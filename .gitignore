@@ -38,7 +38,6 @@ bower_components
 
 *.sublime*
 **/*.test.*
-**/App.test.js
 
 psd
 thumb
