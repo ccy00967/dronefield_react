@@ -7,8 +7,8 @@ import {
   hoverGreen,
   RowView2
 } from "../../../Component/common_style";
-import Component_mapList from "./Component_mapList";
-import { globalSearchAddressToCoordinate } from "../../../Component/naver_maps/GWNaverMaps";
+import Component_mapList, { globalSearchAddressToCoordinate } from "./Component_mapList";
+//import { globalSearchAddressToCoordinate } from "../../../Component/naver_maps/NaverMaps";
 import $ from 'jquery';
 import { server } from "../../url";
 
@@ -374,10 +374,10 @@ const Farmland_Insert = () => {
               }}
             />
             <Btn className="small" onClick={handleSearch}>
-              검색 하기
+              주소 등록
             </Btn>
           </RowView2>
-          <InputDiv className="smallText">*검색하기를 눌러야 면적이 아래 계산됩니다</InputDiv>
+          <InputDiv className="smallText">*주소등록을 눌러야 면적이 아래 계산됩니다</InputDiv>
 
 
           <RowView2>
