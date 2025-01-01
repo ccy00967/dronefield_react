@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { RowView } from "../../../Component/common_style";
-import { ContentArea,MapArea,TableHeader,TableList,MiniBtn } from "./FarmerCss";
+import { ContentArea, MapArea, TableHeader, TableList, MiniBtn } from "./FarmerCss";
 import { ScrollToTop_smooth } from "../../../Component/function/ScrollTop";
 import PagingControl from "../../../Component/UI/PagingControl";
 import PerPageControl from "../../../Component/UI/PerPageControl";
