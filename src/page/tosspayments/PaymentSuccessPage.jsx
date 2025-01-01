@@ -1,22 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import styled from "styled-components";
-import { BackgroundArea, Icon, RowView2 } from "../../Component/common_style";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { BackgroundArea, Icon, ModalBox, RowView2 } from "../../Component/common_style";
 import { server } from "../url";
-
-
-
-
-const ModalBox = styled.div`
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 28rem;
-  padding: 1rem 1.5rem 1.5rem 1.5rem;
-  margin: auto 0rem;
-  background-color: white;
-  border-radius: 8px;
-  overflow: hidden;
-`;
 
 
 export function PaymentSuccessPage() {
@@ -40,7 +25,7 @@ export function PaymentSuccessPage() {
             const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
             const accessToken = userInfo.access_token;
 
-            const response = await fetch(server+`/payments/success/`, {
+            const response = await fetch(server + `/payments/success/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
