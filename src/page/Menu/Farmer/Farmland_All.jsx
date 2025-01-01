@@ -8,7 +8,8 @@ import {
 } from "../../../Component/common_style";
 import Component_mapList from "./Component_mapList";
 import { server } from "../../url";
-import { InsertBox,DataBox,TitleBox } from "./FarmerCss";
+import { InsertBox,DataBox,TitleBox } from "./css/FarmerCss";
+
 
 
 

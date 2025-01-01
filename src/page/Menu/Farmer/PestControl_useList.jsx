@@ -2,128 +2,22 @@ import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import Common_Layout from "../../../Component/common_Layout";
 import {
-  blueColor,
-  grayColor,
-  GreenColor,
   Icon,
-  lightGreenColor,
   RowView,
   RowView2,
-  yellowColor,
 } from "../../../Component/common_style";
+import { ContentArea_Pest_useList,
+  FilterBox_Pest_useList,
+  TableHeader_Pest_useList,
+  TableList_Pest_useList,
+  BtnArea_Pest_useList
+ } from "./css/FarmerCss";
 import PagingControl from "../../../Component/UI/PagingControl";
 import PerPageControl from "../../../Component/UI/PerPageControl";
 import SideMenuBar from "../SideMenuBar";
 import PestControl_useListModal from "./Modal/PestControl_useListModal";
 import { server } from "../../url";
 
-const ContentArea = styled.div`
-  flex: 1;
-  padding: 2rem;
-  border-left: 1px solid #f0f0f0;
-  div.title {
-    font-size: 28px;
-    font-family: var(--font-Pretendard-SemiBold);
-  }
-  div.title > img {
-    margin-left: 5px;
-    cursor: pointer;
-  }
-`;
-const FilterBox = styled(RowView)`
-  margin: 2rem 0rem;
-  div {
-    flex: 1;
-    padding: 1rem 0rem;
-    text-align: center;
-    font-size: 20px;
-    color: #8e8e8e;
-    border: 1px solid #f0f0f0;
-    border-radius: 8px;
-    cursor: pointer;
-    &:hover{
-      background-color: #f0f0f0;
-    }
-  }
-  span {
-    color: #d8d8d8;
-    margin: 0rem 1rem;
-  }
-  div.this {
-    font-family: var(--font-Pretendard-SemiBold);
-    color: white;
-    background-color: ${GreenColor};
-  }
-`;
-const TableHeader = styled(RowView)`
-  height: 4rem;
-  margin-top: 0.5rem;
-  background-color: ${lightGreenColor};
-  font-size: 18px;
-  font-family: var(--font-Pretendard-Medium);
-  div {
-    text-align: center;
-    flex: 1;
-  }
-  div.addr {
-    flex: 2;
-  }
-  select {
-    font-size: 18px;
-    font-family: var(--font-Pretendard-Medium);
-    background-color: ${lightGreenColor};
-    border: 0;
-    outline: 0;
-    cursor: pointer;
-  }
-  span {
-    width: 6rem;
-  }
-`;
-const TableList = styled(RowView)`
-  height: 4rem;
-  cursor: pointer;
-  &.x2 {
-    background-color: #f8f8f8;
-    border-top: 1px solid #f0f0f0;
-    border-bottom: 1px solid #f0f0f0;
-  }
-  div {
-    text-align: center;
-    flex: 1;
-  }
-  div.addr {
-    flex: 2;
-  }
-`;
-const BtnArea = styled.span`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 6rem;
-  font-family: var(--font-Pretendard-Medium);
-  color: white;
-  span {
-    padding: 0.4rem 1rem;
-    border-radius: 4px;
-  }
-   span.green {
-    background-color: ${GreenColor};
-    cursor: pointer;
-  }
-  span.blue {
-    background-color: ${blueColor};
-    cursor: pointer;
-  }
-  span.gray {
-    background-color: ${grayColor};
-    cursor: pointer;
-  }
-  span.yellow {
-  background-color: ${yellowColor};
-  cursor: pointer;}
-  }
-`;
 
 const PestControl_useList = () => {
   const [cnt, setCnt] = useState(0); // 전체 개시글 갯수
@@ -302,7 +196,7 @@ const PestControl_useList = () => {
       <RowView className="top">
         <SideMenuBar mainmenu={"방제"} submenu={"방제이용목록"} />
 
-        <ContentArea>
+        <ContentArea_Pest_useList>
           <RowView2 className="title">
             방제이용목록
             <Icon
@@ -311,7 +205,7 @@ const PestControl_useList = () => {
             />
           </RowView2>
 
-          <FilterBox>
+          <FilterBox_Pest_useList>
             <div className={isSelect("매칭중")} onClick={() => setFilter(0)}>
               매칭중 ({getcountlength(0)})
             </div>
@@ -328,7 +222,7 @@ const PestControl_useList = () => {
             <div className={isSelect("작업확인")} onClick={() => setFilter(3)}>
               작업확인({getcountlength(3)})
             </div>
-          </FilterBox>
+          </FilterBox_Pest_useList>
 
           <PerPageControl
             perPage={perPage}
@@ -336,7 +230,7 @@ const PestControl_useList = () => {
             setCurrentPage={setCurrentPage}
           />
 
-          <TableHeader>
+          <TableHeader_Pest_useList>
             <div>농지별명</div>
             <div>
               <select>
@@ -350,7 +244,7 @@ const PestControl_useList = () => {
             <div className="addr">농지주소</div>
             <div>상태</div>
             {/* {filter !== "작업대기중" && filter !== "작업중" && <span />} */}
-          </TableHeader>
+          </TableHeader_Pest_useList>
 
           {filterData().map((data, idx) => {
             // 테스트용 state
@@ -369,7 +263,7 @@ const PestControl_useList = () => {
             // const isBtnShow = filter !== "작업대기중" && filter !== "작업중";
 
             return (
-              <TableList
+              <TableList_Pest_useList
                 key={idx}
                 className={(idx + 1) % 2 === 0 ? "x2" : ""}
                 onClick={() => openModal(data)}
@@ -382,7 +276,7 @@ const PestControl_useList = () => {
                 <div>{data.exterminateSate}</div>
 
 
-                <BtnArea>
+                <BtnArea_Pest_useList>
                   {data.exterminateSate === 0 ? (
                     <span className="yellow">
                       매칭 중
@@ -405,9 +299,9 @@ const PestControl_useList = () => {
                         )
                       )
                     ))}
-                </BtnArea>
+                </BtnArea_Pest_useList>
 
-              </TableList>
+              </TableList_Pest_useList>
             );
           })}
 
@@ -417,7 +311,7 @@ const PestControl_useList = () => {
             setCurrentPage={setCurrentPage}
             perPage={perPage}
           />
-        </ContentArea>
+        </ContentArea_Pest_useList>
 
         <PestControl_useListModal ref={ModalRef} />
       </RowView>
