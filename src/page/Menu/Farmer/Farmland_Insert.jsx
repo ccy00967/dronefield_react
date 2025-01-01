@@ -3,88 +3,15 @@ import styled from "styled-components";
 import Common_Layout from "../../../Component/common_Layout";
 import {
   CheckBox,
-  GreenColor,
-  hoverGreen,
   RowView2
 } from "../../../Component/common_style";
+import { InsertBox_Farmland_Insert,InputBox_Farmland_Insert, InputDiv_Farmland_Insert,Btn_Farmland_Insert
+ } from "./css/FarmerCss";
 import Component_mapList, { globalSearchAddressToCoordinate } from "./Component_mapList";
 //import { globalSearchAddressToCoordinate } from "../../../Component/naver_maps/NaverMaps";
 import $ from 'jquery';
 import { server } from "../../url";
 
-//css 옮기기
-const InsertBox = styled.div`
-  flex: 1;
-  margin-right: 2rem;
-
-  div.title {
-    font-size: 28px;
-    font-family: var(--font-Pretendard-SemiBold);
-  }
-  div.subtitle {
-    margin-top: 1rem;
-    font-family: var(--font-Pretendard-Medium);
-  }
-  span {
-    font-size: 14px;
-    color: gray;
-  }
-`;
-const InputBox = styled.input`
-  box-sizing: border-box;
-  width: 100%;
-  padding: 0.8rem 1rem;
-  margin: 0.5rem 0;
-  font-size: 16px;
-  outline: 0;
-  border: 1px solid #f0f0f0;
-  border-radius: 8px;
-  &:focus {
-    border: 1px solid ${GreenColor};
-  }
-`;
-const InputDiv = styled(RowView2)`
-  flex: 1;
-  box-sizing: border-box;
-  padding: 0.8rem 1rem;
-  margin-top: 0.5rem;
-  border: 1px solid;
-  border-color: ${(props) =>
-    props.$isfocused === "on" ? GreenColor : "#f0f0f0"};
-  border-radius: 8px;
-  input {
-    font-size: 16px;
-    width: 75%;
-    margin-right: 0.5rem;
-    outline: 0;
-    border: 0;
-  }
-  &.smallText {
-    font-size: 14px;
-    color: gray;
-    border: 0;
-    margin: 0;
-    padding: 0.5rem 1rem;
-  }
-`;
-const Btn = styled.div`
-  padding: 1rem;
-  margin-top: 1rem;
-  font-family: var(--font-Pretendard-SemiBold);
-  text-align: center;
-  color: white;
-  background-color: ${GreenColor};
-  border-radius: 8px;
-  cursor: pointer;
-  &.small {
-    margin: 0 0 0 1rem;
-    padding: 0.8rem 1rem;
-    width: 10rem;
-  }
-  &:hover {
-    background-color: ${hoverGreen};
-  }
-`;
 
 // 농지 데이터
 
@@ -351,11 +278,11 @@ const Farmland_Insert = () => {
         setTotalArea={setTotalArea} // 총 면적 전달
         setLandCount={setLandCount} // 필지 개수 전달
       >
-        <InsertBox>
+        <InsertBox_Farmland_Insert>
           <div className="title">농지등록</div>
 
           <div className="subtitle">농지 별명</div>
-          <InputBox
+          <InputBox_Farmland_Insert
             placeholder="농지 별명을 입력해주세요."
             value={landNickName}
             onChange={setting_name}
@@ -363,7 +290,7 @@ const Farmland_Insert = () => {
 
           <div className="subtitle">농지 주소</div>
           <RowView2>
-            <InputBox
+            <InputBox_Farmland_Insert
               placeholder="보유하신 농지 지번 주소를 입력해주세요."
               value={searchAddr}
               onChange={setting_addr}
@@ -373,20 +300,20 @@ const Farmland_Insert = () => {
                 }
               }}
             />
-            <Btn className="small" onClick={handleSearch}>
+            <Btn_Farmland_Insert className="small" onClick={handleSearch}>
               주소 등록
-            </Btn>
+            </Btn_Farmland_Insert>
           </RowView2>
-          <InputDiv className="smallText">*주소등록을 눌러야 면적이 아래 계산됩니다</InputDiv>
+          <InputDiv_Farmland_Insert className="smallText">*주소등록을 눌러야 면적이 아래 계산됩니다</InputDiv_Farmland_Insert>
 
 
           <RowView2>
             <div className="subtitle">면적</div>
-            <div className="subtitle"><InputDiv className="smallText">*자동입력됩니다</InputDiv></div>
+            <div className="subtitle"><InputDiv_Farmland_Insert className="smallText">*자동입력됩니다</InputDiv_Farmland_Insert></div>
           </RowView2>
 
           <RowView2>
-            <InputDiv
+            <InputDiv_Farmland_Insert
               style={{ marginRight: "1rem" }}
               $isfocused={isfocuse_area}
               disabled={true}
@@ -400,8 +327,8 @@ const Farmland_Insert = () => {
               //disabled={true}
               />
               평
-            </InputDiv>
-            <InputDiv $isfocused={isfocuse_m2}>
+            </InputDiv_Farmland_Insert>
+            <InputDiv_Farmland_Insert $isfocused={isfocuse_m2}>
               <input
                 value={lndpclAr}
                 readOnly
@@ -411,11 +338,11 @@ const Farmland_Insert = () => {
               //disabled={true}
               />
               m²
-            </InputDiv>
+            </InputDiv_Farmland_Insert>
           </RowView2>
 
           <div className="subtitle">작물</div>
-          <InputBox
+          <InputBox_Farmland_Insert
             placeholder="작물을 입력해주세요. ex)벼,콩,보리,옥수수"
             value={cropsInfo}
             onChange={setting_plant}
@@ -431,14 +358,14 @@ const Farmland_Insert = () => {
             <span> (필수)</span>
           </RowView2>
 
-          <Btn onClick={insert_API}>농지등록</Btn>
+          <Btn_Farmland_Insert onClick={insert_API}>농지등록</Btn_Farmland_Insert>
 
           {/* <Btn onClick={() => {
             console.log(window.addressInfo.jibunAddress)
           }}>
             네이버 변수 확인 window.address
           </Btn> */}
-        </InsertBox>
+        </InsertBox_Farmland_Insert>
       </Component_mapList>
     </Common_Layout>
   );

@@ -15,194 +15,13 @@ import SideMenuBar from "../SideMenuBar";
 import { requestPayment } from "../../tosspayments/TossPayments_func";
 import { server } from "../../url";
 import { fetchToken, fetchUserInfo, fetchAddressData } from "./pilotFetchFunc";
-
-
-
-const TextSemiBold = styled.div`
-  font-size: ${(props) => `${props.$size || 16}px`};
-  font-family: var(--font-Pretendard-SemiBold);
-`;
-const TextMedium = styled.div`
-  color: ${(props) => (props.$color ? redColor : "#1d1d1d")};
-  font-size: ${(props) => `${props.$fontsize || 16}px`};
-  font-family: var(--font-Pretendard-Medium);
-  width: 4rem;
-  &.auto {
-    width: auto;
-  }
-`;
-const DataRow = styled(RowView2)`
-  align-items: flex-start;
-  margin-top: 0.7rem;
-  div {
-    width: 4rem;
-  }
-  div.letter {
-    letter-spacing: 7px;
-  }
-  div.gray {
-    flex: 1;
-    margin-left: 1rem;
-    color: #555555;
-  }
-  div.gray_w {
-    width: auto;
-    margin-left: 1rem;
-    color: #555555;
-  }
-`;
-const ContentArea = styled.div`
-  flex: 1;
-  padding: 2rem;
-  border-left: 1px solid #f0f0f0;
-  div.title > img {
-    margin-left: 5px;
-    cursor: pointer;
-  }
-`;
-const FilterBox = styled(RowView2)`
-  margin-top: 2rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid #f0f0f0;
-  select {
-    width: 15rem;
-    padding: 1rem 0rem;
-    margin-right: 1rem;
-    text-align: center;
-    font-size: 20px;
-    color: #8e8e8e;
-    outline: 0;
-    border: 1px solid #f0f0f0;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-`;
-const SearchBox = styled.input`
-  box-sizing: border-box;
-  padding: 0.8rem 1rem;
-  margin-top: 2rem;
-  margin-bottom: 1rem;
-  width: 25rem;
-  font-size: 16px;
-  outline: 0;
-  border: 1px solid #f0f0f0;
-  border-radius: 8px;
-  &:focus {
-    border: 1px solid #454545;
-  }
-  &::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  &::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-`;
-const Content = styled(RowView)`
-  div.table {
-    flex: 1;
-  }
-`;
-const TableHeader = styled(RowView)`
-  height: 3.8rem;
-  background-color: ${lightBlueColor};
-  font-size: 18px;
-  font-family: var(--font-Pretendard-Medium);
-  div {
-    text-align: center;
-    flex: 1;
-  }
-  div.long {
-    flex: 2;
-  }
-  select {
-    font-size: 18px;
-    font-family: var(--font-Pretendard-Medium);
-    background-color: ${lightBlueColor};
-    border: 0;
-    outline: 0;
-    cursor: pointer;
-  }
-  input {
-    margin-left: 2rem;
-  }
-`;
-const TableList = styled(RowView)`
-  height: 3.8rem;
-  &.x2 {
-    background-color: #f8f8f8;
-    border-top: 1px solid #f0f0f0;
-    border-bottom: 1px solid #f0f0f0;
-  }
-  div {
-    text-align: center;
-    flex: 1;
-  }
-  div.long {
-    flex: 2;
-  }
-  input {
-    margin-left: 2rem;
-  }
-`;
-const Hr = styled.div`
-  width: 100%;
-  height: 1px;
-  margin: 1.2rem 0rem;
-  background-color: #f0f0f0;
-  &.black {
-    background-color: #1d1d1d;
-  }
-`;
-const Bill = styled(RowView)`
-  box-sizing: border-box;
-  width: 26rem;
-  height: 42.5rem;
-  padding: 1rem;
-  margin-left: 1rem;
-  border: 1px solid #f0f0f0;
-  border-radius: 8px;
-  div.btn {
-    font-size: 14px;
-    color: #555555;
-    background-color: #f0f0f0;
-    border-radius: 5px;
-    box-shadow: 0px 0px 4px #c6c6c6;
-    cursor: pointer;
-  }
-  div.content {
-    box-sizing: border-box;
-    width: 100%;
-    padding: 1rem;
-  }
-`;
-const Btn = styled.div`
-  margin-top: 2rem;
-  padding: 0.8rem 0rem;
-  font-family: var(--font-Pretendard-SemiBold);
-  text-align: center;
-  color: white;
-  background-color: ${blueColor};
-  border-radius: 8px;
-  cursor: pointer;
-`;
-const SearchBtn = styled.div`
-  width: 8rem;
-  padding: 1rem 0rem;
-  margin-left: 1rem;
-  font-family: var(--font-Pretendard-SemiBold);
-  text-align: center;
-  color: white;
-  background-color: ${blueColor};
-  border-radius: 8px;
-  cursor: pointer;
-`;
-
-
-
-
-
+import {
+  TextSemiBold, TextMedium,
+  DataRow, ContentArea,
+  FilterBox, SearchBox,
+  Content, TableHeader, TableList,
+  Hr, SearchBtn, Bill, Btn
+} from "./css/MatchingCss";
 
 const Matching = ({ }) => {
   const [cnt, setCnt] = useState(0);
@@ -225,7 +44,7 @@ const Matching = ({ }) => {
   const [see_seq, setSee_Seq] = useState(0);
   const [dataList, setDataList] = useState([]);
   const [lndpcl, setlndpcl] = useState([]);
-  const [sum,setsum]=useState([]);
+  const [sum, setsum] = useState([]);
 
   const name = pilotdata?.name || "이름 없음";
   const phone = pilotdata?.mobileno || "번호 없음";
@@ -243,34 +62,34 @@ const Matching = ({ }) => {
     // landInfo가 유효한 객체인지 확인
     if (value.landInfo && typeof value.landInfo === 'object') {
       const lndpclAr = parseFloat(value.landInfo.lndpclAr); // 문자열을 숫자로 변환
-  
+
       // lndpclAr가 유효한 숫자인지 확인
       if (!isNaN(lndpclAr)) {
         const calculatedLndpcl = lndpclAr * 30 * 0.3025; // 숫자로 계산
-        
+
         if (isChecked) {
           // 항목이 체크된 경우
           setCheckedList((prev) => [...prev, value.orderid]);
           setSelectData((prev) => [...prev, value]);
           // lndpcl에 숫자 값 추가 (중복 허용)
           setlndpcl((prev) => [...prev, calculatedLndpcl]);
-          
+
           return;
         }
-      
+
         // 항목이 체크 해제된 경우
         if (!isChecked && checkedList.includes(value.orderid)) {
           // 선택된 마지막 항목이라면 see_seq 감소
-          if (see_seq + 1 === selectData.length) { 
-            setSee_Seq(see_seq - 1); 
+          if (see_seq + 1 === selectData.length) {
+            setSee_Seq(see_seq - 1);
           }
-  
+
           // 체크리스트에서 orderid 제거
           setCheckedList((prev) => prev.filter((item) => item !== value.orderid));
-  
+
           // selectData에서 해당 값 제거
           setSelectData((prev) => prev.filter((item) => item.orderid !== value.orderid));
-  
+
           // lndpcl에서 계산된 값 제거
           setlndpcl((prev) => {
             // 해당 값을 제거 (중복된 값 제거)
@@ -281,10 +100,10 @@ const Matching = ({ }) => {
             }
             return updatedLndpcl;
           });
-  
+
           console.log(lndpcl);
           console.log(selectData);
-          
+
           return;
         }
       } else {
@@ -293,21 +112,21 @@ const Matching = ({ }) => {
     } else {
       console.error('landInfo is not a valid object:', value.landInfo);
     }
-  
+
     return;
   };
-  
+
   // 숫자만 포함된 lndpcl 배열에서 합계 계산
   const formattedTotal = Math.round(
     lndpcl.reduce((acc, cur) => acc + cur, 0) // lndpcl에는 이미 숫자만 들어있음
   )
     .toString()
     .replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원";
-  
- 
-  
-  
-  
+
+
+
+
+
 
   const checkHandler = (e, value) => {
     setIsChecked(!isChecked);
@@ -487,7 +306,7 @@ const Matching = ({ }) => {
       setSee_Seq(see_seq + 1);
     }
   };
-  
+
 
   useEffect(() => {
     setSee_Seq(0);

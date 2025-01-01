@@ -9,102 +9,12 @@ import {
   RowView,
   RowView2,
 } from "../../../Component/common_style";
+import { ContentArea_Farm_useList,FilterBox, TableHeader_Farm_useList, TableList_Farm_useList, BtnArea } from "./css/FarmerCss";
 import PagingControl from "../../../Component/UI/PagingControl";
 import PerPageControl from "../../../Component/UI/PerPageControl";
 import SideMenuBar from "../SideMenuBar";
 import FarmlandAnalyze_useListModal from "./Modal/FarmlandAnalyze_useListModal";
 
-const ContentArea = styled.div`
-  flex: 1;
-  padding: 2rem;
-  border-left: 1px solid #f0f0f0;
-  div.title {
-    font-size: 28px;
-    font-family: var(--font-Pretendard-SemiBold);
-  }
-  div.title > img {
-    margin-left: 5px;
-    cursor: pointer;
-  }
-`;
-const FilterBox = styled(RowView)`
-  margin: 2rem 0rem;
-  div {
-    flex: 1;
-    padding: 1rem 0rem;
-    text-align: center;
-    font-size: 20px;
-    color: #8e8e8e;
-    border: 1px solid #f0f0f0;
-    border-radius: 8px;
-    cursor: pointer;
-    &:hover {
-      background-color: #f0f0f0;
-    }
-  }
-  span {
-    color: #d8d8d8;
-    margin: 0rem 1rem;
-  }
-  div.this {
-    font-family: var(--font-Pretendard-SemiBold);
-    color: white;
-    background-color: ${GreenColor};
-  }
-`;
-const TableHeader = styled(RowView)`
-  height: 4rem;
-  margin-top: 0.5rem;
-  background-color: ${lightGreenColor};
-  font-size: 18px;
-  font-family: var(--font-Pretendard-Medium);
-  div {
-    text-align: center;
-    flex: 1;
-  }
-  div.addr {
-    flex: 2;
-  }
-  span {
-    width: 6rem;
-  }
-`;
-const TableList = styled(RowView)`
-  height: 4rem;
-  cursor: pointer;
-  &.x2 {
-    background-color: #f8f8f8;
-    border-top: 1px solid #f0f0f0;
-    border-bottom: 1px solid #f0f0f0;
-  }
-  div {
-    text-align: center;
-    flex: 1;
-  }
-  div.addr {
-    flex: 2;
-  }
-`;
-const BtnArea = styled.span`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 6rem;
-  font-family: var(--font-Pretendard-Medium);
-  color: white;
-  span {
-    padding: 0.4rem 1rem;
-    border-radius: 4px;
-  }
-  span.gray {
-    background-color: #8e8e8e;
-    cursor: pointer;
-  }
-  span.blue {
-    background-color: ${blueColor};
-    cursor: pointer;
-  }
-`;
 
 const FarmlandAnalyze_useList = () => {
   const [cnt, setCnt] = useState(0); // 전체 개시글 갯수
@@ -170,7 +80,7 @@ const FarmlandAnalyze_useList = () => {
       <RowView className="top">
         <SideMenuBar mainmenu={"농지분석"} submenu={"농지분석 이용목록"} />
 
-        <ContentArea>
+        <ContentArea_Farm_useList>
           <RowView2 className="title">
             농지분석 이용목록
             <Icon
@@ -199,12 +109,12 @@ const FarmlandAnalyze_useList = () => {
             setCurrentPage={setCurrentPage}
           />
 
-          <TableHeader>
+          <TableHeader_Farm_useList>
             <div>농지별명</div>
             <div className="addr">농지주소</div>
             <div>상태</div>
             {filter !== "작업중" && <span />}
-          </TableHeader>
+          </TableHeader_Farm_useList>
 
           {dataList.map((data, idx) => {
             // 테스트용 state
@@ -223,7 +133,7 @@ const FarmlandAnalyze_useList = () => {
             const isBtnShow = filter !== "작업중";
 
             return (
-              <TableList
+              <TableList_Farm_useList
                 key={idx}
                 className={(idx + 1) % 2 === 0 ? "x2" : ""}
                 onDoubleClick={() => openModal(data)}
@@ -250,7 +160,7 @@ const FarmlandAnalyze_useList = () => {
                     )}
                   </BtnArea>
                 )}
-              </TableList>
+              </TableList_Farm_useList>
             );
           })}
 
@@ -260,7 +170,7 @@ const FarmlandAnalyze_useList = () => {
             setCurrentPage={setCurrentPage}
             perPage={perPage}
           />
-        </ContentArea>
+        </ContentArea_Farm_useList>
 
         <FarmlandAnalyze_useListModal ref={ModalRef} />
       </RowView>
