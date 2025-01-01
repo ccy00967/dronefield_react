@@ -14,6 +14,7 @@ import PerPageControl from "../../../Component/UI/PerPageControl";
 import SideMenuBar from "../SideMenuBar";
 import { server } from "../../url";
 
+
 const ContentArea = styled.div`
   flex: 1;
   padding: 2rem;

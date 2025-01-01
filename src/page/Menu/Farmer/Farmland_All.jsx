@@ -8,41 +8,9 @@ import {
 } from "../../../Component/common_style";
 import Component_mapList from "./Component_mapList";
 import { server } from "../../url";
+import { InsertBox,DataBox,TitleBox } from "./FarmerCss";
 
-const InsertBox = styled.div`
-  flex: 1;
-  margin-right: 2rem;
-  div.title {
-    margin-bottom: 2rem;
-    font-size: 28px;
-    font-family: var(--font-Pretendard-SemiBold);
-  }
-`;
-const DataBox = styled(CenterView)`
-  flex-direction: column;
-  padding: 2rem 1rem;
-  margin-top: 1rem;
-  font-size: 20px;
-  border: 1px solid #f0f0f0;
-  border-radius: 8px;
-`;
-const TitleBox = styled.div`
-  position: relative;
-  margin-bottom: 1rem;
-  div.subtitle {
-    position: relative;
-    z-index: 2;
-    font-size: 22px;
-    font-family: var(--font-Pretendard-SemiBold);
-  }
-  div.hightLight {
-    position: absolute;
-    bottom: -25%;
-    width: 100%;
-    height: 1rem;
-    background-color: ${lightGreenColor};
-  }
-`;
+
 
 const Farmland_All = () => {
   const [totalArea, setTotalArea] = useState(0); // 총 면적

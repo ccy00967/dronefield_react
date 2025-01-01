@@ -6,87 +6,11 @@ import {
   Icon,
   RowView,
 } from "../../Component/common_style";
+import {Section1,Section2,HomePic,Text,SectionLast} from "./HomeCss"
 import Login from "./Login";
 
-const Section1 = styled.div`
-  position: relative;
-  width: 100%;
-  height: 50rem;
-  background-color: #eeeeee;
-  overflow: hidden;
-  div.content {
-    box-sizing: border-box;
-    padding: 0rem 2rem;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    color: white;
-  }
-  div.flex {
-    flex: 1;
-  }
-  div.large {
-    font-size: 35px;
-    font-family: var(--font-Pretendard-Medium);
-  }
-  div.xxlarge {
-    font-size: 100px;
-    font-family: var(--font-Pretendard-Bold);
-    margin-bottom: 0.5rem;
-  }
-  div.small {
-    font-size: 24px;
-    margin-bottom: 2rem;
-  }
-`;
-const Section2 = styled(RowView)`
-  box-sizing: border-box;
-  padding: 0rem 2rem;
-  margin: 20rem 0rem;
-  div.flex {
-    flex: 1;
-  }
-`;
-const HomePic = styled(Icon)`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-`;
-const Text = styled(CenterView)`
-  font-family: var(--font-Pretendard-SemiBold);
-  div.green {
-    color: ${GreenColor};
-    font-size: 28px;
-  }
-  div.xlarge {
-    font-size: 50px;
-  }
-`;
-const SectionLast = styled(CenterView)`
-  margin: 5rem 0rem 20rem 0rem;
-  font-size: 24px;
-  div.top {
-    box-sizing: border-box;
-    padding: 0rem 2rem;
-    width: 100%;
-    max-width: 65rem;
-  }
-  .top > div {
-    flex: 1;
-    flex-direction: column;
-  }
-  img {
-    width: 100%;
-    max-width: 180px;
-  }
-  div.title {
-    margin: 2rem 0rem 1rem 0rem;
-    font-size: 30px;
-    font-family: var(--font-Pretendard-SemiBold);
-  }
-`;
+
+
 
 const Home = () => {
   return (
@@ -96,6 +20,7 @@ const Home = () => {
 
         <RowView className="content">
           <CenterView className="flex">
+
             <div>
               <div className="xlarge">현재 서비스 개발 중입니다</div>
               <div className="large">디지털 농업의 시작</div>
