@@ -12,7 +12,7 @@ import Component_mapList, { globalSearchAddressToCoordinate } from "./Component_
 import $ from 'jquery';
 import { server } from "../../url";
 
-
+//css 옮기기
 const InsertBox = styled.div`
   flex: 1;
   margin-right: 2rem;
