@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
-import { RowView } from "../../../Component/common_style";
-import { ContentArea, MapArea, TableHeader, TableList, MiniBtn } from "./FarmerCss";
+import styled from "styled-components";
+import {
+  CenterView,
+  GreenColor,
+  hoverGreen,
+  hoverRed,
+  lightGreenColor,
+  lightRedColor,
+  redColor,
+  RowView
+} from "../../../Component/common_style";
 import { ScrollToTop_smooth } from "../../../Component/function/ScrollTop";
 import PagingControl from "../../../Component/UI/PagingControl";
 import PerPageControl from "../../../Component/UI/PerPageControl";
@@ -9,6 +18,92 @@ import SideMenuBar from "../SideMenuBar";
 //import { globalSearchAddressToCoordinate } from "../../../Component/naver_maps/NaverMaps";
 import { useUser } from "../../../Component/userContext";
 import { server } from "../../url";
+
+
+const ContentArea = styled.div`
+  flex: 1;
+  padding: 2rem;
+  border-left: 1px solid #f0f0f0;
+`;
+const MapArea = styled(CenterView)`
+  flex: 1.5;
+  height: 550px;
+  margin-top: 3rem;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  z-index: 1;
+`;
+const TableHeader = styled(RowView)`
+  height: 4rem;
+  margin-top: 0.5rem;
+  background-color: ${lightGreenColor};
+  font-size: 18px;
+  font-family: var(--font-Pretendard-Medium);
+  div {
+    text-align: center;
+    flex: 1;
+  }
+  div.addr {
+    flex: 2;
+  }
+  span {
+    opacity: 0;
+    cursor: default;
+  }
+`;
+const TableList = styled(RowView)`
+  height: 4rem;
+  &.x2 {
+    background-color: #f8f8f8;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  div {
+    text-align: center;
+    flex: 1;
+  }
+  div.addr {
+    flex: 2;
+  }
+`;
+const MiniBtn = styled.span`
+  margin: 0rem 1rem;
+  padding: 0.4rem 1rem;
+  font-family: var(--font-Pretendard-Medium);
+  border-radius: 4px;
+  cursor: pointer;
+  &.delete {
+    color: ${redColor};
+    background-color: ${lightRedColor};
+    &:hover {
+      background-color: ${hoverRed};
+    }
+  }
+  &.select {
+    color: white;
+    background-color: ${GreenColor};
+    &:hover {
+      background-color: ${hoverGreen};
+    }
+  }
+`;
+
+
+const loadScript = (src, callback) => {
+  const script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src = src;
+  script.onload = () => callback();
+  document.head.appendChild(script);
+};
+
+window.addressInfo = {
+  roadAddress: '',
+  jibunAddress: '',
+  englishAddress: '',
+  x: '',
+  y: ''
+};
 
 
 const Component_mapList = (props) => {
