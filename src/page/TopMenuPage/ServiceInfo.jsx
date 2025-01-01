@@ -1,6 +1,6 @@
 import YouTube from "react-youtube";
 import Common_Layout from "../../Component/common_Layout";
-import { YouTubeBox } from "./CompanyInfo";
+import { YouTubeBox } from "./css/CompanyInfoCss";
 
 const ServiceInfo = () => {
   return (

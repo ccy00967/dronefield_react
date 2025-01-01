@@ -1,4 +1,3 @@
-import styled from "styled-components";
 import {
   BackgroundArea,
   CenterView,
@@ -7,17 +6,8 @@ import {
 } from "../../Component/common_style";
 import noScroll from "../../Component/function/noScroll";
 import DaumPostcodeEmbed from "react-daum-postcode";
+import { ModalBox } from "./css/AddressModalCss";
 
-
-const ModalBox = styled.div`
-  box-sizing: border-box;
-  max-width: 28rem;
-  padding: 1rem 1.5rem 1.5rem 1.5rem;
-  margin: auto 0rem;
-  background-color: white;
-  border-radius: 8px;
-  overflow: hidden;
-`;
 
 const AddressModal = ({ isOpen, closeAddrModal, setAddrRoad, setAddrJibun }) => {
 
