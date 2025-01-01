@@ -5,12 +5,168 @@ import { ScrollToTop_smooth } from "../../../Component/function/ScrollTop";
 import PagingControl from "../../../Component/UI/PagingControl";
 import PerPageControl from "../../../Component/UI/PerPageControl";
 import SideMenuBar from "../SideMenuBar";
-import GWNaverMap from "../../../Component/naver_maps/GWNaverMaps";
-import { globalSearchAddressToCoordinate } from "../../../Component/naver_maps/GWNaverMaps";
+//import NaverMap from "../../../Component/naver_maps/NaverMaps";
+//import { globalSearchAddressToCoordinate } from "../../../Component/naver_maps/NaverMaps";
 import { useUser } from "../../../Component/userContext";
 import { server } from "../../url";
 
+
 const Component_mapList = (props) => {
+  const { naver } = window;
+
+  const infoWindow = new naver.maps.InfoWindow({
+    anchorSkew: true,
+  });
+
+  // 지도 클릭시 주소를 보여주는 말풍선
+  function showInfoWindowTextBox(htmlAddresses) {
+    infoWindow.setContent(`
+      <div style="padding:10px;min-width:200px;line-height:150%;">
+      <h4 style="margin-top:5px;">검색 주소</h4><br />
+      ${htmlAddresses.join('<br />')}
+      </div>
+   `);
+  }
+
+  // 주소를 변환하는 함수
+  function makeAddress(item) {
+    if (!item) return '';
+
+    const { region, land, name } = item;
+    const isRoadAddress = name === 'roadaddr';
+
+    let sido = region.area1?.name || '';
+    let sigugun = region.area2?.name || '';
+    let dongmyun = region.area3?.name || '';
+    let ri = region.area4?.name || '';
+    let rest = '';
+
+    if (land) {
+      if (land.type === '2') rest += '산';
+      rest += land.number1;
+      if (land.number2) rest += `-${land.number2}`;
+      if (isRoadAddress) {
+        if (dongmyun.endsWith('면')) ri = land.name;
+        else dongmyun = land.name;
+        if (land.addition0) rest += `${land.addition0.value}`;
+      }
+    }
+    console.log(ri) // ri값이 없으면 한칸이 띄워짐 주의!
+    return [sido, sigugun, dongmyun, ri, rest].join(' ');
+  }
+
+  const initMap = () => {
+    // 네이버 Maps API 사용 지도 생성
+    const map = new naver.maps.Map('map', {
+      center: new naver.maps.LatLng(35.1409402, 126.925774), // 초기값: 우리기업 위치
+      zoom: 15,
+    });
+    map.setOptions("mapTypeControl", true); //지도 유형 컨트롤의 표시 여부
+
+    // 지도 클릭, 좌표를 주소로 변환 - 이벤트에 등록
+    function searchCoordinateToAddress(latlng) {
+      infoWindow.close();
+
+      naver.maps.Service.reverseGeocode(
+        {
+          coords: latlng,
+          orders: [
+            naver.maps.Service.OrderType.ADDR,
+            naver.maps.Service.OrderType.ROAD_ADDR,
+          ].join(','),
+        },
+        (status, response) => {
+          if (status === naver.maps.Service.Status.ERROR) {
+            return alert('Something Wrong!');
+          }
+
+          const items = response.v2.results;
+
+          const htmlAddresses = items.map((item, index) => {
+            const address = makeAddress(item);
+            //const addrType = item.name === 'roadaddr' ? '[도로명 주소]' : '[지번 주소]';
+            return `${address}`;
+          });
+
+          showInfoWindowTextBox(htmlAddresses)
+
+          infoWindow.open(map, latlng);
+
+          window.addressInfo = {
+            jibunAddress: htmlAddresses[0],
+          };
+
+          setSearchAddr(htmlAddresses[0])
+        }
+      );
+    }
+
+    // 지도 클릭 이벤트 설정
+    map.addListener('click', (e) => {
+      searchCoordinateToAddress(e.coord);
+    });
+
+    // 주소 검색시 지도에 표시, 주소를 좌표로 변환
+    const searchAddressToCoordinate = (address) => {
+      naver.maps.Service.geocode(
+        { query: address, },
+        (status, response) => {
+          if (status === naver.maps.Service.Status.ERROR) {
+            return alert('Something Wrong!');
+          }
+
+          if (response.v2.meta.totalCount === 0) {
+            return alert('주소가 올바르지 않습니다.');
+          }
+
+          const item = response.v2.addresses[0];
+          const point = new naver.maps.Point(item.x, item.y);
+
+          // 주소입력 -> 주소를 받음
+          const htmlAddresses = [];
+          // if (item.jibunAddress) htmlAddresses.push(item.jibunAddress);
+          // if (item.roadAddress) htmlAddresses.push(item.roadAddress);
+          // if (item.englishAddress) htmlAddresses.push(`[영문명 주소] ${item.englishAddress}`);
+
+          item.jibunAddress != null ? htmlAddresses.push(item.jibunAddress) : htmlAddresses.push("")
+          item.roadAddress != null ? htmlAddresses.push(item.roadAddress) : htmlAddresses.push("")
+
+          showInfoWindowTextBox(htmlAddresses)
+
+          map.setCenter(point);
+          infoWindow.open(map, point);
+
+          window.addressInfo = {
+            roadAddress: item.roadAddress,
+            jibunAddress: item.jibunAddress,
+            englishAddress: item.englishAddress,
+            x: item.x,
+            y: item.y
+          };
+
+          setSearchAddr(htmlAddresses[0])
+        }
+      );
+    }
+
+    globalSearchAddressToCoordinate = searchAddressToCoordinate;
+    globalSearchCoordinateToAddress = searchCoordinateToAddress;
+  }
+
+  useEffect(() => {
+    // 스크립트 로딩 확인
+    if (typeof naver === 'undefined') {
+      loadScript(
+        'https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=YOUR_CLIENT_ID',
+        initMap,
+      );
+    } else {
+      initMap();
+    }
+
+    farmlands_load()
+  }, []);
+
   const mainmenu = props.mainmenu || "";
   const submenu = props.submenu || "";
   const children = props.children || <></>;
@@ -21,60 +177,20 @@ const Component_mapList = (props) => {
   const setSearchAddr = props.setSearchAddr || null;
   const { setTotalArea, setLandCount } = props;
 
-  //const [searchAddr, setSearchAddr] = useState([]); // 주소변수를 받는곳
-
   const [cnt, setCnt] = useState(0); // 전체 개시글 갯수
   const [perPage, setPerPage] = useState(20); // 페이지당 게시글 갯수 (디폴트:20)
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지
   const { setUser_info } = useUser();
 
-
   // 농지 데이터 load
   const [dataList, setDataList] = useState([]);
-  // 이건 테스트 데이터 
-  // const testData = Array(parseInt(perPage)).fill({
-  //   name: "김가네벼",
-  //   addr: "전북특별자치도 김제시 백산읍 공덕 2길",
-  //   area: "2000평/66,112342m²",
-  //   plant: "옥수수",
-  // });
-  //
-  const load_API = async () => {
-    // 액세스 토큰과 리프레시 토큰을 갱신하는 함수
-    const refreshAccessToken = async () => {
-      const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
-      const refreshToken = userInfo?.refresh_token;
 
-      const res = await fetch(server+'/user/token/refresh/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          refresh: refreshToken,
-        }),
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        // 액세스 토큰과 리프레시 토큰을 로컬스토리지와 상태에 갱신
-        userInfo.access_token = data.access;
-        localStorage.setItem('User_Credential', JSON.stringify(userInfo));
-        setUser_info(userInfo); // 상태 업데이트
-        return data.access; // 새로운 액세스 토큰 반환
-      } else {
-        // 리프레시 토큰이 만료되었거나 유효하지 않을 경우 처리
-        alert('로그인이 만료되었습니다.'); // 경고창 표시
-        localStorage.removeItem('User_Credential'); // 로컬 스토리지에서 정보 제거
-        window.location.replace('/'); // 첫 페이지로 리다이렉트
-        return null;
-      }
-    };
-
+  const farmlands_load = async () => {
+    // 유저 정보등 인증에 필요한 것들 가져오기 - 액세스토큰에서 막히면 리프레시 토큰으로 자동으로 갱신하는 기능과 연계 작업 필요
     const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
     const accessToken = userInfo?.access_token;
 
-    const firstResponse = await fetch(server+"/customer/lands/", {
+    const firstResponse = await fetch(server + "/customer/lands/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -82,31 +198,7 @@ const Component_mapList = (props) => {
       },
     });
 
-    // 401 에러 발생 시 토큰 갱신 후 재시도
-    if (firstResponse.status === 401) {
-      const newAccessToken = await refreshAccessToken();
-      if (newAccessToken) {
-        const retryResponse = await fetch(server+"/customer/lands/", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${newAccessToken}`,
-          },
-        });
-
-        if (retryResponse.ok) {
-          const data = await retryResponse.json();
-          console.log(data);
-          setDataList(data);  // 받아온 데이터를 상태에 저장
-          // 총 면적과 필지 개수를 계산하고 부모 컴포넌트로 전달
-          const totalArea = data.reduce((sum, item) => sum + item.lndpclAr, 0);
-          setTotalArea(totalArea);
-          setLandCount(data.length);
-        } else {
-          console.error('데이터 로드 실패');
-        }
-      }
-    } else if (firstResponse.ok) {
+    if (firstResponse.ok) {
       const data = await firstResponse.json();
       setDataList(data);  // 받아온 데이터를 상태에 저장
       // 총 면적과 필지 개수를 계산하고 부모 컴포넌트로 전달
@@ -116,12 +208,7 @@ const Component_mapList = (props) => {
     } else {
       console.error('데이터 로드 실패');
     }
-  };
-
-  useEffect(() => {
-    load_API();
-  }, [currentPage, perPage]);
-
+  }
 
   // 방재신청 > 농지선택
   const selectFarmland = (data) => {
@@ -130,7 +217,7 @@ const Component_mapList = (props) => {
       const farmland = `${data.landNickName}(${data.address.jibunAddress})`;
       setSelectFarmland(data);
       ScrollToTop_smooth();
-      globalSearchAddressToCoordinate(data.address.jibunAddress);
+      //globalSearchAddressToCoordinate(data.address.jibunAddress);
     }
   };
 
@@ -143,7 +230,7 @@ const Component_mapList = (props) => {
           {children}
 
           <MapArea>
-            <GWNaverMap setValue={setSearchAddr} />
+            <div id="map" style={{ width: '100%', height: '100%' }} />
           </MapArea>
         </RowView>
 
@@ -175,7 +262,7 @@ const Component_mapList = (props) => {
               {delete_API && (
                 <MiniBtn
                   className="delete"
-                  onClick={() => delete_API(data.uuid, load_API)}
+                  onClick={() => delete_API(data.uuid)}
                 >
                   삭제
                 </MiniBtn>
@@ -204,3 +291,5 @@ const Component_mapList = (props) => {
 };
 
 export default Component_mapList;
+export let globalSearchAddressToCoordinate
+export let globalSearchCoordinateToAddress

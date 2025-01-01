@@ -8,7 +8,7 @@ window.addressInfo = {
   y: ''
 };
 
-const GWNaverMap = ({ setValue }) => {
+const NaverMap = ({ setValue }) => {
   const { naver } = window;
 
   useEffect(() => {
@@ -54,8 +54,6 @@ const GWNaverMap = ({ setValue }) => {
             return `${address}`;
           });
 
-          console.log('좌주', htmlAddresses)
-
           showInfoWindowTextBox(htmlAddresses)
 
           infoWindow.open(map, latlng);
@@ -97,8 +95,6 @@ const GWNaverMap = ({ setValue }) => {
 
           item.jibunAddress != null ? htmlAddresses.push(item.jibunAddress) : htmlAddresses.push("")
           item.roadAddress != null ? htmlAddresses.push(item.roadAddress) : htmlAddresses.push("")
-
-          console.log('주좌', htmlAddresses)
 
           showInfoWindowTextBox(htmlAddresses)
 
@@ -168,6 +164,6 @@ const GWNaverMap = ({ setValue }) => {
   return <div id="map" style={{ width: '100%', height: '100%' }}></div>;
 };
 
-export default GWNaverMap;
+export default NaverMap;
 export let globalSearchAddressToCoordinate
 export let globalSearchCoordinateToAddress
