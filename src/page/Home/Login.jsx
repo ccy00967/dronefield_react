@@ -8,103 +8,11 @@ import {
   RowView,
   RowView2,
 } from "../../Component/common_style";
+import { LoginBox,TypeBox,InputBox,Btn,TextBtn,TextLogin } from "./HomeCss";
 import { useUser } from "../../Component/userContext";
 import { server } from "../url";
 
-const LoginBox = styled.div`
-  box-sizing: border-box;
-  width: 24rem;
-  padding: 2rem;
-  background-color: white;
-  border-radius: 12px;
-  div.label {
-    color: #1d1d1d;
-    margin: 1rem 0rem 0.5rem 0rem;
-    font-family: var(--font-Pretendard-Medium);
-  }
-`;
-const TypeBox = styled.div`
-  flex: 1;
-  padding: 1rem 0rem;
-  text-align: center;
-  color: gray;
-  cursor: pointer;
-  border: 1px solid #eeeeee;
-  &.left {
-    border-radius: 8px 0px 0px 8px;
-  }
-  &.center {
-    border-right: 0;
-    border-left: 0;
-  }
-  &.right {
-    border-radius: 0px 8px 8px 0px;
-  }
-  &.this {
-    color: ${GreenColor};
-    border: 1px solid ${GreenColor};
-    font-family: var(--font-Pretendard-Medium);
-  }
-`;
-const InputBox = styled.input`
-  box-sizing: border-box;
-  width: 100%;
-  padding: 0.8rem 1rem;
-  font-size: 16px;
-  font-family: var(--font-Pretendard-Regular);
-  border: 1px solid #f0f0f0;
-  border-radius: 8px;
-  outline: 0;
-  ::placeholder {
-    color: gray;
-  }
-`;
-const Btn = styled.div`
-  padding: 0.8rem 0rem;
-  margin-top: 0.5rem;
-  text-align: center;
-  font-family: var(--font-Pretendard-SemiBold);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-Color 0.3s;
-  &.green {
-    margin-top: 1.5rem;
-    color: white;
-    background-color: ${GreenColor};
-    &:hover {
-      background-color: ${hoverGreen};
-    }
-  }
-  &.gray {
-    color: gray;
-    background-color: #e4e4e4;
-    &:hover {
-      background-color: #c6c6c6;
-    }
-  }
-`;
-const TextBtn = styled(RowView2)`
-  margin-top: 0.5rem;
-  color: #8e8e8e;
-  font-size: 14px;
-  span {
-    cursor: pointer;
-  }
-  div.bar {
-    width: 1px;
-    height: 10px;
-    margin: 0rem 0.5rem;
-    background-color: #8e8e8e;
-  }
-`;
-const Text = styled.div`
-  color: #1d1d1d;
-  font-size: 24px;
-  font-family: var(--font-Pretendard-SemiBold);
-  span {
-    color: ${GreenColor};
-  }
-`;
+
 
 const UserInfoData = {
   "name": "비정상 로그인",
@@ -248,12 +156,12 @@ const Login = (props) => {
     <LoginBox>
       {isLogin ? (
         <>
-          <Text>
+          <TextLogin>
             <span> {userInfo.name} </span>
             {User_Credential.userType}님,
             <br />
             안녕하세요!
-          </Text>
+          </TextLogin>
           <Btn className="green" onClick={goSeriveStart}>
             서비스 시작하기
           </Btn>

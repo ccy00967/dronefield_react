@@ -8,69 +8,18 @@ import {
   redColor,
   RowView,
   RowView2,
+  ConBox,
+  ModalBox,
+  Hr,
+  DataRow,
+  TextSemiBold,
+  TextMedium,
+
 } from "../../../../Component/common_style";
 import noScroll from "../../../../Component/function/noScroll";
 import useEscapeKey from "../../../../Component/function/useEscapeKey";
 
-const ConBox = styled(CenterView)`
-  width: 100%;
-  max-width: 32rem;
-  margin: auto 0rem;
-  div.btn {
-    padding: 3rem 0.4rem;
-    font-size: 14px;
-    color: #555555;
-    background-color: #f0f0f0;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-`;
-const ModalBox = styled.div`
-  box-sizing: border-box;
-  width: 100%;
-  padding: 1rem 1.5rem 1.5rem 1.5rem;
-  margin: 0rem 1rem;
-  background-color: white;
-  border-radius: 8px;
-  overflow: hidden;
-`;
-const Hr = styled.div`
-  width: 100%;
-  height: 1px;
-  margin: 1.2rem 0rem;
-  background-color: #f0f0f0;
-  &.black {
-    background-color: #1d1d1d;
-  }
-`;
-const DataRow = styled(RowView2)`
-  align-items: flex-start;
-  margin-top: 0.7rem;
-  div {
-    width: 4rem;
-  }
-  div.letter {
-    letter-spacing: 7px;
-  }
-  div.gray {
-    flex: 1;
-    margin-left: 1rem;
-    color: #555555;
-  }
-`;
-const TextSemiBold = styled.div`
-  font-size: ${(props) => `${props.$fontsize || 16}px`};
-  font-family: var(--font-Pretendard-SemiBold);
-`;
-const TextMedium = styled.div`
-  width: 4rem;
-  &.auto {
-    width: auto;
-  }
-  color: ${(props) => (props.$color ? redColor : "#1d1d1d")};
-  font-size: ${(props) => `${props.$fontsize || 16}px`};
-  font-family: var(--font-Pretendard-Medium);
-`;
+
 
 const WorkStatus_Modal = forwardRef((props, ref) => {
   const [modalOpen, setModalOpen] = useState(false);
