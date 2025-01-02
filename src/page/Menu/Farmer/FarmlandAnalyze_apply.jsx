@@ -8,7 +8,7 @@ import {
   lightGreenColor,
   RowView,
 } from "../../../Component/common_style";
-import { InsertBox_apply, InputBox, DateBox, Btn } from "./FarmerCss";
+import { InsertBox_apply, InputBox, DateBox, Btn } from "./css/FarmerCss";
 import Component_mapList from "./Component_mapList";
 import FarmlandAnalyze_applyModal from "./Modal/FarmlandAnalyze_applyModal";
 

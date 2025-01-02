@@ -1,20 +1,9 @@
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
 import { BackgroundArea, Icon, RowView2 } from "../../Component/common_style";
 import { useState } from "react";
+import { ModalBox } from "./css/tossCss";
 
-
-const ModalBox = styled.div`
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 28rem;
-  padding: 1rem 1.5rem 1.5rem 1.5rem;
-  margin: auto 0rem;
-  background-color: white;
-  border-radius: 8px;
-  overflow: hidden;
-`;
 
 export function PaymentFailPage() {
     const [modalOpen, setModalOpen] = useState(true);

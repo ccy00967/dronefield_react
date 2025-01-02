@@ -1,19 +1,6 @@
 import { useParams } from "react-router-dom";
-import styled from "styled-components";
+import { TermsBox, TOSbox } from "./css/Rule_ModalCss";
 
-const TOSbox = styled.div`
-  padding: 1rem;
-`;
-const TermsBox = styled.textarea`
-  width: 100%;
-  height: 25rem;
-  box-sizing: border-box;
-  resize: none;
-  padding: 1rem;
-  border: 1px solid #e7e7e7;
-  border-radius: 8px;
-  outline: none;
-`;
 
 const Rule_Modal = () => {
   const { type } = useParams();

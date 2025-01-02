@@ -3,17 +3,14 @@ import styled from "styled-components";
 import Common_Layout from "../../../Component/common_Layout";
 import {
   CheckBox,
-  GreenColor,
-  hoverGreen,
-  RowView2,
-  
+  RowView2
 } from "../../../Component/common_style";
-import { InputBoxFarm, InsertBoxFarm, InputDiv, BtnFarm, } from "./FarmerCss";
-import Component_mapList from "./Component_mapList";
-import { globalSearchAddressToCoordinate } from "../../../Component/naver_maps/GWNaverMaps";
+import { InsertBox_Farmland_Insert,InputBox_Farmland_Insert, InputDiv_Farmland_Insert,Btn_Farmland_Insert
+ } from "./css/FarmerCss";
+import Component_mapList, { globalSearchAddressToCoordinate } from "./Component_mapList";
+//import { globalSearchAddressToCoordinate } from "../../../Component/naver_maps/NaverMaps";
 import $ from 'jquery';
 import { server } from "../../url";
-
 
 
 // 농지 데이터
@@ -281,11 +278,11 @@ const Farmland_Insert = () => {
         setTotalArea={setTotalArea} // 총 면적 전달
         setLandCount={setLandCount} // 필지 개수 전달
       >
-        <InsertBoxFarm>
+        <InsertBox_Farmland_Insert>
           <div className="title">농지등록</div>
 
           <div className="subtitle">농지 별명</div>
-          <InputBoxFarm
+          <InputBox_Farmland_Insert
             placeholder="농지 별명을 입력해주세요."
             value={landNickName}
             onChange={setting_name}
@@ -293,7 +290,7 @@ const Farmland_Insert = () => {
 
           <div className="subtitle">농지 주소</div>
           <RowView2>
-            <InputBoxFarm
+            <InputBox_Farmland_Insert
               placeholder="보유하신 농지 지번 주소를 입력해주세요."
               value={searchAddr}
               onChange={setting_addr}
@@ -303,20 +300,20 @@ const Farmland_Insert = () => {
                 }
               }}
             />
-            <BtnFarm className="small" onClick={handleSearch}>
-              검색 하기
-            </BtnFarm>
+            <Btn_Farmland_Insert className="small" onClick={handleSearch}>
+              주소 등록
+            </Btn_Farmland_Insert>
           </RowView2>
-          <InputDiv className="smallText">*검색하기를 눌러야 면적이 아래 계산됩니다</InputDiv>
+          <InputDiv_Farmland_Insert className="smallText">*주소등록을 눌러야 면적이 아래 계산됩니다</InputDiv_Farmland_Insert>
 
 
           <RowView2>
             <div className="subtitle">면적</div>
-            <div className="subtitle"><InputDiv className="smallText">*자동입력됩니다</InputDiv></div>
+            <div className="subtitle"><InputDiv_Farmland_Insert className="smallText">*자동입력됩니다</InputDiv_Farmland_Insert></div>
           </RowView2>
 
           <RowView2>
-            <InputDiv
+            <InputDiv_Farmland_Insert
               style={{ marginRight: "1rem" }}
               $isfocused={isfocuse_area}
               disabled={true}
@@ -330,8 +327,8 @@ const Farmland_Insert = () => {
               //disabled={true}
               />
               평
-            </InputDiv>
-            <InputDiv $isfocused={isfocuse_m2}>
+            </InputDiv_Farmland_Insert>
+            <InputDiv_Farmland_Insert $isfocused={isfocuse_m2}>
               <input
                 value={lndpclAr}
                 readOnly
@@ -341,11 +338,11 @@ const Farmland_Insert = () => {
               //disabled={true}
               />
               m²
-            </InputDiv>
+            </InputDiv_Farmland_Insert>
           </RowView2>
 
           <div className="subtitle">작물</div>
-          <InputBoxFarm
+          <InputBox_Farmland_Insert
             placeholder="작물을 입력해주세요. ex)벼,콩,보리,옥수수"
             value={cropsInfo}
             onChange={setting_plant}
@@ -361,14 +358,14 @@ const Farmland_Insert = () => {
             <span> (필수)</span>
           </RowView2>
 
-          <BtnFarm onClick={insert_API}>농지등록</BtnFarm>
+          <Btn_Farmland_Insert onClick={insert_API}>농지등록</Btn_Farmland_Insert>
 
           {/* <Btn onClick={() => {
             console.log(window.addressInfo.jibunAddress)
           }}>
             네이버 변수 확인 window.address
           </Btn> */}
-        </InsertBoxFarm>
+        </InsertBox_Farmland_Insert>
       </Component_mapList>
     </Common_Layout>
   );
