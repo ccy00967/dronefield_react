@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
 import Common_Layout from "../../../Component/common_Layout";
 import {
   Icon,
@@ -11,9 +10,8 @@ import PerPageControl from "../../../Component/UI/PerPageControl";
 import SideMenuBar from "../SideMenuBar";
 import WorkStatus_Modal from "./Modal/WorkStatus_Modal";
 import { server } from "../../url";
-import { workStart_API, workFin_API, cancel1_API, cancel2_API } from "./pilotFetchFunc";
-import { ContentArea,FilterBox,TableHeader,TableList,BtnArea } from "./css/WorkStatusCss";
-
+import { ContentArea, FilterBox, TableHeader, TableList, BtnArea } from "./css/WorkStatusCss";
+import { workStart_API,workFin_API,cancel1_API,cancel2_API } from "../../../Api/api_DronePilot";
 
 const WorkStatus = () => {
   const [cnt, setCnt] = useState(0); // 전체 개시글 갯수
@@ -53,7 +51,7 @@ const WorkStatus = () => {
   }
 
   useEffect(() => {
-  getWorkStatus()
+    getWorkStatus()
   }, []);
 
   //필터 함수
@@ -176,7 +174,7 @@ const WorkStatus = () => {
           {filterData().map((data, idx) => {
             //'매칭중'인 데이터는 cut
             if (data.exterminateState !== 0) {
-          
+
               return (
                 <TableList
                   key={idx}
@@ -203,9 +201,9 @@ const WorkStatus = () => {
                           <span className="blue" onClick={() => workFin_API(data.orderid)}>
                             완료
                           </span>
-                           <span className="yellow" onClick={() => cancel1_API(data.orderid)}>
+                          <span className="yellow" onClick={() => cancel1_API(data.orderid)}>
                             취소
-                          </span> 
+                          </span>
                         </RowView2>
 
                       ) : (
