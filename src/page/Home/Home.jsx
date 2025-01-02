@@ -6,7 +6,7 @@ import {
   Icon,
   RowView,
 } from "../../Component/common_style";
-import {Section1,Section2,HomePic,Text,SectionLast} from "./HomeCss"
+import { Section1, Section2, HomePic, Text, SectionLast } from "./HomeCss"
 import Login from "./Login";
 
 
