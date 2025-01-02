@@ -14,7 +14,7 @@ import PagingControl from "../../../Component/UI/PagingControl";
 import SideMenuBar from "../SideMenuBar";
 import { requestPayment } from "../../tosspayments/TossPayments_func";
 import { server } from "../../url";
-import { fetchToken, fetchUserInfo, fetchAddressData } from "./pilotFetchFunc";
+import { fetchToken, fetchUserInfo, fetchAddressData,getfarmrequest, putfarmrequest } from "../../../Api/api_DronePilot";
 import {
   TextSemiBold, TextMedium,
   DataRow, ContentArea,
@@ -212,56 +212,17 @@ const Matching = ({ }) => {
   };
 
 
-  const getfarmrequest = async () => {
-    let length = 0;
-    const User_Credential = JSON.parse(localStorage.getItem('User_Credential'));
-    const accessToken = User_Credential?.access_token;
 
-    const cdInfoURL = cdInfo == "" ? "" : cdInfo + "/"
-
-    const res = await fetch(server + "/exterminator/getrequests/" + cdInfoURL, {
-
-
-      method: 'GET',
-      headers: {
-        'Content-Type': "application/json",
-        'authorization': `Bearer ${accessToken}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        length = data.length;
-        //console.log(length);
-        setDataList(data)
-        console.log(data)
-        //return data
-      });
-  }
-
-
-
-
-  const putfarmrequest = async () => {
-    const User_Credential = JSON.parse(localStorage.getItem('User_Credential'));
-    const accessToken = User_Credential?.access_token;
-    console.log(checkedList)
-    const res = await fetch(server + `/exterminator/accept/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify({ orderidlist: checkedList }),
-    })
-      .then((res) => res.json())
-      .then((data) => data)
-
-    console.log(res)
+  //cd값을 받아서 정보를 뿌려줌
+  const fetchfarmrequest = async () => {
+    const farmdata = await getfarmrequest(cdInfo);
+    setDataList(farmdata)
 
   }
+
 
   useEffect(() => {
-    getfarmrequest();
+    //getfarmrequest();
     setCnt(dataList.length);
     fetchUserInfo();
 
@@ -271,6 +232,8 @@ const Matching = ({ }) => {
       const pilotdata = await fetchUserInfo();
       setPilotdata(pilotdata);
     }
+    //매칭 리스트 가져오기 
+    fetchfarmrequest();
     fetchinfo();
 
 
@@ -357,7 +320,7 @@ const Matching = ({ }) => {
                 </select>
 
 
-                <SearchBtn onClick={() => getfarmrequest()}>
+                <SearchBtn onClick={() => fetchfarmrequest()}>
                   검색하기
                 </SearchBtn>
 
@@ -522,8 +485,8 @@ const Matching = ({ }) => {
                     {/* <button type='submit' >콘솔 찍어보기</button>
                  
                   <Btn onClick={() => { putfarmrequest() }}>찍어</Btn> */}
-                    <Btn onClick={() => { requestPayment(selectedPaymentMethod, totalAmount, name, phone, email, payorderid); }}>결제하기</Btn>
-                    {/* <Btn onClick={() => { putfarmrequest(); requestPayment(selectedPaymentMethod, totalAmount, name, phone, email, payorderid); }}>결제하기</Btn> */}
+                    {/* <Btn onClick={() => { requestPayment(selectedPaymentMethod, totalAmount, name, phone, email, payorderid); }}>결제하기</Btn> */}
+                    <Btn onClick={() => { putfarmrequest(checkedList); requestPayment(selectedPaymentMethod, totalAmount, name, phone, email, payorderid); }}>결제하기</Btn>
 
                   </div>
 
