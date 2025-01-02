@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import styled from "styled-components";
 import {
   RowView
 } from "../../../Component/common_style";
@@ -7,11 +6,9 @@ import { ScrollToTop_smooth } from "../../../Component/function/ScrollTop";
 import PagingControl from "../../../Component/UI/PagingControl";
 import PerPageControl from "../../../Component/UI/PerPageControl";
 import SideMenuBar from "../SideMenuBar";
-//import NaverMap from "../../../Component/naver_maps/NaverMaps";
-//import { globalSearchAddressToCoordinate } from "../../../Component/naver_maps/NaverMaps";
 import { useUser } from "../../../Component/userContext";
-import { server } from "../../url";
-import { ContentArea, MapArea, TableHeader, TableList, MiniBtn} from "./css/Component_mapListCss";
+import { ContentArea, MapArea, TableHeader, TableList, MiniBtn } from "./css/Component_mapListCss";
+import { getLandInfo } from "../../../Api/api_farmer";
 
 
 const loadScript = (src, callback) => {
@@ -206,28 +203,12 @@ const Component_mapList = (props) => {
   const [dataList, setDataList] = useState([]);
 
   const farmlands_load = async () => {
-    // 유저 정보등 인증에 필요한 것들 가져오기 - 액세스토큰에서 막히면 리프레시 토큰으로 자동으로 갱신하는 기능과 연계 작업 필요
-    const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
-    const accessToken = userInfo?.access_token;
-
-    const firstResponse = await fetch(server + "/customer/lands/", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-
-    if (firstResponse.ok) {
-      const data = await firstResponse.json();
-      setDataList(data);  // 받아온 데이터를 상태에 저장
-      // 총 면적과 필지 개수를 계산하고 부모 컴포넌트로 전달
-      const totalArea = data.reduce((sum, item) => sum + parseFloat(item.lndpclAr), 0);
-      setTotalArea(totalArea);
-      setLandCount(data.length);
-    } else {
-      console.error('데이터 로드 실패');
-    }
+    const data = await getLandInfo();
+    setDataList(data);  // 받아온 데이터를 상태에 저장
+    // 총 면적과 필지 개수를 계산하고 부모 컴포넌트로 전달
+    const totalArea = data.reduce((sum, item) => sum + parseFloat(item.lndpclAr), 0);
+    setTotalArea(totalArea);
+    setLandCount(data.length);
   }
 
   // 방재신청 > 농지선택
