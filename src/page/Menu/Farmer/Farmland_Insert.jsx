@@ -5,12 +5,14 @@ import {
   CheckBox,
   RowView2
 } from "../../../Component/common_style";
-import { InsertBox_Farmland_Insert,InputBox_Farmland_Insert, InputDiv_Farmland_Insert,Btn_Farmland_Insert
- } from "./css/FarmerCss";
-import Component_mapList, { globalSearchAddressToCoordinate } from "./Component_mapList";
-//import { globalSearchAddressToCoordinate } from "../../../Component/naver_maps/NaverMaps";
+import {
+  InsertBox_Farmland_Insert, InputBox_Farmland_Insert, InputDiv_Farmland_Insert, Btn_Farmland_Insert
+} from "./css/FarmerCss";
+
 import $ from 'jquery';
 import { server } from "../../url";
+import { globalSearchAddressToCoordinate } from "./init_naver_map";
+import Component_mapList from "./Component_mapList";
 
 
 // 농지 데이터
