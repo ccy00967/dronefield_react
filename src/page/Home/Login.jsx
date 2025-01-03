@@ -8,7 +8,7 @@ import {
   RowView,
   RowView2,
 } from "../../Component/common_style";
-import { LoginBox,TypeBox,InputBox,Btn,TextBtn,TextLogin } from "./HomeCss";
+import { LoginBox, TypeBox, InputBox, Btn, TextBtn, TextLogin } from "./HomeCss";
 import { useUser } from "../../Component/userContext";
 import { server } from "../url";
 
