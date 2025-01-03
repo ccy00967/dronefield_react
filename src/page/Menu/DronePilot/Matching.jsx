@@ -224,7 +224,7 @@ const Matching = ({ }) => {
   useEffect(() => {
     //getfarmrequest();
     setCnt(dataList.length);
-    fetchUserInfo();
+    // fetchUserInfo();
 
 
     const fetchinfo = async () => {
