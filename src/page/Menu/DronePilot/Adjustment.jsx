@@ -8,7 +8,7 @@ import {
 import PagingControl from "../../../Component/UI/PagingControl";
 import PerPageControl from "../../../Component/UI/PerPageControl";
 import SideMenuBar from "../SideMenuBar";
-import { getWorkStatus } from "../../../Api/api_DronePilot";
+import { getWorkStatus } from "../../../Api/DronePilot";
 import { ContentArea, FilterBox, TableHeader,TableList,BtnArea } from "./css/AdjustmentCss";
 import { data } from "jquery";
 

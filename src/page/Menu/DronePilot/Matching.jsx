@@ -14,7 +14,7 @@ import PagingControl from "../../../Component/UI/PagingControl";
 import SideMenuBar from "../SideMenuBar";
 import { requestPayment } from "../../tosspayments/TossPayments_func";
 import { server } from "../../url";
-import { fetchToken, fetchUserInfo, fetchAddressData,getfarmrequest, putfarmrequest } from "../../../Api/api_DronePilot";
+import { fetchToken, fetchUserInfo, fetchAddressData,getfarmrequest, putfarmrequest } from "../../../Api/DronePilot";
 import {
   TextSemiBold, TextMedium,
   DataRow, ContentArea,
@@ -224,7 +224,7 @@ const Matching = ({ }) => {
   useEffect(() => {
     //getfarmrequest();
     setCnt(dataList.length);
-    fetchUserInfo();
+    // fetchUserInfo();
 
 
     const fetchinfo = async () => {
