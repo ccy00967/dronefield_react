@@ -11,7 +11,7 @@ import SideMenuBar from "../SideMenuBar";
 import WorkStatus_Modal from "./Modal/WorkStatus_Modal";
 import { server } from "../../url";
 import { ContentArea, FilterBox, TableHeader, TableList, BtnArea } from "./css/WorkStatusCss";
-import { workStart_API,workFin_API,cancel1_API,cancel2_API } from "../../../Api/api_DronePilot";
+import { workStart_API,workFin_API,cancel1_API,cancel2_API } from "../../../Api/DronePilot";
 
 const WorkStatus = () => {
   const [cnt, setCnt] = useState(0); // 전체 개시글 갯수
