@@ -84,7 +84,6 @@ export const getLandInfo = async () => {
 
         const data = await res.json();
         return data;
-
     } catch (e) {
         alert("정보를 가져오는 중 오류가 발생했습니다. 다시 시도해 주세요.");
         return [];
@@ -101,18 +100,16 @@ export const deleteLandInfo = async (uuid) => {
                 Authorization: `Bearer ${accessToken}`,
             },
         });
-        // if (res.status == 401) {
-        //     return await refreshAccessToken(deleteLandInfo);
-        // }
-        // else if (!res.ok) {
-        //     throw new Error(`Error: ${res.statusText}`);
-        // }
+        if (res.status == 401) {
+            return await refreshAccessToken(deleteLandInfo);
+        }
+        else if (!res.ok) {
+            throw new Error(`Error: ${res.statusText}`);
+        }
 
-        const data = await res.json();
-        console.log(data)
-        return data;
+        return true;
     } catch (e) {
-        alert("삭제하는데 오류가 발생했습니다. 다시 시도해 주세요.");
+        return false;
     }
 }
 

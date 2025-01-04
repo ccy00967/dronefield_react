@@ -57,11 +57,19 @@ const Component_mapList = (props) => {
   // 농지 전체보기 > 농지삭제 함수  
   const delete_func = async (uuid) => {
     //if (window.confirm("삭제하시겠습니까?")) {
-      console.log(uuid);
-      await deleteLandInfo(uuid);
-      await farmlands_load()
-     // deleteLandInfo(uuid);
-      
+    const is_deleted = await deleteLandInfo(uuid);
+
+    if (is_deleted) {
+      alert("삭제가 완료 되었습니다.")
+    }
+
+    else if (!is_deleted) {
+      alert("삭제 에러!!!")
+    }
+
+    await farmlands_load()
+    // deleteLandInfo(uuid);
+
     //}
   };
 
