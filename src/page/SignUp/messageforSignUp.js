@@ -4,7 +4,7 @@ export const alert_type = {
     default: "회원선택을 해주세요.",
 };
 export const alert_pass = {
-    no: "본인인증을 먼저 해주세요.",
+    no: "본인인증을 해주세요.",
     ok: "본인인증이 완료되었습니다.",
     default: "",
 };
