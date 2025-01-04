@@ -60,6 +60,8 @@ const NicePassBtn = ({ isOpen, closeModal, setNicepass }) => {
             return;
         }
         window.addEventListener("message", receiveMessage, false);
+
+        window.postMessage("no");
     }
 
     return (

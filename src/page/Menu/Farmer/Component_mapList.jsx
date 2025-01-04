@@ -8,7 +8,7 @@ import PerPageControl from "../../../Component/UI/PerPageControl";
 import SideMenuBar from "../SideMenuBar";
 import { useUser } from "../../../Component/userContext";
 import { ContentArea, MapArea, TableHeader, TableList, MiniBtn } from "./css/Component_mapListCss";
-import { getLandInfo } from "../../../Api/api_farmer";
+import { deleteLandInfo, getLandInfo } from "../../../Api/Farmer";
 import initMap from "./init_naver_map";
 
 
@@ -56,9 +56,13 @@ const Component_mapList = (props) => {
 
   // 농지 전체보기 > 농지삭제 함수  
   const delete_func = async (uuid) => {
-    if (window.confirm("삭제하시겠습니까?")) {
-      alert('농지 삭제가 완료되었습니다.');
-    }
+    //if (window.confirm("삭제하시겠습니까?")) {
+      console.log(uuid);
+      await deleteLandInfo(uuid);
+      await farmlands_load()
+     // deleteLandInfo(uuid);
+      
+    //}
   };
 
   const mainmenu = props.mainmenu || "";
