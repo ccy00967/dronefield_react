@@ -358,6 +358,44 @@ export const applyPestControl = async (postData, uuid, openModal) => {
     }
   };
 
+// src/utils/api.js
+
+export const load_API = async (setDataList, setCnt) => {
+  const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
+  const accessToken = userInfo?.access_token;
+
+  const fetchData = async () => {
+    const res = await fetch(`${server}/farmrequest/requests/`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!res.ok) {
+      throw new Error(`Error: ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    setCnt(data.length); // 전체 게시글 수 업데이트
+    setDataList(data); // 데이터 리스트 업데이트
+    return data; // 데이터 반환
+  };
+
+  try {
+    return await fetchData();
+  } catch (e) {
+    if (e.message.includes("401")) {
+      // 401 오류 발생 시 토큰 갱신 후 재시도
+      return await refreshAccessToken(fetchData);
+    }
+    console.error("데이터 로드 실패:", e);
+    throw e;
+  }
+};
+
+
 
 
 

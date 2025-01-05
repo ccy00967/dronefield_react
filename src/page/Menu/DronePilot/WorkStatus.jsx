@@ -69,6 +69,8 @@ const WorkStatus = () => {
   };
 
 
+
+  
   const filterData = () => {
     if (!dataList || dataList.length === 0) {
       return [];  // data가 undefined 또는 빈 배열일 때 빈 배열 반환
@@ -136,15 +138,15 @@ const WorkStatus = () => {
           </RowView2>
 
           <FilterBox>
-            <div className={isSelect("매칭완료")} onClick={() => setFilter(1)}>
+            <div className={isSelect(1)} onClick={() => setFilter(1)}>
               작업 준비 중({getcountlength(1)})
             </div>
             <span>▶︎</span>
-            <div className={isSelect("작업시작")} onClick={() => setFilter(2)}>
+            <div className={isSelect(2)} onClick={() => setFilter(2)}>
               작업 중({getcountlength(2)})
             </div>
             <span>▶︎</span>
-            <div className={isSelect("작업완료")} onClick={() => setFilter(3)}>
+            <div className={isSelect(3)} onClick={() => setFilter(3)}>
               작업 완료({getcountlength(3)})
             </div>
           </FilterBox>

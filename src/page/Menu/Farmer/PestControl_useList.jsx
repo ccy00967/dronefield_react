@@ -17,13 +17,13 @@ import PerPageControl from "../../../Component/UI/PerPageControl";
 import SideMenuBar from "../SideMenuBar";
 import PestControl_useListModal from "./Modal/PestControl_useListModal";
 import { server } from "../../url";
+import { load_API } from "../../../Api/Farmer";
 
 
 const PestControl_useList = () => {
   const [cnt, setCnt] = useState(0); // 전체 개시글 갯수
   const [perPage, setPerPage] = useState(20); // 페이지당 게시글 갯수 (디폴트:20)
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지
-
   // const [count_매칭중, setCount_매칭중] = useState(12);
   // const [count_작업대기중, setCount_작업대기중] = useState(3);
   // const [count_작업중, setCount_작업중] = useState(3);
@@ -40,6 +40,8 @@ const PestControl_useList = () => {
     if (filter === menu) return "this";
     return "";
   };
+
+
   // 작업확인 버튼 state 판별 className
   const isFinalCheck = (state_btn) => {
     if (state_btn === "확인 완료") return "gray";
@@ -63,115 +65,107 @@ const PestControl_useList = () => {
   //   setCnt(960);
   //   setDataList(testData);
   // };
-  const load_API = async () => {
-    // 액세스 토큰과 리프레시 토큰을 갱신하는 함수
-    const refreshAccessToken = async () => {
-      const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
-      const refreshToken = userInfo?.refresh_token;
+  // const load_API = async () => {
+  //   // 액세스 토큰과 리프레시 토큰을 갱신하는 함수
+  //   const refreshAccessToken = async () => {
+  //     const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
+  //     const refreshToken = userInfo?.refresh_token;
 
-      const res = await fetch(server+'/user/token/refresh/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          refresh: refreshToken,
-        }),
-      });
+  //     const res = await fetch(server+'/user/token/refresh/', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({
+  //         refresh: refreshToken,
+  //       }),
+  //     });
 
-      if (res.ok) {
-        const data = await res.json();
-        // 액세스 토큰과 리프레시 토큰을 로컬스토리지에 갱신
-        userInfo.access_token = data.access;
-        localStorage.setItem('User_Credential', JSON.stringify(userInfo));
-        return data.access; // 새로운 액세스 토큰 반환
-      } else {
-        // 리프레시 토큰이 만료되었거나 유효하지 않을 경우 처리
-        alert('다시 로그인해주세요'); // 경고창 표시
-        localStorage.removeItem('User_Credential'); // 로컬 스토리지에서 정보 제거
-        window.location.replace('/'); // 첫 페이지로 리다이렉트
-        return null;
-      }
-    };
+  //     if (res.ok) {
+  //       const data = await res.json();
+  //       // 액세스 토큰과 리프레시 토큰을 로컬스토리지에 갱신
+  //       userInfo.access_token = data.access;
+  //       localStorage.setItem('User_Credential', JSON.stringify(userInfo));
+  //       return data.access; // 새로운 액세스 토큰 반환
+  //     } else {
+  //       // 리프레시 토큰이 만료되었거나 유효하지 않을 경우 처리
+  //       alert('다시 로그인해주세요'); // 경고창 표시
+  //       localStorage.removeItem('User_Credential'); // 로컬 스토리지에서 정보 제거
+  //       window.location.replace('/'); // 첫 페이지로 리다이렉트
+  //       return null;
+  //     }
+  //   };
 
-    const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
-    let accessToken = userInfo?.access_token;
+  //   const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
+  //   let accessToken = userInfo?.access_token;
 
-    // 첫 번째 API 호출
-    let res = await fetch(server+"/farmrequest/requests/", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+  //   // 첫 번째 API 호출
+  //   let res = await fetch(server+"/farmrequest/requests/", {
+  //     method: "GET",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Authorization: `Bearer ${accessToken}`,
+  //     },
+  //   });
 
-    // 401 에러가 발생하면 리프레시 토큰으로 액세스 토큰 갱신 후 다시 시도
-    if (res.status === 401) {
-      accessToken = await refreshAccessToken();
-      if (accessToken) {
-        // 새로운 액세스 토큰으로 다시 시도
-        res = await fetch(server+"/farmrequest/requests/", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        console.log(res);
-      }
-    }
+  //   // 401 에러가 발생하면 리프레시 토큰으로 액세스 토큰 갱신 후 다시 시도
+  //   if (res.status === 401) {
+  //     accessToken = await refreshAccessToken();
+  //     if (accessToken) {
+  //       // 새로운 액세스 토큰으로 다시 시도
+  //       res = await fetch(server+"/farmrequest/requests/", {
+  //         method: "GET",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${accessToken}`,
+  //         },
+  //       });
+  //       console.log(res);
+  //     }
+  //   }
 
-    // 응답이 성공했을 때 데이터 처리
-    if (res.ok) {
-      const data = await res.json();
-      setCnt(data.length); // 전체 게시글 수 설정
-      setDataList(data); // 데이터 목록 설정
-      // console.log(data);
-    } else {
-      console.error('데이터 로드 실패');
-    }
-  };
+  //   // 응답이 성공했을 때 데이터 처리
+  //   if (res.ok) {
+  //     const data = await res.json();
+  //     console.log(data[0].exterminateState)
+  //     setCnt(data.length); // 전체 게시글 수 설정
+  //     setDataList(data); // 데이터 목록 설정
+  //     // console.log(data);
+  //   } else {
+  //     console.error('데이터 로드 실패');
+  //   }
+  // };
   useEffect(() => {
-    load_API();
+    load_API(setDataList, setCnt);
+    // load_API();
   }, [currentPage, perPage]);
 
   //필터 로직
-  const filterData = () => {
-    if (!dataList || dataList.length === 0) {
-      return [];  // data가 undefined 또는 빈 배열일 때 빈 배열 반환
-    }
-    if (filter === 0) {
-      return dataList.filter((item) => item.exterminateState === 0);
-    }
-    else if (filter === 1) {
-      return dataList.filter(item => item.exterminateState === 1);
-    }
-    else if (filter === 2) {
-      return dataList.filter(item => item.exterminateState === 2);
-    }
-    else if (filter === 3) {
-      return dataList.filter(item => item.exterminateState === 3);
-    }
-    else {
-      return dataList;
-    }
-  };
+// 필터링된 데이터 반환 및 카운트 계산 로직
+const processData = (filterType) => {
+  if (!dataList || dataList.length === 0) {
+    return { filteredData: [], count: 0 }; // 데이터가 없을 경우 빈 배열과 0 반환
+  }
 
-  // 필터 후 카운트 로직
-  const getcountlength = (filterType) => {
-    if (filterType === 0) {
-      return dataList.filter(item => item.exterminateSate === 0).length;
-    }
-    else if (filterType === 1) {
-      return dataList.filter(item => item.exterminateSate === 1).length;
-    } else if (filterType === 2) {
-      return dataList.filter(item => item.exterminateSate === 2).length;
-    } else if (filterType === 3) {
-      return dataList.filter(item => item.exterminateSate === 3).length;
-    }
-    return dataList.length;
-  };
+  if ([0, 1, 2, 3].includes(filterType)) {
+    const filteredData = dataList.filter((item) => item.exterminateState === filterType);
+    return { filteredData, count: filteredData.length };
+  }
+
+  // 유효하지 않은 filterType일 경우 전체 데이터 반환
+  return { filteredData: dataList, count: dataList.length };
+};
+
+// 필터 로직
+const filterData = () => {
+  return processData(filter).filteredData; // 선택된 필터에 해당하는 데이터 반환
+};
+
+// 카운트 로직
+const getcountlength = (filterType) => {
+  return processData(filterType).count; // 선택된 필터에 해당하는 데이터 개수 반환
+};
+
 
 
   const refund_API = () => {
@@ -206,20 +200,20 @@ const PestControl_useList = () => {
           </RowView2>
 
           <FilterBox_Pest_useList>
-            <div className={isSelect("매칭중")} onClick={() => setFilter(0)}>
+            <div className={isSelect(0)} onClick={() => setFilter(0)}>
               매칭중 ({getcountlength(0)})
             </div>
             <span>▶︎</span>
             <div
-              className={isSelect("작업대기중")} onClick={() => setFilter(1)}>
+              className={isSelect(1)} onClick={() => setFilter(1)}>
               작업대기중({getcountlength(1)})
             </div>
             <span>▶︎</span>
-            <div className={isSelect("작업중")} onClick={() => setFilter(2)}>
+            <div className={isSelect(2)} onClick={() => setFilter(2)}>
               작업중({getcountlength(2)})
             </div>
             <span>▶︎</span>
-            <div className={isSelect("작업확인")} onClick={() => setFilter(3)}>
+            <div className={isSelect(3)} onClick={() => setFilter(3)}>
               작업확인({getcountlength(3)})
             </div>
           </FilterBox_Pest_useList>

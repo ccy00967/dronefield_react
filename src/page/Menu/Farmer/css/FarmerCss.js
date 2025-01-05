@@ -593,9 +593,12 @@ div {
   border: 1px solid #f0f0f0;
   border-radius: 8px;
   cursor: pointer;
+  
   &:hover{
     background-color: #f0f0f0;
+    
   }
+ 
 }
 span {
   color: #d8d8d8;
