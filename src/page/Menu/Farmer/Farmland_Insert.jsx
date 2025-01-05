@@ -148,15 +148,13 @@ const Farmland_Insert = () => {
     }
 
     if (!check) {
-      alert("동의를 체크해주세요!")
-      return
+      return alert("동의를 체크해주세요!")
+
     }
     InsertRefreshAccessToken();
 
     const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
     let accessToken = userInfo?.access_token;
-    console.log(landinfo);
-
     // 첫 번째 POST 요청
     let res = await fetch(server + "/customer/lands/", {
       method: "POST",
@@ -198,7 +196,7 @@ const Farmland_Insert = () => {
   //주소 찾기를 클릭하면 순차적으로 실행되도록 하는 함수
   const handleSearch = async (searchAddr) => {
     if (!searchAddr) {
-      return alert("농지 주소를 입력하세요.");
+      // return alert("농지 주소를 입력하세요.");
     }
 
     // 순차 실행 전부 for pnu, cd 등등
@@ -308,8 +306,8 @@ const Farmland_Insert = () => {
             본인 토지가 아닌 경우 책임은 등록/신청자에게 있습니다.
             <span> (필수)</span>
           </RowView2>
-
           <Btn_Farmland_Insert onClick={() => { insert_API() }}>농지등록</Btn_Farmland_Insert>
+
 
           {/* <Btn onClick={() => {
             console.log(window.addressInfo.jibunAddress)
