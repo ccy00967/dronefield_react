@@ -358,7 +358,6 @@ export const applyPestControl = async (postData, uuid, openModal) => {
     }
   };
 
-// src/utils/api.js
 
 export const load_API = async (setDataList, setCnt) => {
   const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
@@ -395,11 +394,56 @@ export const load_API = async (setDataList, setCnt) => {
   }
 };
 
+export const insert_API = async (landinfo, lndpclAr,check) => {
+    if (lndpclAr == "") {
+      return alert("검색하기를 눌러서 면적을 입력해주세요");
+    }
 
+    if (!check) {
+      return alert("동의를 체크해주세요!")
 
+    }
+    await InsertRefreshAccessToken();
 
+    const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
+    let accessToken = userInfo?.access_token;
+    // 첫 번째 POST 요청
+    let res = await fetch(server + "/customer/lands/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(landinfo),
+    });
 
+    // 401 에러 발생 시 토큰 갱신 후 다시 시도
+    if (res.status === 401) {
+      accessToken = await InsertRefreshAccessToken();
+      if (accessToken) {
+        // 새로운 액세스 토큰으로 다시 시도
+        res = await fetch(server + "/customer/lands/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify(landinfo),
+        });
+      }
+    }
 
+    // 응답이 성공했을 때 데이터 처리
+    if (res.ok) {
+      const result = await res.json();
+      alert("농지 등록이 완료되었습니다.");
+      console.log("Success:", result);
+      // 페이지 새로고침
+      window.location.reload();
+    } else {
+      console.error('요청 실패');
+    }
+  };
 
 
 /** 농지

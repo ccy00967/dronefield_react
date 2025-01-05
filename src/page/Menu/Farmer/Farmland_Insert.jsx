@@ -13,7 +13,7 @@ import $ from 'jquery';
 import { server } from "../../url";
 import { globalSearchAddressToCoordinate } from "./init_naver_map";
 import Component_mapList from "./Component_mapList";
-import { get_pnu_api, search_area_api, cd_for_accessToken, getCdApi, InsertRefreshAccessToken } from "../../../Api/Farmer";
+import { get_pnu_api, search_area_api, cd_for_accessToken, getCdApi, insert_API } from "../../../Api/Farmer";
 
 
 // 농지를 등록하는 페이지
@@ -141,57 +141,7 @@ const Farmland_Insert = () => {
   };
 
   // 농지 등록
-  const insert_API = async () => {
-    handleSearch()
-    if (lndpclAr == "") {
-      return alert("검색하기를 눌러서 면적을 입력해주세요");
-    }
-
-    if (!check) {
-      return alert("동의를 체크해주세요!")
-
-    }
-    InsertRefreshAccessToken();
-
-    const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
-    let accessToken = userInfo?.access_token;
-    // 첫 번째 POST 요청
-    let res = await fetch(server + "/customer/lands/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify(landinfo),
-    });
-
-    // 401 에러 발생 시 토큰 갱신 후 다시 시도
-    if (res.status === 401) {
-      accessToken = await InsertRefreshAccessToken();
-      if (accessToken) {
-        // 새로운 액세스 토큰으로 다시 시도
-        res = await fetch(server + "/customer/lands/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify(landinfo),
-        });
-      }
-    }
-
-    // 응답이 성공했을 때 데이터 처리
-    if (res.ok) {
-      const result = await res.json();
-      alert("농지 등록이 완료되었습니다.");
-      console.log("Success:", result);
-      // 페이지 새로고침
-      window.location.reload();
-    } else {
-      console.error('요청 실패');
-    }
-  };
+  
 
   //주소 찾기를 클릭하면 순차적으로 실행되도록 하는 함수
   const handleSearch = async (searchAddr) => {
@@ -306,7 +256,7 @@ const Farmland_Insert = () => {
             본인 토지가 아닌 경우 책임은 등록/신청자에게 있습니다.
             <span> (필수)</span>
           </RowView2>
-          <Btn_Farmland_Insert onClick={() => { insert_API() }}>농지등록</Btn_Farmland_Insert>
+          <Btn_Farmland_Insert onClick={() => { insert_API(landinfo,lndpclAr,check) }}>농지등록</Btn_Farmland_Insert>
 
 
           {/* <Btn onClick={() => {
