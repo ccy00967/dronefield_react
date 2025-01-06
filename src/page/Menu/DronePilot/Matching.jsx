@@ -14,7 +14,7 @@ import PagingControl from "../../../Component/UI/PagingControl";
 import SideMenuBar from "../SideMenuBar";
 import { requestPayment } from "../../tosspayments/TossPayments_func";
 import { server } from "../../url";
-import { fetchToken, fetchUserInfo, fetchAddressData,getfarmrequest, putfarmrequest } from "../../../Api/DronePilot";
+import { fetchToken, fetchUserInfo, fetchAddressData, getfarmrequest, putfarmrequest } from "../../../Api/DronePilot";
 import {
   TextSemiBold, TextMedium,
   DataRow, ContentArea,
@@ -38,10 +38,11 @@ const Matching = ({ }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [cdInfo, setCdInfo] = useState(""); //cd값 저장
   const [checkedList, setCheckedList] = useState([]);
+  const [isMasterChecked, setIsMasterChecked] = useState(false); // 전체 선택 상태
   const [isChecked, setIsChecked] = useState(false); //체크한 orderid
   const [selectData, setSelectData] = useState([]); // 체크한 데이터 신청정보창 정보
   const [pilotdata, setPilotdata] = useState([]); // pilot data 
-  const [see_seq, setSee_Seq] = useState(0);
+  const [see_seq, setSee_Seq] = useState();
   const [dataList, setDataList] = useState([]);
   const [lndpcl, setlndpcl] = useState([]);
   const [sum, setsum] = useState([]);
@@ -56,6 +57,29 @@ const Matching = ({ }) => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("CARD");
 
 
+
+  // 전체 선택/해제 핸들러
+  const handleMasterCheckboxChange = (e) => {
+    const isChecked = e.target.checked;
+    setIsMasterChecked(isChecked);
+
+    if (isChecked) {
+      // `exterminateState === 0`인 데이터만 전체 선택
+      const filteredData = dataList.filter((item) => item.exterminateState === 0);
+      const allOrderIds = filteredData.map((item) => item.orderid);
+      setCheckedList(allOrderIds);
+      setSelectData(filteredData);
+    } else {
+      setCheckedList([]);
+      setSelectData([]);
+    }
+  };
+
+  useEffect(() => {
+    setIsMasterChecked(
+      checkedList.length > 0 && checkedList.length === dataList.length
+    );
+  }, [checkedList, dataList]);
 
   //체크박스 로직
   const checkedItemHandler = (value, isChecked) => {
@@ -217,6 +241,8 @@ const Matching = ({ }) => {
   const fetchfarmrequest = async () => {
     const farmdata = await getfarmrequest(cdInfo);
     setDataList(farmdata)
+    setCheckedList([]);
+    setSelectData([]);
 
   }
 
@@ -233,12 +259,18 @@ const Matching = ({ }) => {
       setPilotdata(pilotdata);
     }
     //매칭 리스트 가져오기 
+
     fetchfarmrequest();
     fetchinfo();
 
 
   }, []);
 
+
+  const buttonfunc = async () => {
+    putfarmrequest(checkedList);
+    await fetchfarmrequest();
+  }
 
 
 
@@ -258,14 +290,15 @@ const Matching = ({ }) => {
 
 
 
-  // 신청정보 seq
+  // 모달에 표시할 데이터 이전/다음 이동
   const setting_pre = () => {
-    if (see_seq !== 0) {
+    if (see_seq > 0) {
       setSee_Seq(see_seq - 1);
     }
   };
+
   const setting_next = () => {
-    if (see_seq + 1 !== seqList.length) {
+    if (see_seq + 1 < selectData.length) {
       setSee_Seq(see_seq + 1);
     }
   };
@@ -331,10 +364,10 @@ const Matching = ({ }) => {
 
             </div>
 
-            <SearchBox
+            {/* <SearchBox
               type={"number"}
               placeholder="원하시는 묶음의 숫자를 입력해주세요."
-            />
+            /> */}
 
             <Content className="top">
               <div className="table">
@@ -342,6 +375,8 @@ const Matching = ({ }) => {
                   <CheckBox
                     type={"checkbox"}
                     $color={"#555555"}
+                    checked={isMasterChecked}
+                    onClick={handleMasterCheckboxChange}
                   // onClick={}
                   />
                   <div>농지별명</div>
@@ -409,7 +444,7 @@ const Matching = ({ }) => {
                     <CenterView style={{ marginBottom: "2rem" }}>
                       <TextSemiBold $size={22}>신청정보</TextSemiBold>
                       <div style={{ color: "gray" }}>
-                        ({see_seq + 1}/{seqList.length})
+                        ({see_seq + 1}/{checkedList.length})
                       </div>
                     </CenterView>
 
@@ -486,7 +521,7 @@ const Matching = ({ }) => {
                  
                   <Btn onClick={() => { putfarmrequest() }}>찍어</Btn> */}
                     {/* <Btn onClick={() => { requestPayment(selectedPaymentMethod, totalAmount, name, phone, email, payorderid); }}>결제하기</Btn> */}
-                    <Btn onClick={() => { putfarmrequest(checkedList); requestPayment(selectedPaymentMethod, totalAmount, name, phone, email, payorderid); }}>결제하기</Btn>
+                    <Btn onClick={() => { buttonfunc(); requestPayment(selectedPaymentMethod, totalAmount, name, phone, email, payorderid); }}>결제하기</Btn>
 
                   </div>
 
