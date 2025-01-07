@@ -24,7 +24,7 @@ import {
 } from "./css/MatchingCss";
 
 const Matching = ({ }) => {
-  const [cnt, setCnt] = useState(0);
+  const [cnt, setCnt] = useState(0); //page
   const [perPage, setPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [seqList, setSeqList] = useState([]);
@@ -67,11 +67,20 @@ const Matching = ({ }) => {
       // `exterminateState === 0`인 데이터만 전체 선택
       const filteredData = dataList.filter((item) => item.exterminateState === 0);
       const allOrderIds = filteredData.map((item) => item.orderid);
-      setCheckedList(allOrderIds);
+      const allLndpclValues = filteredData.map((item) => {
+        const lndpclAr = parseFloat(item.landInfo.lndpclAr); // 문자열을 숫자로 변환
+        return isNaN(lndpclAr) ? 0 : lndpclAr * 30 * 0.3025; // 계산
+      });
+
       setSelectData(filteredData);
+      setCheckedList(allOrderIds); //리스트의 모든 orderid 선택
+      setlndpcl(allLndpclValues); // lndpcl 상태 업데이트
+
+
     } else {
       setCheckedList([]);
       setSelectData([]);
+      setlndpcl([]);
     }
   };
 
@@ -125,8 +134,8 @@ const Matching = ({ }) => {
             return updatedLndpcl;
           });
 
-          console.log(lndpcl);
-          console.log(selectData);
+          //console.log(lndpcl);
+          // console.log(selectData);
 
           return;
         }
@@ -161,8 +170,8 @@ const Matching = ({ }) => {
   const onSubmit = useCallback(
     (e) => {
       e.preventDefault();
-      console.log('checkedList:', [...checkedList]);
-      console.log('selectData', selectData)
+      //console.log('checkedList:', [...checkedList]);
+      // console.log('selectData', selectData)
 
     },
     [checkedList]
@@ -221,7 +230,7 @@ const Matching = ({ }) => {
 
   const handleCityChange = (e) => {
     const selectedCd = e.target.value;
-    console.log(selectedCd); // 시/군/구 코드 출력
+    //console.log(selectedCd); // 시/군/구 코드 출력
     setSelectedCity(selectedCd);
     setCdInfo(selectedCd);
 
@@ -229,7 +238,7 @@ const Matching = ({ }) => {
 
   const handleTownChange = (e) => {
     const selectedCd = e.target.value;
-    console.log(selectedCd); // 읍/면/동 코드 출력
+    //console.log(selectedCd); // 읍/면/동 코드 출력
     setSelectedTown(selectedCd);
     setCdInfo(selectedCd);
 
@@ -373,10 +382,10 @@ const Matching = ({ }) => {
               <div className="table">
                 <TableHeader>
                   <CheckBox
-                    type={"checkbox"}
+                    type="checkbox"
                     $color={"#555555"}
                     checked={isMasterChecked}
-                    onClick={handleMasterCheckboxChange}
+                    onChange={handleMasterCheckboxChange}
                   // onClick={}
                   />
                   <div>농지별명</div>
@@ -397,33 +406,32 @@ const Matching = ({ }) => {
                 </TableHeader>
 
                 {dataList.map((data, idx) => {
-                  if (data.exterminateState == 0) {
-                    if (!data || data.length === 0) {
-                      return [];  // data가 undefined 또는 빈 배열일 때 빈 배열 반환
-                    }
-                    return (
-                      <TableList
-                        key={idx}
-                        className={(idx + 1) % 2 === 0 ? "x2" : ""}
-
-                      >
-                        <CheckBox
-                          type={"checkbox"}
-                          $color={"#555555"}
-                          id={data.orderid}
-                          checked={checkedList.includes(data.orderid)}
-                          onClick={(e) => { selectSeq(idx); }}
-                          onChange={(e) => checkHandler(e, data)}
-                        // getCheckboxData(data.orderid);
-                        />
-                        <div>{data.landInfo.landNickName}</div>
-                        <div className="long">{data.landInfo.address.jibunAddress}</div>
-                        <div className="long">{data.landInfo.lndpclAr}m<sup>2</sup></div>
-                        <div>{data.landInfo.cropsInfo}</div>
-                        <div>{data.pesticide}</div>
-                      </TableList>
-                    );
+                  if (!data || data.length === 0) {
+                    return [];  // data가 undefined 또는 빈 배열일 때 빈 배열 반환
                   }
+                  return (
+                    <TableList
+                      key={idx}
+                      className={(idx + 1) % 2 === 0 ? "x2" : ""}
+
+                    >
+                      <CheckBox
+                        type={"checkbox"}
+                        $color={"#555555"}
+                        id={data.orderid}
+                        checked={checkedList.includes(data.orderid)}
+                        onClick={(e) => { selectSeq(idx); }}
+                        onChange={(e) => checkHandler(e, data)}
+                      // getCheckboxData(data.orderid);
+                      />
+                      <div>{data.landInfo.landNickName}</div>
+                      <div className="long">{data.landInfo.address.jibunAddress}</div>
+                      <div className="long">{data.landInfo.lndpclAr}m<sup>2</sup></div>
+                      <div>{data.landInfo.cropsInfo}</div>
+                      <div>{data.pesticide}</div>
+                    </TableList>
+                  );
+
                 })}
 
                 <PagingControl
@@ -512,15 +520,16 @@ const Matching = ({ }) => {
                         이용금액
                       </TextSemiBold>
                       <TextMedium className="auto" $fontsize={20} $color={true}>
-                        {(seqList.length * 1000).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}원
+                        {(selectData.length * 1000).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}원
 
                       </TextMedium>
                     </RowView>
 
-                    {/* <button type='submit' >콘솔 찍어보기</button>
-                 
-                  <Btn onClick={() => { putfarmrequest() }}>찍어</Btn> */}
+                    {/* <button type='submit' >콘솔 찍어보기</button> */}
+
+                    {/* <Btn onClick={() => { console.log("data",checkedList, ) }}>찍어</Btn> */}
                     {/* <Btn onClick={() => { requestPayment(selectedPaymentMethod, totalAmount, name, phone, email, payorderid); }}>결제하기</Btn> */}
+                    {/* orderid는 checkedList로 보내기 */}
                     <Btn onClick={() => { buttonfunc(); requestPayment(selectedPaymentMethod, totalAmount, name, phone, email, payorderid); }}>결제하기</Btn>
 
                   </div>
