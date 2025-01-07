@@ -140,7 +140,7 @@ export const getfarmrequest = async (cdInfo) => {
                 'authorization': `Bearer ${accessToken}`,
             },
         });
-
+        //TODO: 나중에 수정 요청해야함 exterminateState 0인 값만 가져오는 url필요합니다.
         // HTTP 응답 상태 확인
         if (!res.ok) {
             throw new Error(`HTTP error! Status: ${res.status}`);
