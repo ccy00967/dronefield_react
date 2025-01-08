@@ -29,6 +29,7 @@ const NicePassBtn = ({ isOpen, closeModal, setNicepass }) => {
         const { form_chk } = document;
 
         //표준창 호출에 필요한 정보를 백엔드에서 가져오기
+    
         const res = await fetch(server + '/user/nice-token/', {
             method: 'POST',
             headers: { "Content-Type": "application/json", },
@@ -39,7 +40,6 @@ const NicePassBtn = ({ isOpen, closeModal, setNicepass }) => {
         })
             .then((res) => res.json())
             .then((data) => data)
-
         window.open('', 'popupChk', 'width=480, height=812, top=100, fullscreen=no, menubar=no, status=no, toolbar=no, titlebar=yes, location=no, scrollbar=no');
         document.form_chk.action = "https://nice.checkplus.co.kr/CheckPlusSafeModel/checkplus.cb";
         document.form_chk.target = "popupChk";
@@ -50,7 +50,6 @@ const NicePassBtn = ({ isOpen, closeModal, setNicepass }) => {
 
         function receiveMessage(event) {
             //if (event.origin !== window.location.href) return;
-            console.log(event.data)
             if (event.data === "ok") {
                 dispatch(nicePassSuccess())
             }

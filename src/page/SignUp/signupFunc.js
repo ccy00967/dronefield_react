@@ -3,7 +3,8 @@ import { server } from "../url";
 
 // 인증이메일 발송
 export const sendOTPEmail = async function (id) {
-    return fetch(server + '/validation/emailsend/', {
+    console.log(id);
+    return fetch(server + '/user/validatekey/', {
         method: 'POST',
         headers: [["Content-Type", 'application/json']],
         credentials: "include",
@@ -12,7 +13,8 @@ export const sendOTPEmail = async function (id) {
 }
 
 export const emailValidateCheck = async function (otp) {
-    return fetch(server + '/validation/validatekeycheck/', {
+    console.log(otp);
+    return fetch(server + '/user/validatekeycheck/', {
         method: 'POST',
         headers: [["Content-Type", 'application/json']],
         credentials: "include",
