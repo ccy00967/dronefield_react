@@ -89,7 +89,12 @@ export const getLandInfo = async () => {
         return [];
     }
 }
-//서버에 삭제 요청
+
+/**
+ * 서버에 삭제 요청
+ * @param {*} uuid 
+ * @returns 
+ */
 export const deleteLandInfo = async (uuid) => {
     const accessToken = loadAccessToken();
     try {
@@ -113,56 +118,11 @@ export const deleteLandInfo = async (uuid) => {
     }
 }
 
-// export const deleteLandInfo = async (uuid) => {
-//     if (!uuid) {
-//       alert("유효한 농지 ID(UUID)가 제공되지 않았습니다.");
-//       return;
-//     }
   
-//     if (!window.confirm("삭제하시겠습니까?")) {
-//       return;
-//     }
-  
-//     try {
-//       const userInfo = JSON.parse(localStorage.getItem("User_Credential"));
-//       const accessToken = userInfo?.access_token;
-  
-//       if (!accessToken) {
-//         alert("로그인이 필요합니다. 다시 로그인해주세요.");
-//         window.location.replace("/");
-//         return;
-//       }
-  
-//       const res = await fetch(`${server}/customer/landinfo/${uuid}/`, {
-//         method: "DELETE",
-//         headers: {
-//           "Authorization": `Bearer ${accessToken}`,
-//           "Content-Type": "application/json",
-//         },
-//       });
-  
-//       if (res.ok) {
-//         alert("농지 삭제가 완료되었습니다.");
-//         window.location.reload();
-//       } else if (res.status === 401) {
-//         alert("권한이 없습니다. 다시 로그인해주세요.");
-//         window.location.replace("/");
-//       } else if (res.status === 404) {
-//         alert("삭제하려는 농지를 찾을 수 없습니다.");
-//       } else {
-//         const errorText = await res.text();
-//         console.error("Unexpected response:", errorText);
-//         alert("농지 삭제 중 문제가 발생했습니다. 다시 시도해주세요.");
-//       }
-//     } catch (error) {
-//       console.error("삭제 요청 중 오류 발생:", error);
-//       alert("예기치 못한 오류가 발생했습니다. 다시 시도해주세요.");
-//     }
-//   };
-  
+/**
 
-
-//농지 주소 -> PNU 정보 변환
+ * 농지 주소 -> PNU 정보 변환
+ */
 export const get_pnu_api = async () => {
     const getPnu = "https://api.vworld.kr/req/search?key=" + KEY;
     return new Promise((resolve, reject) => {
@@ -192,8 +152,11 @@ export const get_pnu_api = async () => {
     });
 };
 
-// 주소검색으로 농지 제곱미터 받는 api
-
+/**
+ * 주소검색으로 농지 제곱미터 받는 api
+ * @param {*} pnu 
+ * @returns 
+ */
 export const search_area_api = async (pnu) => {
     const getLndpclAr = "https://api.vworld.kr/ned/data/ladfrlList?key=" + KEY;
     // console.log("pnu1", pnu);
@@ -225,8 +188,9 @@ export const search_area_api = async (pnu) => {
     });
 };
 
-
-// cd값을 받기 위한 엑세스토큰 발급 API
+/**
+ * cd값을 받기 위한 엑세스토큰 발급 API
+ */
 export const cd_for_accessToken = async () => {
     const res = await fetch("https://sgisapi.kostat.go.kr/OpenAPI3/auth/authentication.json" +
         "?consumer_key=" + consumer_KEY +
@@ -274,8 +238,9 @@ export const getCdApi = async (cdAccesstoken, address = window.addressInfo.jibun
         return undefined;
     }
 };
-
-// 액세스 토큰과 리프레시 토큰을 갱신하는 함수
+/**
+ * 액세스 토큰과 리프레시 토큰을 갱신하는 함수
+ */
 export const InsertRefreshAccessToken = async () => {
     const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
     const refreshToken = userInfo?.refresh_token;
@@ -358,8 +323,9 @@ export const applyPestControl = async (postData, uuid, openModal) => {
     }
   };
 
-// src/utils/api.js
 
+
+//방제이용목록의 정보 불러오기
 export const load_API = async (setDataList, setCnt) => {
   const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
   const accessToken = userInfo?.access_token;
@@ -398,8 +364,57 @@ export const load_API = async (setDataList, setCnt) => {
 
 
 
+//농지등록 함수
+export const insert_API = async (landinfo, lndpclAr,check) => {
+    if (lndpclAr == "") {
+      return alert("검색하기를 눌러서 면적을 입력해주세요");
+    }
 
+    if (!check) {
+      return alert("동의를 체크해주세요!")
 
+    }
+    await InsertRefreshAccessToken();
+
+    const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
+    let accessToken = userInfo?.access_token;
+    // 첫 번째 POST 요청
+    let res = await fetch(server + "/customer/lands/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(landinfo),
+    });
+
+    // 401 에러 발생 시 토큰 갱신 후 다시 시도
+    if (res.status === 401) {
+      accessToken = await InsertRefreshAccessToken();
+      if (accessToken) {
+        // 새로운 액세스 토큰으로 다시 시도
+        res = await fetch(server + "/customer/lands/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify(landinfo),
+        });
+      }
+    }
+
+    // 응답이 성공했을 때 데이터 처리
+    if (res.ok) {
+      const result = await res.json();
+      alert("농지 등록이 완료되었습니다.");
+      console.log("Success:", result);
+      // 페이지 새로고침
+      window.location.reload();
+    } else {
+      console.error('요청 실패');
+    }
+  };
 
 
 /** 농지

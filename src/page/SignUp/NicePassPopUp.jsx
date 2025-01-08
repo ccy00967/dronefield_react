@@ -17,8 +17,8 @@ const NicePassPopUp = () => {
       headers: { "Content-Type": "application/json", },
       credentials: "include",
       body: JSON.stringify({
-        token_version_id: token_version_id,
         enc_data: enc_data,
+        token_version_id: token_version_id,
         integrity_value: integrity_value,
       }),
     })

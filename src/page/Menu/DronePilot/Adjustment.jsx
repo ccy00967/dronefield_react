@@ -120,11 +120,11 @@ const Adjustment = () => {
           </RowView2>
 
           <FilterBox>
-            <div className={isSelect("미정산")} onClick={() => setFilter(0)}>
+            <div className={isSelect(0)} onClick={() => setFilter(0)}>
               미정산({getcountlength(0)})
             </div>
             <span>▶︎</span>
-            <div className={isSelect("정산완료")} onClick={() => setFilter(1)}>
+            <div className={isSelect(1)} onClick={() => setFilter(1)}>
               정산 완료({getcountlength(1)})
             </div>
           </FilterBox>

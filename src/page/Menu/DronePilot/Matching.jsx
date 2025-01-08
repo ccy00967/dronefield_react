@@ -14,7 +14,7 @@ import PagingControl from "../../../Component/UI/PagingControl";
 import SideMenuBar from "../SideMenuBar";
 import { requestPayment } from "../../tosspayments/TossPayments_func";
 import { server } from "../../url";
-import { fetchToken, fetchUserInfo, fetchAddressData,getfarmrequest, putfarmrequest } from "../../../Api/DronePilot";
+import { fetchToken, fetchUserInfo, fetchAddressData, getfarmrequest, putfarmrequest } from "../../../Api/DronePilot";
 import {
   TextSemiBold, TextMedium,
   DataRow, ContentArea,
@@ -24,7 +24,7 @@ import {
 } from "./css/MatchingCss";
 
 const Matching = ({ }) => {
-  const [cnt, setCnt] = useState(0);
+  const [cnt, setCnt] = useState(0); //page
   const [perPage, setPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [seqList, setSeqList] = useState([]);
@@ -38,10 +38,11 @@ const Matching = ({ }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [cdInfo, setCdInfo] = useState(""); //cd값 저장
   const [checkedList, setCheckedList] = useState([]);
+  const [isMasterChecked, setIsMasterChecked] = useState(false); // 전체 선택 상태
   const [isChecked, setIsChecked] = useState(false); //체크한 orderid
   const [selectData, setSelectData] = useState([]); // 체크한 데이터 신청정보창 정보
   const [pilotdata, setPilotdata] = useState([]); // pilot data 
-  const [see_seq, setSee_Seq] = useState(0);
+  const [see_seq, setSee_Seq] = useState();
   const [dataList, setDataList] = useState([]);
   const [lndpcl, setlndpcl] = useState([]);
   const [sum, setsum] = useState([]);
@@ -56,6 +57,38 @@ const Matching = ({ }) => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("CARD");
 
 
+
+  // 전체 선택/해제 핸들러
+  const handleMasterCheckboxChange = (e) => {
+    const isChecked = e.target.checked;
+    setIsMasterChecked(isChecked);
+
+    if (isChecked) {
+      // `exterminateState === 0`인 데이터만 전체 선택
+      const filteredData = dataList.filter((item) => item.exterminateState === 0);
+      const allOrderIds = filteredData.map((item) => item.orderid);
+      const allLndpclValues = filteredData.map((item) => {
+        const lndpclAr = parseFloat(item.landInfo.lndpclAr); // 문자열을 숫자로 변환
+        return isNaN(lndpclAr) ? 0 : lndpclAr * 30 * 0.3025; // 계산
+      });
+
+      setSelectData(filteredData);
+      setCheckedList(allOrderIds); //리스트의 모든 orderid 선택
+      setlndpcl(allLndpclValues); // lndpcl 상태 업데이트
+
+
+    } else {
+      setCheckedList([]);
+      setSelectData([]);
+      setlndpcl([]);
+    }
+  };
+
+  useEffect(() => {
+    setIsMasterChecked(
+      checkedList.length > 0 && checkedList.length === dataList.length
+    );
+  }, [checkedList, dataList]);
 
   //체크박스 로직
   const checkedItemHandler = (value, isChecked) => {
@@ -101,8 +134,8 @@ const Matching = ({ }) => {
             return updatedLndpcl;
           });
 
-          console.log(lndpcl);
-          console.log(selectData);
+          //console.log(lndpcl);
+          // console.log(selectData);
 
           return;
         }
@@ -137,8 +170,8 @@ const Matching = ({ }) => {
   const onSubmit = useCallback(
     (e) => {
       e.preventDefault();
-      console.log('checkedList:', [...checkedList]);
-      console.log('selectData', selectData)
+      //console.log('checkedList:', [...checkedList]);
+      // console.log('selectData', selectData)
 
     },
     [checkedList]
@@ -197,7 +230,7 @@ const Matching = ({ }) => {
 
   const handleCityChange = (e) => {
     const selectedCd = e.target.value;
-    console.log(selectedCd); // 시/군/구 코드 출력
+    //console.log(selectedCd); // 시/군/구 코드 출력
     setSelectedCity(selectedCd);
     setCdInfo(selectedCd);
 
@@ -205,7 +238,7 @@ const Matching = ({ }) => {
 
   const handleTownChange = (e) => {
     const selectedCd = e.target.value;
-    console.log(selectedCd); // 읍/면/동 코드 출력
+    //console.log(selectedCd); // 읍/면/동 코드 출력
     setSelectedTown(selectedCd);
     setCdInfo(selectedCd);
 
@@ -217,6 +250,8 @@ const Matching = ({ }) => {
   const fetchfarmrequest = async () => {
     const farmdata = await getfarmrequest(cdInfo);
     setDataList(farmdata)
+    setCheckedList([]);
+    setSelectData([]);
 
   }
 
@@ -233,12 +268,18 @@ const Matching = ({ }) => {
       setPilotdata(pilotdata);
     }
     //매칭 리스트 가져오기 
+
     fetchfarmrequest();
     fetchinfo();
 
 
   }, []);
 
+
+  const buttonfunc = async () => {
+    putfarmrequest(checkedList);
+    await fetchfarmrequest();
+  }
 
 
 
@@ -258,14 +299,15 @@ const Matching = ({ }) => {
 
 
 
-  // 신청정보 seq
+  // 모달에 표시할 데이터 이전/다음 이동
   const setting_pre = () => {
-    if (see_seq !== 0) {
+    if (see_seq > 0) {
       setSee_Seq(see_seq - 1);
     }
   };
+
   const setting_next = () => {
-    if (see_seq + 1 !== seqList.length) {
+    if (see_seq + 1 < selectData.length) {
       setSee_Seq(see_seq + 1);
     }
   };
@@ -331,17 +373,19 @@ const Matching = ({ }) => {
 
             </div>
 
-            <SearchBox
+            {/* <SearchBox
               type={"number"}
               placeholder="원하시는 묶음의 숫자를 입력해주세요."
-            />
+            /> */}
 
             <Content className="top">
               <div className="table">
                 <TableHeader>
                   <CheckBox
-                    type={"checkbox"}
+                    type="checkbox"
                     $color={"#555555"}
+                    checked={isMasterChecked}
+                    onChange={handleMasterCheckboxChange}
                   // onClick={}
                   />
                   <div>농지별명</div>
@@ -362,33 +406,32 @@ const Matching = ({ }) => {
                 </TableHeader>
 
                 {dataList.map((data, idx) => {
-                  if (data.exterminateState == 0) {
-                    if (!data || data.length === 0) {
-                      return [];  // data가 undefined 또는 빈 배열일 때 빈 배열 반환
-                    }
-                    return (
-                      <TableList
-                        key={idx}
-                        className={(idx + 1) % 2 === 0 ? "x2" : ""}
-
-                      >
-                        <CheckBox
-                          type={"checkbox"}
-                          $color={"#555555"}
-                          id={data.orderid}
-                          checked={checkedList.includes(data.orderid)}
-                          onClick={(e) => { selectSeq(idx); }}
-                          onChange={(e) => checkHandler(e, data)}
-                        // getCheckboxData(data.orderid);
-                        />
-                        <div>{data.landInfo.landNickName}</div>
-                        <div className="long">{data.landInfo.address.jibunAddress}</div>
-                        <div className="long">{data.landInfo.lndpclAr}m<sup>2</sup></div>
-                        <div>{data.landInfo.cropsInfo}</div>
-                        <div>{data.pesticide}</div>
-                      </TableList>
-                    );
+                  if (!data || data.length === 0) {
+                    return [];  // data가 undefined 또는 빈 배열일 때 빈 배열 반환
                   }
+                  return (
+                    <TableList
+                      key={idx}
+                      className={(idx + 1) % 2 === 0 ? "x2" : ""}
+
+                    >
+                      <CheckBox
+                        type={"checkbox"}
+                        $color={"#555555"}
+                        id={data.orderid}
+                        checked={checkedList.includes(data.orderid)}
+                        onClick={(e) => { selectSeq(idx); }}
+                        onChange={(e) => checkHandler(e, data)}
+                      // getCheckboxData(data.orderid);
+                      />
+                      <div>{data.landInfo.landNickName}</div>
+                      <div className="long">{data.landInfo.address.jibunAddress}</div>
+                      <div className="long">{data.landInfo.lndpclAr}m<sup>2</sup></div>
+                      <div>{data.landInfo.cropsInfo}</div>
+                      <div>{data.pesticide}</div>
+                    </TableList>
+                  );
+
                 })}
 
                 <PagingControl
@@ -409,7 +452,7 @@ const Matching = ({ }) => {
                     <CenterView style={{ marginBottom: "2rem" }}>
                       <TextSemiBold $size={22}>신청정보</TextSemiBold>
                       <div style={{ color: "gray" }}>
-                        ({see_seq + 1}/{seqList.length})
+                        ({see_seq + 1}/{checkedList.length})
                       </div>
                     </CenterView>
 
@@ -477,16 +520,17 @@ const Matching = ({ }) => {
                         이용금액
                       </TextSemiBold>
                       <TextMedium className="auto" $fontsize={20} $color={true}>
-                        {(seqList.length * 1000).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}원
+                        {(selectData.length * 1000).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}원
 
                       </TextMedium>
                     </RowView>
 
-                    {/* <button type='submit' >콘솔 찍어보기</button>
-                 
-                  <Btn onClick={() => { putfarmrequest() }}>찍어</Btn> */}
+                    {/* <button type='submit' >콘솔 찍어보기</button> */}
+
+                    {/* <Btn onClick={() => { console.log("data",checkedList, ) }}>찍어</Btn> */}
                     {/* <Btn onClick={() => { requestPayment(selectedPaymentMethod, totalAmount, name, phone, email, payorderid); }}>결제하기</Btn> */}
-                    <Btn onClick={() => { putfarmrequest(checkedList); requestPayment(selectedPaymentMethod, totalAmount, name, phone, email, payorderid); }}>결제하기</Btn>
+                    {/* orderid는 checkedList로 보내기 */}
+                    <Btn onClick={() => { buttonfunc(); requestPayment(selectedPaymentMethod, totalAmount, name, phone, email, payorderid); }}>결제하기</Btn>
 
                   </div>
 

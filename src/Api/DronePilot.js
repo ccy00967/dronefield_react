@@ -46,7 +46,7 @@ export const fetchUserInfo = async () => {
         credentials: 'include',
     })
     const data = await res.json();
-    console.log('userinfo', data)
+    //console.log('userinfo', data)
     return data;
 };
 
@@ -56,6 +56,7 @@ export const fetchUserInfo = async () => {
 
 /**
  *  드론방제사 거래 수락
+ * orderid를 모은 checkedList를 받음
  * @returns {<[OrderData]>}
  */
 
@@ -120,10 +121,11 @@ const addressDepthServerModel = (json) => {
 
 
 /**
+ * 거래매칭 화면 리스트 불러오기
  * 행정구역 cd에 따라 거래 리스트 받는다
+ * 나중에는 서버에서 필터링 요청
  * @return {Promise<[OrderInfo]>} 
  */
-
 export const getfarmrequest = async (cdInfo) => {
     const User_Credential = JSON.parse(localStorage.getItem('User_Credential'));
     const accessToken = User_Credential?.access_token;
@@ -138,20 +140,22 @@ export const getfarmrequest = async (cdInfo) => {
                 'authorization': `Bearer ${accessToken}`,
             },
         });
-
+        //TODO: 나중에 수정 요청해야함 exterminateState 0인 값만 가져오는 url필요합니다.
         // HTTP 응답 상태 확인
         if (!res.ok) {
             throw new Error(`HTTP error! Status: ${res.status}`);
         }
 
         const data = await res.json();
-        console.log("Response Data:", data);
-        return data;
+        // exterminateState가 0인 값만 필터링
+        const filteredData = data.filter((item) => item.exterminateState === 0);
+        return filteredData; // 필터링된 데이터 반환
     } catch (error) {
         console.error("Error fetching farm requests:", error);
         return { error: true, message: error.message };
     }
 };
+
 
 
 
@@ -220,7 +224,7 @@ export const workStart_API = (orderid) =>
  */
 
 export const getWorkStatus = async () => {
-    
+
     try {
         const User_Credential = JSON.parse(localStorage.getItem('User_Credential'));
         if (!User_Credential || !User_Credential.access_token) {
