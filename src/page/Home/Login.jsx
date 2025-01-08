@@ -59,18 +59,18 @@ const Login = (props) => {
     return "";
   };
 
-  const fetchUserInfo = async (uuid, accessToken) => {
-    const res = await fetch(server + `/user/userinfo/${uuid}/`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: `Bearer ${accessToken}`
-      },
-      credentials: 'include',
-    });
-    const data = await res.json();
-    return data;
-  };
+  // const fetchUserInfo = async (uuid, accessToken) => {
+  //   const res = await fetch(server + `/user/userinfo/${uuid}/`, {
+  //     method: 'GET',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       authorization: `Bearer ${accessToken}`
+  //     },
+  //     credentials: 'include',
+  //   });
+  //   const data = await res.json();
+  //   return data;
+  // };
 
   const Login_API = async () => {
     if (email == "" || password == "") alert("이메일 또는 비밀번호를 입력해주세요")
@@ -93,18 +93,18 @@ const Login = (props) => {
           userType: userType,
           access_token: data.access,
           refresh_token: data.refresh,
-          uuid: data.uuid,
+          user: data.user,
         };
 
-        const userInfoData = await fetchUserInfo(userCredential.uuid, userCredential.access_token);
+        //const userInfoData = await fetchUserInfo(userCredential.uuid, userCredential.access_token);
 
-        if (userInfoData.role == 3) {
+        if (userCredential.user.type == 3) {
           if (userType !== "드론조종사") {
             alert("방제사로 로그인 해주세요")
             return
           }
         }
-        if (userInfoData.role == 4) {
+        if (userCredential.user.type == 4) {
           if (userType !== "농업인") {
             alert("농업인으로 로그인 해주세요")
             return
@@ -112,7 +112,7 @@ const Login = (props) => {
         }
         setUser_info(userCredential);
         localStorage.setItem("User_Credential", JSON.stringify(userCredential));
-        setUserInfo(userInfoData);
+        setUserInfo(userCredential);
       }
       else {
         if (res.status === 400) {
@@ -126,12 +126,12 @@ const Login = (props) => {
     }
   };
 
-  const Set_User_info = async () => {
-    if (User_Credential && User_Credential.uuid) {
-      const userInfoData = await fetchUserInfo(User_Credential.uuid, User_Credential.access_token);
-      setUserInfo(userInfoData);
-    }
-  };
+  // const Set_User_info = async () => {
+  //   if (User_Credential && User_Credential.uuid) {
+  //     const userInfoData = await fetchUserInfo(User_Credential.uuid, User_Credential.access_token);
+  //     setUserInfo(userInfoData);
+  //   }
+  // };
 
   const enterPress = (e) => {
     if (e.key === "Enter") {
@@ -143,7 +143,7 @@ const Login = (props) => {
     const storedCredentials = JSON.parse(localStorage.getItem("User_Credential"));
     if (storedCredentials) {
       setUser_info(storedCredentials);
-      Set_User_info();
+      //Set_User_info();
     }
   }, [setUser_info]);
 
@@ -157,7 +157,7 @@ const Login = (props) => {
       {isLogin ? (
         <>
           <TextLogin>
-            <span> {userInfo.name} </span>
+            <span> {userInfo.user.name} </span>
             {User_Credential.userType}님,
             <br />
             안녕하세요!
