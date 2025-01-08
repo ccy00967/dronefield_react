@@ -6,8 +6,10 @@ import $ from 'jquery';
 
 // 장고에서 확정된 URL들을 적는다.
 // API 이름 규칙 => /farmer/farms == api_farmer_farms
-const api_getAccessToken = server + "/user/token/refresh/"
-const api_farmer_farm = server + "/customer/lands/";
+const api_getAccessToken = server + "/user/refresh/"
+const api_farmer_farm = server + "/farmer/lands/";
+// const api_getAccessToken = server + "/user/token/refresh/"
+// const api_farmer_farm = server + "/customer/lands/";
 // 디지털트윈국토 for 토지임야정보: 개발용 KEY임 나중에 변경 필요 - 127.0.0.1이 허용됨
 const KEY = "6C934ED4-5978-324D-B7DE-AC3A0DDC3B38"
 // kosis 단계별 행정구역 and 검색API for cd값
@@ -47,7 +49,7 @@ const refreshAccessToken = async (reTryFunc) => {
         const token = await res.json();
 
         userInfo.access_token = token;
-
+        
         localStorage.setItem('User_Credential', JSON.stringify(userInfo))
 
         const data = await reTryFunc();
