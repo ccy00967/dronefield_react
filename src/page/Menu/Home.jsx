@@ -35,22 +35,23 @@ const MainMenu = () => {
   const [UserInfo, setUserInfo] = useState([])
 
   const Set_User_info = async () => {
-    const res = await fetch(server + '/user/userinfo/' + User_Credential.uuid + '/', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: "Bearer " + User_Credential.access_token,
-      },
-      // 나중에 동시 로그인, 다른 곳에서 로그인을 credentials의 정보로 찾기
-      credentials: "include",
-    })
+    // const res = await fetch(server + '/user/userinfo/' + User_Credential.uuid + '/', {
+      const res = await fetch(server + '/user/profile/', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: "Bearer " + User_Credential.access_token,
+        },
+        // 나중에 동시 로그인, 다른 곳에서 로그인을 credentials의 정보로 찾기
+        credentials: "include",
+      })
       .then((res) => { return res.json(); })
       .then((data) => {
         return data
       });
 
-
     setUserInfo(res)
+    console.log(res)
   }
 
 

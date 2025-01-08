@@ -157,7 +157,7 @@ const Login = (props) => {
       {isLogin ? (
         <>
           <TextLogin>
-            <span> {userInfo.user.name} </span>
+            <span> {User_Credential.user.name} </span>
             {User_Credential.userType}님,
             <br />
             안녕하세요!
