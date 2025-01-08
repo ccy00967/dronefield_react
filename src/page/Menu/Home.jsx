@@ -51,7 +51,7 @@ const MainMenu = () => {
       });
 
     setUserInfo(res)
-    console.log(res)
+    console.log('3434',User_Credential)
   }
 
 
