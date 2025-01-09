@@ -51,8 +51,11 @@ const Component_mapList = (props) => {
       initMap(naver, infoWindow, setSearchAddr);
     }
 
-    farmlands_load()
+
   }, []);
+
+
+
 
   // 농지 전체보기 > 농지삭제 함수  
   const delete_func = async (uuid) => {
@@ -82,17 +85,35 @@ const Component_mapList = (props) => {
   const setSearchAddr = props.setSearchAddr || null;
   //const { setTotalArea, setLandCount } = props;
 
-  const [cnt, setCnt] = useState(0); // 전체 개시글 갯수
-  const [perPage, setPerPage] = useState(20); // 페이지당 게시글 갯수 (디폴트:20)
-  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지
+  const [cnt, setCnt] = useState(0); // 전체 개시글 갯수 total_items
+  const [perPage, setPerPage] = useState(5); // 페이지당 게시글 갯수 (디폴트:5)  page_size
+  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지              page
   const { setUser_info } = useUser();
 
   // 농지 데이터 load
   const [dataList, setDataList] = useState([]);
 
+  useEffect(() => {
+    farmlands_load();
+  }, [currentPage]); //perPage, currentPage가 변경될 때 실행
+
+  useEffect(() => {
+    const load = async () => {
+      setCurrentPage(1);
+      console.log('current',currentPage);
+      await farmlands_load();
+    }
+    load();
+  }, [perPage])
+
+
+
   const farmlands_load = async () => {
-    const data = await getLandInfo();
-    setDataList(data);  // 받아온 데이터를 상태에 저장
+    const data = await getLandInfo(perPage, currentPage);
+    setDataList(data.data);
+    setCnt(data.total_items)
+
+    // 받아온 데이터를 상태에 저장
     // 총 면적과 필지 개수를 계산하고 부모 컴포넌트로 전달
     //const totalArea = data.reduce((sum, item) => sum + parseFloat(item.lndpclAr), 0);
     //setTotalArea(totalArea);
@@ -144,7 +165,7 @@ const Component_mapList = (props) => {
           return (
             <TableList key={idx} className={(idx + 1) % 2 === 0 ? "x2" : ""}>
               <div>{data.landNickName}</div>
-              <div className="addr"> {data.address.jibunAddress}</div>
+              <div className="addr"> {data.jibun}</div>
               <div>{`${areaInPyeong}평/${areaInSquareMeters}㎡`}</div>
               <div>{data.cropsInfo}</div>
 

@@ -38,18 +38,30 @@ const Farmland_Insert = () => {
   const [additionalPhoneNum, setAdditionalPhoneNum] = useState("");
   const adlndpclArup = Math.ceil(lndpclAr * 0.3025);
   const landinfo = {
-    "address": {
-      "roadaddress": window.addressInfo.roadAddress || "값이 없음",
-      "jibunAddress": window.addressInfo.jibunAddress || "값이 없음",
-      "detailAddress": "값이 없음"
-    },
     "pnu": pnu || "값이 없음",
     "lndpclAr": lndpclAr,
     "cd": cd || "값이 없음",
     "landNickName": landNickName || "별명 없음",
     "cropsInfo": cropsInfo || "값이 없음",
-    "additionalPhoneNum": "값이 없음"
+    "additionalPhoneNum": "값이 없음",
+    "road": window.addressInfo.roadAddress || "값이 없음",
+    "jibun": window.addressInfo.jibunAddress || "값이 없음",
+    "detail": "값이 없음"
   };
+  // const landinfo = {
+  //   "address": {
+  //     "roadaddress": window.addressInfo.roadAddress || "값이 없음",
+  //     "jibunAddress": window.addressInfo.jibunAddress || "값이 없음",
+  //     "detailAddress": "값이 없음"
+  //   },
+  //   "pnu": pnu || "값이 없음",
+  //   "lndpclAr": lndpclAr,
+  //   "cd": cd || "값이 없음",
+  //   "landNickName": landNickName || "별명 없음",
+  //   "cropsInfo": cropsInfo || "값이 없음",
+  //   "additionalPhoneNum": "값이 없음"
+  // };
+
 
   const setting_addr = (e) => setSearchAddr(e.target.value)
   const setting_name = (e) => setLandNickName(e.target.value);
@@ -256,6 +268,7 @@ const Farmland_Insert = () => {
             본인 토지가 아닌 경우 책임은 등록/신청자에게 있습니다.
             <span> (필수)</span>
           </RowView2>
+          {/* <Btn_Farmland_Insert onClick={() =>  console.log(landinfo)}>농지등록</Btn_Farmland_Insert> */}
           <Btn_Farmland_Insert onClick={() => { insert_API(landinfo,lndpclAr,check) }}>농지등록</Btn_Farmland_Insert>
 
 

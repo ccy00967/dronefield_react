@@ -59,6 +59,7 @@ const TopBar = (props) => {
   const Logout_API = () => {
     // localStorage에 userInfo가 저장되어있기 때문에
     // 로그아웃 API sucess 후 해당 코드가 꼭 실행되어야 합니다.
+    
     localStorage.removeItem("User_Credential");
     window.location.replace("/");
   };

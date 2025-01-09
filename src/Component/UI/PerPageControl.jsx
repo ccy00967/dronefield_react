@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import styled from "styled-components";
 import { RowView2 } from "../common_style";
+import { getLandInfo } from "../../Api/Farmer";
 
 const PerPageDiv = styled(RowView2)`
   margin-top: 1rem;
@@ -33,9 +34,9 @@ const PerPageControl = (props) => {
   return (
     <PerPageDiv className="end">
       <select value={perPage} onChange={setting_perPage}>
+        <option value={5}>5개</option>
+        <option value={10}>10개</option>
         <option value={20}>20개</option>
-        <option value={50}>50개</option>
-        <option value={100}>100개</option>
       </select>
     </PerPageDiv>
   );
