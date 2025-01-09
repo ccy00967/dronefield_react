@@ -15,7 +15,7 @@ export function PaymentSuccessPage() {
         async function confirm() {
             const requestData = {
                 paymentKey: searchParams.get("paymentKey"),
-                amount: searchParams.get("amount"),
+                // amount: searchParams.get("amount"),
                 orderId: searchParams.get("orderId"),
                 orderidlist: [searchParams.get("orderId")],
             };
@@ -24,7 +24,6 @@ export function PaymentSuccessPage() {
             console.log(requestData)
             const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
             const accessToken = userInfo.access_token;
-
             const response = await fetch(server + `/payments/success/`, {
                 method: "POST",
                 headers: {

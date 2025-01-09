@@ -58,10 +58,10 @@ const PestControl_apply = () => {
   const apply = () => {
     const postData = {
       dealmothod: transaction === "일반거래" ? 0 : 1,
+      setAveragePrice: price,
       startDate: startDate || "2024-10-30",
       endDate: "2021-11-03",
       pesticide: pesticidesUsed,
-      setAveragePrice: price,
     };
   
     applyPestControl(postData, uuid, openModal); // 토큰 갱신은 applyPestControl 내부에서 처리
@@ -74,7 +74,7 @@ const PestControl_apply = () => {
         submenu={"방제신청"}
         setSearchAddr={setDummy}
         setSelectFarmland={(data) => {
-          const farmland = `${data.landNickName}(${data.address.jibunAddress})`;
+          const farmland = `${data.landNickName}(${data.jibun})`;
           setSelectFarmland(farmland); // 선택된 농지 이름
           setUuid(data.uuid);
           setSelectlndpclAr(data.lndpclAr);

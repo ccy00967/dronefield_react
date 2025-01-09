@@ -255,7 +255,7 @@ export const InsertRefreshAccessToken = async () => {
   const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
   const refreshToken = userInfo?.refresh_token;
 
-  const res = await fetch(server + '/user/token/refresh/', {
+  const res = await fetch(server + api_getAccessToken, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -292,7 +292,7 @@ export const applyPestControl = async (postData, uuid, openModal) => {
     console.log("POST Data:", postData);
 
     // 첫 번째 요청
-    let res = await fetch(`${server}/farmrequest/send/${uuid}/`, {
+    let res = await fetch(`${server}/trade/${uuid}/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -307,7 +307,7 @@ export const applyPestControl = async (postData, uuid, openModal) => {
       accessToken = await refreshAccessToken(refreshToken); // 토큰 갱신 호출
       if (accessToken) {
         // 갱신된 토큰으로 다시 요청
-        res = await fetch(`${server}/farmrequest/send/${uuid}/`, {
+        res = await fetch(`${server}/trade/${uuid}/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -341,7 +341,7 @@ export const load_API = async (setDataList, setCnt) => {
   const accessToken = userInfo?.access_token;
 
   const fetchData = async () => {
-    const res = await fetch(`${server}/farmrequest/requests/`, {
+    const res = await fetch(`${server}/trade/list/`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -356,6 +356,7 @@ export const load_API = async (setDataList, setCnt) => {
     const data = await res.json();
     setCnt(data.length); // 전체 게시글 수 업데이트
     setDataList(data); // 데이터 리스트 업데이트
+    console.log(data);
     return data; // 데이터 반환
   };
 
@@ -384,10 +385,11 @@ export const insert_API = async (landinfo, lndpclAr, check) => {
     return alert("동의를 체크해주세요!")
 
   }
-  await refreshAccessToken();
+   await InsertRefreshAccessToken();
 
   const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
   let accessToken = userInfo?.access_token;
+  console.log(accessToken);
   // 첫 번째 POST 요청
   let res = await fetch(server + "/farmer/land/", {
     // let res = await fetch(server + "/customer/lands/", {

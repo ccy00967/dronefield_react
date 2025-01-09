@@ -23,6 +23,7 @@ const PestControl_applyModal = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
     visible: (data) => {
       data ? setData(data) : setData({});
+      console.log('data',data);
       setModalOpen(true);
     },
   }));
@@ -33,7 +34,7 @@ const PestControl_applyModal = forwardRef((props, ref) => {
   const phonenum = data.owner?.mobileno || "번호 없음";
   const amount = data?.requestAmount || 0;
   const email = data.owner?.email || "이메일 없음";
-  const payorderid = data?.orderid || "주문번호 없음";
+  const payorderid = data?.orderId || "주문번호 없음";
   const [serviceAmount, setServiceAmount] = useState(10000);
   const [payment, setPayment] = useState(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("CARD");
@@ -80,7 +81,7 @@ const PestControl_applyModal = forwardRef((props, ref) => {
         </DataRow>
         <DataRow>
           <TextMedium>농ㅤㅤ지</TextMedium>
-          <div className="gray">{data.landInfo?.address.jibunAddress || "(선택안함)"}</div>
+          <div className="gray">{data.landInfo?.jibun|| "(선택안함)"}</div>
         </DataRow>
         <DataRow>
           <TextMedium className="letter">평단가</TextMedium>
@@ -118,7 +119,8 @@ const PestControl_applyModal = forwardRef((props, ref) => {
           </TextMedium>
         </RowView>
 
-        <Btn onClick={() => requestPayment(selectedPaymentMethod, totalAmount, name, phonenum, email, payorderid)}>결제하기</Btn>
+        <Btn onClick={() => requestPayment(selectedPaymentMethod, totalAmount, name, phonenum, email, payorderid)}>결제하기</Btn> 
+        {/* <Btn onClick={() => console.log(selectedPaymentMethod, totalAmount, name, phonenum, email, payorderid)}>콘솔솔</Btn> */}
       </ModalBox>
     </BackgroundArea>
   );
