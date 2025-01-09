@@ -40,9 +40,10 @@ const MyInfo = () => {
       const userCredential = JSON.parse(localStorage.getItem('User_Credential'));
       const accessToken = userCredential ? userCredential.access_token : null;
       const uuid = userCredential ? userCredential.uuid : null;
-
-      if (accessToken && uuid) {
-        const res = await fetch(server + `/user/userinfo/${uuid}/`, {
+      console.log('access', accessToken)
+      if (accessToken) {
+        const res = await fetch(server + `/user/profile/`, {
+          // const res = await fetch(server + `/user/userinfo/${uuid}/`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -52,6 +53,7 @@ const MyInfo = () => {
 
         if (res.ok) {
           const resdata = await res.json();
+          console.log('resdata', resdata)
           setMyInfo({
             name: resdata.name,
             email: resdata.email,

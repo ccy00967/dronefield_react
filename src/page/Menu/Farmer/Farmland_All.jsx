@@ -19,10 +19,12 @@ const Farmland_All = () => {
 
 
   const calculate_farm = async () => {
+    console.log("Calculating")
+    //fetch url toral-area로 바꾸기기
     const data = await getLandInfo();
-    const totalArea = data.reduce((sum, item) => sum + parseFloat(item.lndpclAr), 0);
+    const totalArea = data.data.reduce((sum, item) => sum + parseFloat(item.lndpclAr), 0);
     setTotalArea(totalArea);
-    setLandCount(data.length);
+    setLandCount(data.total_items);
   }
 
   useEffect(() => {

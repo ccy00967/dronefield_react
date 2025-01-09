@@ -60,6 +60,7 @@ const refreshAccessToken = async (reTryFunc) => {
   } catch (e) {
     alert("다시 로그인 해주세요!");
     // 로그인 화면으로 리턴시키는 로직 작성
+    localStorage.removeItem('User_Credential');
     window.location.href = '/'; // 로그인 페이지로 이동
   }
 }
@@ -67,14 +68,17 @@ const refreshAccessToken = async (reTryFunc) => {
 // Component_mapList에서 사용 - 페이지를 처음 들어가면 농지 리스트를 가져옴
 /** 
  * 농지 리스트를 가져온다
+ * currentPage page 현재 페이지
+ * perPage page_size 페이지당 게시글 갯수
  * @returns {Promise<LandInfo[]>} 
 */
-export const getLandInfo = async () => {
+export const getLandInfo = async (perPage, currentPage) => {
   const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
   const accessToken = loadAccessToken();
-  console.log(userInfo);
+  const actualCurrentPage = currentPage || 1;
+  const actualPerPage = perPage || 5;
   try {
-    const res = await fetch(api_farmer_farm, {
+    const res = await fetch(server + `/farmer/lands/?page=${actualCurrentPage}&page_size=${actualPerPage}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
