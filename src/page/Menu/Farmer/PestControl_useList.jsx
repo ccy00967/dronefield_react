@@ -179,10 +179,10 @@ const getcountlength = (filterType) => {
                 onClick={() => openModal(data)}
               >
                 <div>{data.landInfo.landNickName}</div>
-                <div>{data.landInfo.lastUpdtDt}</div>
+                <div>{data.startDate}</div>
                 <div>{data.exterminatorinfo != null ? data.exterminatorinfo.name : ""}</div>
                 <div>{data.exterminatorinfo != null ? data.exterminatorinfo.phone_number : ""}</div>
-                <div className="addr">{data.landInfo.address.jibunAddress}</div>
+                <div className="addr">{data.landInfo.jibun}</div>
                 <div>{data.exterminateSate}</div>
 
 

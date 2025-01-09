@@ -124,7 +124,7 @@ const Component_mapList = (props) => {
   const selectFarmland = (data) => {
     if (setSelectFarmland) {
       console.log(data);
-      const farmland = `${data.landNickName}(${data.address.jibunAddress})`;
+      const farmland = `${data.landNickName}(${data.jibun})`;
       setSelectFarmland(data);
       ScrollToTop_smooth();
       //globalSearchAddressToCoordinate(data.address.jibunAddress);
