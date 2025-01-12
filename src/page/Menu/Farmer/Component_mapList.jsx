@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   RowView
 } from "../../../Component/common_style";
@@ -8,9 +8,9 @@ import PerPageControl from "../../../Component/UI/PerPageControl";
 import SideMenuBar from "../SideMenuBar";
 import { useUser } from "../../../Component/userContext";
 import { ContentArea, MapArea, TableHeader, TableList, MiniBtn } from "./css/Component_mapListCss";
-import { deleteLandInfo, getLandInfo,editLandInfo } from "../../../Api/Farmer";
+import { deleteLandInfo, getLandInfo, editLandInfo } from "../../../Api/Farmer";
 import initMap from "./init_naver_map";
-
+import Component_mapList_editModal from "./Modal/Component_mapList_editModal";
 
 const loadScript = (src, callback, naver, infoWindow, setSearchAddr) => {
   const script = document.createElement('script');
@@ -57,7 +57,7 @@ const Component_mapList = (props) => {
   const edit_func = async (uuid) => {
     const is_edited = await editLandInfo(uuid);
 
-    if(is_edited) {
+    if (is_edited) {
       alert("수정이 완료 되었습니다.")
     }
     else if (!is_edited) {
@@ -67,6 +67,12 @@ const Component_mapList = (props) => {
 
     await farmlands_load()
   }
+  //수정하기 모달
+  const ModalRef = useRef();
+  const openModal = (data) => {
+    ModalRef.current.visible(data);
+    console.log(data);
+  };
 
 
   // 농지 전체보기 > 농지삭제 함수  
@@ -186,7 +192,7 @@ const Component_mapList = (props) => {
                 <>
                   <MiniBtn
                     className="edit"
-                    onClick={() => edit_func(data.uuid)} // 수정 함수 호출
+                    onClick={() => openModal(data)} // 수정 함수 호출
                   >
                     수정
                   </MiniBtn>
@@ -220,6 +226,7 @@ const Component_mapList = (props) => {
           perPage={perPage}
         />
       </ContentArea>
+        <Component_mapList_editModal ref={ModalRef}/>
     </RowView >
   );
 };
