@@ -20,7 +20,7 @@ export function PaymentSuccessPage() {
                 orderidlist: [searchParams.get("orderId")],
             };
 
-            console.log("bbbbbbbbbbbbbb")
+            console.log("bbbbbbbbbbbbb")
             console.log(requestData)
             const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
             const accessToken = userInfo.access_token;
@@ -31,7 +31,7 @@ export function PaymentSuccessPage() {
                     'Authorization': `Bearer ${accessToken}`,
                     // "X-CSRFToken": csrfToken,  // CSRF 토큰 헤더에 추가
                 },
-                body: JSON.stringify(requestData),
+                body: JSON.stringify(requestData), 
                 credentials: "include",
             });
 

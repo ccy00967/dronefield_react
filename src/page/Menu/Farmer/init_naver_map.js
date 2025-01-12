@@ -37,7 +37,6 @@ const initMap = (naver, infoWindow, setSearchAddr) => {
     // 지도 클릭, 좌표를 주소로 변환 - 이벤트에 등록
     function searchCoordinateToAddress(latlng) {
         infoWindow.close();
-
         naver.maps.Service.reverseGeocode(
             {
                 coords: latlng,

@@ -64,17 +64,15 @@ const Matching = ({ }) => {
     setIsMasterChecked(isChecked);
 
     if (isChecked) {
-      // `exterminateState === 0`인 데이터만 전체 선택
-      const filteredData = dataList.filter((item) => item.exterminateState === 0);
-      const allOrderIds = filteredData.map((item) => item.orderid);
-      const allLndpclValues = filteredData.map((item) => {
-        const lndpclAr = parseFloat(item.landInfo.lndpclAr); // 문자열을 숫자로 변환
+      const allOrderIds = dataList.map((item) => item.orderId);
+      const allLndpclValues = dataList.map((item) => {
+        const lndpclAr = parseFloat(item.lndpclAr); // 문자열을 숫자로 변환
         return isNaN(lndpclAr) ? 0 : lndpclAr * 30 * 0.3025; // 계산
       });
-
-      setSelectData(filteredData);
+      setSelectData(dataList);
       setCheckedList(allOrderIds); //리스트의 모든 orderid 선택
       setlndpcl(allLndpclValues); // lndpcl 상태 업데이트
+      console.log(allOrderIds)
 
 
     } else {
@@ -93,8 +91,8 @@ const Matching = ({ }) => {
   //체크박스 로직
   const checkedItemHandler = (value, isChecked) => {
     // landInfo가 유효한 객체인지 확인
-    if (value.landInfo && typeof value.landInfo === 'object') {
-      const lndpclAr = parseFloat(value.landInfo.lndpclAr); // 문자열을 숫자로 변환
+    if (value && typeof value === 'object') {
+      const lndpclAr = parseFloat(value.lndpclAr); // 문자열을 숫자로 변환
 
       // lndpclAr가 유효한 숫자인지 확인
       if (!isNaN(lndpclAr)) {
@@ -102,7 +100,7 @@ const Matching = ({ }) => {
 
         if (isChecked) {
           // 항목이 체크된 경우
-          setCheckedList((prev) => [...prev, value.orderid]);
+          setCheckedList((prev) => [...prev, value.orderId]);
           setSelectData((prev) => [...prev, value]);
           // lndpcl에 숫자 값 추가 (중복 허용)
           setlndpcl((prev) => [...prev, calculatedLndpcl]);
@@ -111,17 +109,17 @@ const Matching = ({ }) => {
         }
 
         // 항목이 체크 해제된 경우
-        if (!isChecked && checkedList.includes(value.orderid)) {
+        if (!isChecked && checkedList.includes(value.orderId)) {
           // 선택된 마지막 항목이라면 see_seq 감소
           if (see_seq + 1 === selectData.length) {
             setSee_Seq(see_seq - 1);
           }
 
           // 체크리스트에서 orderid 제거
-          setCheckedList((prev) => prev.filter((item) => item !== value.orderid));
+          setCheckedList((prev) => prev.filter((item) => item !== value.orderId));
 
           // selectData에서 해당 값 제거
-          setSelectData((prev) => prev.filter((item) => item.orderid !== value.orderid));
+          setSelectData((prev) => prev.filter((item) => item.orderId !== value.orderId));
 
           // lndpcl에서 계산된 값 제거
           setlndpcl((prev) => {
@@ -140,10 +138,10 @@ const Matching = ({ }) => {
           return;
         }
       } else {
-        console.error('Invalid lndpclAr value:', value.landInfo.lndpclAr);
+        console.error('Invalid lndpclAr value:', value.lndpclAr);
       }
     } else {
-      console.error('landInfo is not a valid object:', value.landInfo);
+      console.error('landInfo is not a valid object:', value);
     }
 
     return;
@@ -277,7 +275,8 @@ const Matching = ({ }) => {
 
 
   const buttonfunc = async () => {
-    putfarmrequest(checkedList);
+    // putfarmrequest(checkedList);
+    console.log(checkedList)
     await fetchfarmrequest();
   }
 
@@ -418,16 +417,16 @@ const Matching = ({ }) => {
                       <CheckBox
                         type={"checkbox"}
                         $color={"#555555"}
-                        id={data.orderid}
-                        checked={checkedList.includes(data.orderid)}
+                        id={data.orderId}
+                        checked={checkedList.includes(data.orderId)}
                         onClick={(e) => { selectSeq(idx); }}
                         onChange={(e) => checkHandler(e, data)}
                       // getCheckboxData(data.orderid);
                       />
-                      <div>{data.landInfo.landNickName}</div>
-                      <div className="long">{data.landInfo.address.jibunAddress}</div>
-                      <div className="long">{data.landInfo.lndpclAr}m<sup>2</sup></div>
-                      <div>{data.landInfo.cropsInfo}</div>
+                      <div>{data.landNickName}</div>
+                      <div className="long">{data.jibun}</div>
+                      <div className="long">{data.lndpclAr}m<sup>2</sup></div>
+                      <div>{data.cropsInfo}</div>
                       <div>{data.pesticide}</div>
                     </TableList>
                   );
@@ -458,11 +457,11 @@ const Matching = ({ }) => {
 
                     <DataRow>
                       <TextMedium>이ㅤㅤ름</TextMedium>
-                      <div className="gray">{selectData[see_seq].owner.name}</div>
+                      <div className="gray">{selectData[see_seq].owner_name}</div>
                     </DataRow>
                     <DataRow>
                       <TextMedium>전화번호</TextMedium>
-                      <div className="gray">{selectData[see_seq].owner.mobileno}</div>
+                      <div className="gray">{selectData[see_seq].owner_mobileno}</div>
                     </DataRow>
 
                     <Hr />
@@ -473,7 +472,7 @@ const Matching = ({ }) => {
                     </DataRow>
                     <DataRow>
                       <TextMedium>농ㅤㅤ지</TextMedium>
-                      <div className="gray">{selectData[see_seq].landInfo.landNickName}</div>
+                      <div className="gray">{selectData[see_seq].landNickName}</div>
                     </DataRow>
                     <DataRow>
                       <TextMedium className="letter">평단가</TextMedium>
@@ -497,7 +496,7 @@ const Matching = ({ }) => {
                         개별 방제대금(받으실 돈)
                       </TextMedium>
                       {/* 소수점 반올림 */}
-                      <div className="gray">{Math.round(30 * selectData[see_seq].landInfo.lndpclAr * 0.3025).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}원</div>
+                      <div className="gray">{Math.round(30 * selectData[see_seq].lndpclAr * 0.3025).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}원</div>
                     </DataRow>
                     <DataRow>
                       <TextMedium className="auto">서비스 이용금액</TextMedium>
