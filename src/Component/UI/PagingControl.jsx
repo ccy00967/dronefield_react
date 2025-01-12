@@ -36,7 +36,7 @@ const PagingControl = (props) => {
   const cnt = props.cnt || 0; // 전체 개시글 갯수
   const currentPage = props.currentPage; // 현재 페이지 넘버
   const setCurrentPage = props.setCurrentPage; // 페이지 set함수
-  const perPage = props.perPage || 5; // 몇개씩 보여줄건지. (디폴트 5개)
+  const perPage = props.perPage || 10; // 몇개씩 보여줄건지. (디폴트 5개)
 
   // 마지막 페이지 넘버
   const finalPagenum =

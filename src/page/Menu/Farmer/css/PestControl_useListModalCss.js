@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { BackgroundArea, CenterView, Icon,redColor,RowView,RowView2} from "../../../../Component/common_style";
+import { BackgroundArea, CenterView, Icon, redColor, RowView, RowView2 } from "../../../../Component/common_style";
 
 export const ModalBox = styled.div`
 box-sizing: border-box;
@@ -47,6 +47,7 @@ font-family: var(--font-Pretendard-SemiBold);
 `;
 
 export const TextMedium = styled.div`
+ white-space: nowrap; 
   width: 4rem;
   &.auto {
     width: auto;

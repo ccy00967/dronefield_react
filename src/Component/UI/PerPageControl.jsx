@@ -34,9 +34,9 @@ const PerPageControl = (props) => {
   return (
     <PerPageDiv className="end">
       <select value={perPage} onChange={setting_perPage}>
-        <option value={5}>5개</option>
         <option value={10}>10개</option>
         <option value={20}>20개</option>
+        <option value={50}>50개</option>
       </select>
     </PerPageDiv>
   );

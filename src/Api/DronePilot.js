@@ -36,8 +36,7 @@ export const fetchToken = async () => {
 export const fetchUserInfo = async () => {
     const User_Credential = JSON.parse(localStorage.getItem('User_Credential'));
     const accessToken = User_Credential?.access_token
-    const uuid = User_Credential?.uuid
-    const res = await fetch(server + `/user/userinfo/${uuid}/`, {
+    const res = await fetch(server + `/user/profile/`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -130,8 +129,8 @@ export const getfarmrequest = async (cdInfo) => {
     const User_Credential = JSON.parse(localStorage.getItem('User_Credential'));
     const accessToken = User_Credential?.access_token;
     try {
-        const cdInfoURL = cdInfo ? `${cdInfo}/` : "";
-        const url = `${server}/exterminator/getrequests/${cdInfoURL}`;
+        const cdInfoURL = cdInfo ? `${cdInfo}` : "";
+        const url = `${server}/trade/lists/?cd=${cdInfoURL}`;
 
         const res = await fetch(url, {
             method: 'GET',
@@ -147,9 +146,9 @@ export const getfarmrequest = async (cdInfo) => {
         }
 
         const data = await res.json();
-        // exterminateState가 0인 값만 필터링
-        const filteredData = data.filter((item) => item.exterminateState === 0);
-        return filteredData; // 필터링된 데이터 반환
+        console.log('getfarmre',data);
+       
+        return data; 
     } catch (error) {
         console.error("Error fetching farm requests:", error);
         return { error: true, message: error.message };

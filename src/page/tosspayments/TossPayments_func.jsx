@@ -1,11 +1,16 @@
 // ------ '결제하기' 버튼 누르면 결제창 띄우기 ------
 // @docs https://docs.tosspayments.com/sdk/v2/js#paymentrequestpayment
 import { loadTossPayments, ANONYMOUS } from "@tosspayments/tosspayments-sdk";
+import { v4 as uuidv4 } from "uuid";
+
+
+
 
 export async function requestPayment(selectedPaymentMethod, totalAmount, name, phonenum, email, payorderid) {
+    const orderid = uuidv4()
     const userid = JSON.parse(localStorage.getItem('User_Credential'));
     const customerKey = userid.user.uuid;
-    console.log('totalAmount',totalAmount)
+    console.log('orderid',orderid)
     const clientKey = "test_ck_LlDJaYngro2ZZaqGR00xVezGdRpX";
     try {
         const tossPayments = await loadTossPayments(clientKey);
@@ -26,7 +31,7 @@ export async function requestPayment(selectedPaymentMethod, totalAmount, name, p
                 currency: "KRW",
                 value: totalAmount,
             }, //최종 결제 값으로 바꾸기
-            orderId: payorderid,
+            orderId: orderid,
             orderName: "방제 서비스",
             successUrl: window.location.origin + "/success",
             failUrl: window.location.origin + "/fail",
@@ -39,7 +44,7 @@ export async function requestPayment(selectedPaymentMethod, totalAmount, name, p
         // 결제 과정에서 악의적으로 결제 금액이 바뀌는 것을 확인하는 용도입니다.
         switch (selectedPaymentMethod) {
             case "CARD":
-                console.log(payment, paymentInfo)
+                console.log(payment, payorderid)
                 await payment.requestPayment({
                     method: "CARD", // 카드 및 간편결제
                     ...paymentInfo,

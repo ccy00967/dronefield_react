@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   RowView
 } from "../../../Component/common_style";
@@ -8,9 +8,9 @@ import PerPageControl from "../../../Component/UI/PerPageControl";
 import SideMenuBar from "../SideMenuBar";
 import { useUser } from "../../../Component/userContext";
 import { ContentArea, MapArea, TableHeader, TableList, MiniBtn } from "./css/Component_mapListCss";
-import { deleteLandInfo, getLandInfo } from "../../../Api/Farmer";
+import { deleteLandInfo, getLandInfo, editLandInfo } from "../../../Api/Farmer";
 import initMap from "./init_naver_map";
-
+import Component_mapList_editModal from "./Modal/Component_mapList_editModal";
 
 const loadScript = (src, callback, naver, infoWindow, setSearchAddr) => {
   const script = document.createElement('script');
@@ -53,8 +53,26 @@ const Component_mapList = (props) => {
 
 
   }, []);
+  //농지 전체보기 > 농지 수정 함수
+  const edit_func = async (uuid) => {
+    const is_edited = await editLandInfo(uuid);
 
+    if (is_edited) {
+      alert("수정이 완료 되었습니다.")
+    }
+    else if (!is_edited) {
+      // alert("editLandInfo url ��려주면 바���기")
+      alert("수정 에러!!!")
+    }
 
+    await farmlands_load()
+  }
+  //수정하기 모달
+  const ModalRef = useRef();
+  const openModal = (data) => {
+    ModalRef.current.visible(data);
+    console.log(data);
+  };
 
 
   // 농지 전체보기 > 농지삭제 함수  
@@ -67,7 +85,8 @@ const Component_mapList = (props) => {
     }
 
     else if (!is_deleted) {
-      alert("삭제 에러!!!")
+      alert("deleteLandInfo url 올려주면 바꾸기")
+      // alert("삭제 에러!!!")
     }
 
     await farmlands_load()
@@ -86,7 +105,7 @@ const Component_mapList = (props) => {
   //const { setTotalArea, setLandCount } = props;
 
   const [cnt, setCnt] = useState(0); // 전체 개시글 갯수 total_items
-  const [perPage, setPerPage] = useState(5); // 페이지당 게시글 갯수 (디폴트:5)  page_size
+  const [perPage, setPerPage] = useState(10); // 페이지당 게시글 갯수 (디폴트:5)  page_size
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지              page
   const { setUser_info } = useUser();
 
@@ -100,7 +119,7 @@ const Component_mapList = (props) => {
   useEffect(() => {
     const load = async () => {
       setCurrentPage(1);
-      console.log('current',currentPage);
+      console.log('current', currentPage);
       await farmlands_load();
     }
     load();
@@ -170,13 +189,24 @@ const Component_mapList = (props) => {
               <div>{data.cropsInfo}</div>
 
               {isShowDltBtn && (
-                <MiniBtn
-                  className="delete"
-                  onClick={() => delete_func(data.uuid)}
-                >
-                  삭제
-                </MiniBtn>
-              )}
+                <>
+                  <MiniBtn
+                    className="edit"
+                    onClick={() => openModal(data)} // 수정 함수 호출
+                  >
+                    수정
+                  </MiniBtn>
+                  <MiniBtn
+                    className="delete"
+                    onClick={() => delete_func(data.uuid)}
+                  >
+                    삭제
+                  </MiniBtn>
+
+                </>
+
+              )
+              }
               {setSelectFarmland && (
                 <MiniBtn
                   className="select"
@@ -196,7 +226,8 @@ const Component_mapList = (props) => {
           perPage={perPage}
         />
       </ContentArea>
-    </RowView>
+        <Component_mapList_editModal ref={ModalRef}/>
+    </RowView >
   );
 };
 

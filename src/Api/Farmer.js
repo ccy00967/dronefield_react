@@ -28,20 +28,26 @@ const loadAccessToken = () => {
 }
 
 // 리프레시토큰으로 액세스 토큰 새로 발급 with 다시 실행할 함수
-const refreshAccessToken = async (reTryFunc) => {
+export const refreshAccessToken = async (reTryFunc) => {
   const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
   const refreshToken = userInfo?.refresh_token
-  console.log(userInfo)
+  // console.log(userInfo.refresh_token)
+
 
   try {
     const res = await fetch(api_getAccessToken, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+        // "Content-Type": "application/json",
+        // Authorization: `Bearer ${refreshToken}`,
       },
-      body: JSON.stringify({
-        refresh: refreshToken,
-      }),
+      body: new URLSearchParams({
+        refresh: refreshToken  // refresh 토큰을 넣어줍니다.
+      })
+      // body: JSON.stringify({
+      //   refresh: refreshToken,
+      // }),
     });
     if (!res.ok) {
       throw new Error(`Error: ${res.statusText}`);
@@ -49,13 +55,16 @@ const refreshAccessToken = async (reTryFunc) => {
 
     // 응답으로 액세스 토큰을 받음 - 장고 API 필요
     const token = await res.json();
-
-    userInfo.access_token = token;
+    // console.log('token', token);
+    userInfo.access_token = token.access;
+    // console.log('userinfo', userInfo);
 
     localStorage.setItem('User_Credential', JSON.stringify(userInfo))
 
-    const data = await reTryFunc();
-    return data
+    if (typeof reTryFunc === 'function') {
+      const data = await reTryFunc();
+      return data;
+    }
 
   } catch (e) {
     alert("다시 로그인 해주세요!");
@@ -76,7 +85,7 @@ export const getLandInfo = async (perPage, currentPage) => {
   const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
   const accessToken = loadAccessToken();
   const actualCurrentPage = currentPage || 1;
-  const actualPerPage = perPage || 5;
+  const actualPerPage = perPage || 10;
   try {
     const res = await fetch(server + `/farmer/lands/?page=${actualCurrentPage}&page_size=${actualPerPage}`, {
       method: "GET",
@@ -93,13 +102,44 @@ export const getLandInfo = async (perPage, currentPage) => {
     }
 
     const data = await res.json();
+    console.log(data);
     return data;
   } catch (e) {
     alert("정보를 가져오는 중 오류가 발생했습니다. 다시 시도해 주세요.");
     return [];
   }
 }
+export const getLandcounts = async (setDone_count, setExterminating_count, setMatching_count, setPreparing_count, setBefore_pay_count) => {
+  const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
+  const accessToken = loadAccessToken();
 
+  try {
+    const res = await fetch(server + `/trade/counts/?type=4`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    if (res.status == 401) {
+      return await refreshAccessToken(getLandInfo);
+    }
+    else if (!res.ok) {
+      throw new Error(`Error: ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    console.log('counts', data);
+    setDone_count(data.done_count)
+    setExterminating_count(data.exterminating_count)
+    setMatching_count(data.matching_count)
+    setPreparing_count(data.preparing_count)
+    setBefore_pay_count(data.before_pay_count)
+  } catch (e) {
+    alert("정보를 가져오는 중 오류가 발생했습니다. 다시 시도해 주세요.");
+    return [];
+  }
+}
 /**
  * 서버에 삭제 요청
  * @param {*} uuid 
@@ -119,6 +159,7 @@ export const deleteLandInfo = async (uuid) => {
       return await refreshAccessToken(deleteLandInfo);
     }
     else if (!res.ok) {
+      console.error("여기인가요")
       throw new Error(`Error: ${res.statusText}`);
     }
 
@@ -366,12 +407,40 @@ export const applyPestControl = async (postData, uuid, openModal) => {
 
 
 //방제이용목록의 정보 불러오기
-export const load_API = async (setDataList, setCnt) => {
-  const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
+export const load_API = async (
+  setDataList,
+  setCnt,
+  currentPage,
+  perPage,
+  requestDepositState,
+  exterminateState
+) => {
+  const actualCurrentPage = currentPage || 1;
+  const actualPerPage = perPage || 10;
+  const userInfo = JSON.parse(localStorage.getItem("User_Credential"));
   const accessToken = userInfo?.access_token;
 
   const fetchData = async () => {
-    const res = await fetch(`${server}/trade/list/`, {
+    // 기본 URL 매개변수 설정
+    const params = new URLSearchParams({
+      page: actualCurrentPage,
+      page_size: actualPerPage,
+    });
+
+    // 조건 처리
+    if (requestDepositState === 0) {
+      // 조건 1: requestDepositState가 0일 경우, exterminateState 상관 없이 requestDepositState만 추가
+      params.append("requestDepositState", 0);
+    } else if ([0, 1, 2, 3].includes(exterminateState)) {
+      // 조건 2: exterminateState가 0, 1, 2, 3일 경우 requestDepositState를 1로 추가
+      params.append("exterminateState", exterminateState);
+      params.append("requestDepositState", 1);
+    }
+
+    // URL 생성
+    const url = `${server}/trade/list/?${params.toString()}`;
+
+    const res = await fetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -384,9 +453,9 @@ export const load_API = async (setDataList, setCnt) => {
     }
 
     const data = await res.json();
-    setCnt(data.length); // 전체 게시글 수 업데이트
-    setDataList(data); // 데이터 리스트 업데이트
-    console.log(data);
+    setCnt(data.total_items); // 전체 게시글 수 업데이트
+    setDataList(data.data); // 데이터 리스트 업데이트
+    console.log("datalist", data);
     return data; // 데이터 반환
   };
 
@@ -405,6 +474,8 @@ export const load_API = async (setDataList, setCnt) => {
 
 
 
+
+
 //농지등록 함수
 export const insert_API = async (landinfo, lndpclAr, check) => {
   const polygonData = await get_polygon_api()
@@ -417,11 +488,11 @@ export const insert_API = async (landinfo, lndpclAr, check) => {
     return alert("동의를 체크해주세요!")
 
   }
-   await InsertRefreshAccessToken();
-
+  await refreshAccessToken();
+  console.log('landinfo', landinfo);
   const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
   let accessToken = userInfo?.access_token;
-  console.log(accessToken);
+  console.log('landinfo', landinfo);
   // 첫 번째 POST 요청
   let res = await fetch(server + "/farmer/land/", {
     // let res = await fetch(server + "/customer/lands/", {
@@ -460,6 +531,46 @@ export const insert_API = async (landinfo, lndpclAr, check) => {
     console.error('요청 실패');
   }
 };
+
+
+//농지정보 수정함수
+export const editLandInfo = async (uuid, landinfo) => {
+  const userInfo = JSON.parse(localStorage.getItem("User_Credential"));
+  let accessToken = userInfo?.access_token;
+  const res = await fetch(server + `/farmer/land/${uuid}/`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(landinfo), // 수정할 내용이 없으��로 {}를 ��어요청
+  })
+}
+
+
+
+
+
+
+/**
+ * 농민 유저의 전부더한 농지 크기를 가져온다다
+ * @param {농민유저의 농지 전부 더한 값} setAllLndpclAr 
+ */
+export const allLndpclAr_API = async (setAllLndpclAr) => {
+  const userInfo = JSON.parse(localStorage.getItem("User_Credential"));
+  let accessToken = userInfo?.access_token;
+  const res = await fetch(server + `/farmer/land/total-area/`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  const data = await res.json();
+  console.log('123', data);
+
+}
 
 
 /** 농지

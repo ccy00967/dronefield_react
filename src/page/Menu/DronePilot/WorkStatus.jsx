@@ -30,7 +30,7 @@ const WorkStatus = () => {
     const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
     const accessToken = userInfo.access_token;
 
-    const res = await fetch(server + "/exterminator/workinglist/0/", {
+    const res = await fetch(server + "/trade/work-list/", {
 
       method: 'GET',
       headers: {

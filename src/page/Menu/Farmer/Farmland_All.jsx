@@ -5,7 +5,7 @@ import {
 } from "../../../Component/common_style";
 import Component_mapList from "./Component_mapList";
 import { InsertBox, DataBox, TitleBox } from "./css/FarmerCss";
-import { getLandInfo } from "../../../Api/Farmer";
+import { allLndpclAr_API, getLandInfo } from "../../../Api/Farmer";
 
 
 // 해당 화면은 농민의 농지를 전부 보여주는 화면입니다.
@@ -29,6 +29,7 @@ const Farmland_All = () => {
 
   useEffect(() => {
     calculate_farm();
+    allLndpclAr_API();
   }, [landCount])
 
   return (
