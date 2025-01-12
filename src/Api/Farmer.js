@@ -128,6 +128,36 @@ export const deleteLandInfo = async (uuid) => {
   }
 }
 
+// 농지 Polygon 객체 받기
+export const get_polygon_api = async (x, y) => {
+  const getPolygon = "https://api.vworld.kr/req/data?key=" + KEY;
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      type: "GET",
+      url:
+        getPolygon +
+        "&request=GetFeature" +
+        "&data=LP_PA_CBND_BUBUN" +
+        // "&geomFilter=" +
+        //`&attrFilter=pnu:=:4617012200113820009`,
+        `&geomFilter=POINT(${x} ${y})`,
+      dataType: "jsonp",
+      success: function (res) {
+        try {
+          const polygon = res.response.result.featureCollection.features[0].geometry.coordinates[0]
+          // console.log("pnu", pnuValue);
+          resolve(polygon); // Promise 성공 시 값 반환
+        } catch (error) {
+          reject("Error parsing response");
+        }
+      },
+      error: function (e) {
+        reject(e.responseText || "AJAX request failed");
+      },
+    });
+  });
+}
+
 
 /**
 
@@ -376,6 +406,8 @@ export const load_API = async (setDataList, setCnt) => {
 
 //농지등록 함수
 export const insert_API = async (landinfo, lndpclAr, check) => {
+  const polygonData = await get_polygon_api()
+  console.log(polygonData)
   if (lndpclAr == "") {
     return alert("검색하기를 눌러서 면적을 입력해주세요");
   }

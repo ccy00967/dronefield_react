@@ -1,3 +1,5 @@
+import axios from 'axios';
+import { get_polygon_api } from '../../../Api/Farmer';
 
 // 주소를 변환하는 함수
 function makeAddress(item) {
@@ -26,6 +28,7 @@ function makeAddress(item) {
     return [sido, sigugun, dongmyun, ri, rest].join(' ');
 }
 
+
 const initMap = (naver, infoWindow, setSearchAddr) => {
     // 네이버 Maps API 사용 지도 생성
     const map = new naver.maps.Map('map', {
@@ -33,6 +36,8 @@ const initMap = (naver, infoWindow, setSearchAddr) => {
         zoom: 15,
     });
     map.setOptions("mapTypeControl", true); //지도 유형 컨트롤의 표시 여부
+
+    //var path = polygon.getPaths().getAt(0);
 
     // 지도 클릭, 좌표를 주소로 변환 - 이벤트에 등록
     function searchCoordinateToAddress(latlng) {
@@ -52,6 +57,8 @@ const initMap = (naver, infoWindow, setSearchAddr) => {
                 }
 
                 const items = response.v2.results;
+
+                console.log(items)
 
                 const htmlAddresses = items.map((item, index) => {
                     const address = makeAddress(item);
@@ -81,7 +88,7 @@ const initMap = (naver, infoWindow, setSearchAddr) => {
     const searchAddressToCoordinate = (address) => {
         naver.maps.Service.geocode(
             { query: address, },
-            (status, response) => {
+            async (status, response) => {
                 if (status === naver.maps.Service.Status.ERROR) {
                     return alert('Something Wrong!');
                 }
@@ -114,6 +121,23 @@ const initMap = (naver, infoWindow, setSearchAddr) => {
                     x: item.x,
                     y: item.y
                 };
+
+                const res = await get_polygon_api(item.x, item.y)
+
+                console.log(res)
+
+                //point = new naver.maps.LatLng(element[0], element[1])
+                new naver.maps.Polygon({
+                    map: map,
+                    paths: res,
+                    fillColor: '#a1bdff',
+                    fillOpacity: 0.3,
+                    strokeColor: '#2768ff',
+                    strokeOpacity: 0.6,
+                    strokeWeight: 3
+                });
+
+                console.log(window.addressInfo)
 
                 setSearchAddr(htmlAddresses[0])
             }
