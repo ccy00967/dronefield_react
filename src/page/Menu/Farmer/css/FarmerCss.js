@@ -333,6 +333,28 @@ border-radius: 8px;
 }
 `;
 
+export const InputBox_Farmland_InsertModal = styled.input`
+  box-sizing: border-box;
+  width: 80%; /* 너비를 80%로 줄임 */
+  padding: 0.5rem 0.8rem; /* 내부 여백 축소 */
+  margin: 0.3rem 0; /* 위아래 간격 축소 */
+  font-size: 14px; /* 텍스트 크기 줄임 */
+  height: 36px; /* 고정된 높이 설정 */
+  outline: 0;
+  border: 1px solid #dcdcdc; /* 테두리 색상 */
+  border-radius: 6px; /* 모서리 둥글게 */
+  &::placeholder {
+    color: #aaaaaa; /* Placeholder 텍스트 색상 */
+    font-size: 13px; /* Placeholder 크기 */
+  }
+  &:focus {
+    border: 1px solid ${GreenColor}; /* 포커스 시 테두리 색상 */
+    background-color: #f9fdf9; /* 포커스 시 배경색 */
+  }
+`;
+
+
+
 export const InputDiv_Farmland_Insert = styled(RowView2)`
 flex: 1;
 box-sizing: border-box;
@@ -593,9 +615,12 @@ div {
   border: 1px solid #f0f0f0;
   border-radius: 8px;
   cursor: pointer;
+  
   &:hover{
     background-color: #f0f0f0;
+    
   }
+ 
 }
 span {
   color: #d8d8d8;

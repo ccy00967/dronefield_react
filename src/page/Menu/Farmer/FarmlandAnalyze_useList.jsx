@@ -171,8 +171,6 @@ const FarmlandAnalyze_useList = () => {
             perPage={perPage}
           />
         </ContentArea_Farm_useList>
-
-        <FarmlandAnalyze_useListModal ref={ModalRef} />
       </RowView>
     </Common_Layout>
   );

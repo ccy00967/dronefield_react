@@ -31,7 +31,7 @@ const PestControl_useListModal = forwardRef((props, ref) => {
   const phonenum = data.owner?.mobileno || "번호 없음";
   // -
   const transaction = data.dealmothod === 0 ? "일반거래" : "개인거래";
-  const farmland = data.landInfo?.address.jibunAddress || "농지 없음";
+  const farmland = data.landInfo?.jibun || "농지 없음";
   const [date, setDate] = useState("8/19");
   const [price, setPrice] = useState("직접입력");
   const pesticidesUsed = data.pesticide || "농약 없음";

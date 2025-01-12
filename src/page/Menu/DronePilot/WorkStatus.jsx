@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
 import Common_Layout from "../../../Component/common_Layout";
 import {
   Icon,
@@ -11,9 +10,8 @@ import PerPageControl from "../../../Component/UI/PerPageControl";
 import SideMenuBar from "../SideMenuBar";
 import WorkStatus_Modal from "./Modal/WorkStatus_Modal";
 import { server } from "../../url";
-import { workStart_API, workFin_API, cancel1_API, cancel2_API } from "./pilotFetchFunc";
-import { ContentArea,FilterBox,TableHeader,TableList,BtnArea } from "./css/WorkStatusCss";
-
+import { ContentArea, FilterBox, TableHeader, TableList, BtnArea } from "./css/WorkStatusCss";
+import { workStart_API,workFin_API,cancel1_API,cancel2_API } from "../../../Api/DronePilot";
 
 const WorkStatus = () => {
   const [cnt, setCnt] = useState(0); // 전체 개시글 갯수
@@ -32,7 +30,7 @@ const WorkStatus = () => {
     const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
     const accessToken = userInfo.access_token;
 
-    const res = await fetch(server + "/exterminator/workinglist/0/", {
+    const res = await fetch(server + "/trade/work-list/", {
 
       method: 'GET',
       headers: {
@@ -53,7 +51,7 @@ const WorkStatus = () => {
   }
 
   useEffect(() => {
-  getWorkStatus()
+    getWorkStatus()
   }, []);
 
   //필터 함수
@@ -71,6 +69,8 @@ const WorkStatus = () => {
   };
 
 
+
+  
   const filterData = () => {
     if (!dataList || dataList.length === 0) {
       return [];  // data가 undefined 또는 빈 배열일 때 빈 배열 반환
@@ -138,15 +138,15 @@ const WorkStatus = () => {
           </RowView2>
 
           <FilterBox>
-            <div className={isSelect("매칭완료")} onClick={() => setFilter(1)}>
+            <div className={isSelect(1)} onClick={() => setFilter(1)}>
               작업 준비 중({getcountlength(1)})
             </div>
             <span>▶︎</span>
-            <div className={isSelect("작업시작")} onClick={() => setFilter(2)}>
+            <div className={isSelect(2)} onClick={() => setFilter(2)}>
               작업 중({getcountlength(2)})
             </div>
             <span>▶︎</span>
-            <div className={isSelect("작업완료")} onClick={() => setFilter(3)}>
+            <div className={isSelect(3)} onClick={() => setFilter(3)}>
               작업 완료({getcountlength(3)})
             </div>
           </FilterBox>
@@ -176,7 +176,7 @@ const WorkStatus = () => {
           {filterData().map((data, idx) => {
             //'매칭중'인 데이터는 cut
             if (data.exterminateState !== 0) {
-          
+
               return (
                 <TableList
                   key={idx}
@@ -203,9 +203,9 @@ const WorkStatus = () => {
                           <span className="blue" onClick={() => workFin_API(data.orderid)}>
                             완료
                           </span>
-                           <span className="yellow" onClick={() => cancel1_API(data.orderid)}>
+                          <span className="yellow" onClick={() => cancel1_API(data.orderid)}>
                             취소
-                          </span> 
+                          </span>
                         </RowView2>
 
                       ) : (

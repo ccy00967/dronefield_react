@@ -17,6 +17,7 @@ const FarmlandAnalyze_useListModal = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
     visible: (data) => {
       data ? setData(data) : setData({});
+      console.log(data);
       setModalOpen(true);
     },
   }));
@@ -51,11 +52,11 @@ const FarmlandAnalyze_useListModal = forwardRef((props, ref) => {
 
         <DataRow>
           <TextMedium>이ㅤㅤ름</TextMedium>
-          <div className="gray">{name}</div>
+          <div className="gray">{data.owner.name}</div>
         </DataRow>
         <DataRow>
           <TextMedium>전화번호</TextMedium>
-          <div className="gray">{phonenum}</div>
+          <div className="gray">{data.owner.mobileno}</div>
         </DataRow>
 
         <Hr />

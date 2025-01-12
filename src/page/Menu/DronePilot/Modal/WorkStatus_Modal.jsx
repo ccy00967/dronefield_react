@@ -24,7 +24,8 @@ import useEscapeKey from "../../../../Component/function/useEscapeKey";
 const WorkStatus_Modal = forwardRef((props, ref) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [data, setData] = useState({});
-
+  console.log("123",data.landInfo);
+  //.lndpclAr
   useImperativeHandle(ref, () => ({
     visible: (data) => {
       data ? setData(data) : setData({});
@@ -39,15 +40,16 @@ const WorkStatus_Modal = forwardRef((props, ref) => {
   // -
   const transaction = data.dealmothod === 0 ? "일반거래" : "개인거래";
   const farmland = data.landInfo?.address.jibunAddress || "농지 없음";
-  const date =data.endDate
+  const date = data.endDate
   // const [date, setDate] = useState("8/19");
   const [price, setPrice] = useState("30원");
   const pesticidesUsed = data.pesticide || "농약 없음";
+  const amount =30 * Math.round(data.landInfo?.lndpclAr * 0.3025).toString() || "대금 없음";
   // -
-  const [amount, setAmount] = useState(360000);
+ // const [amount, setAmount] = useState(360000);
   const [serviceAmount, setServiceAmount] = useState(1000);
   // -
- 
+
 
   // 닫기
   const closeModal = () => {

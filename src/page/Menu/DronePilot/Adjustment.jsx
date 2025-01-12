@@ -8,8 +8,9 @@ import {
 import PagingControl from "../../../Component/UI/PagingControl";
 import PerPageControl from "../../../Component/UI/PerPageControl";
 import SideMenuBar from "../SideMenuBar";
-import { server } from "../../url";
+import { getWorkStatus } from "../../../Api/DronePilot";
 import { ContentArea, FilterBox, TableHeader,TableList,BtnArea } from "./css/AdjustmentCss";
+import { data } from "jquery";
 
 
 const Adjustment = () => {
@@ -26,34 +27,16 @@ const Adjustment = () => {
   // const setting_미정산 = () => setFilter("미정산");
   // const setting_정산완료 = () => setFilter("정산완료");
 
-  const getWorkStatus = async () => {
-    let length = 0;
-    const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
-    const accessToken = userInfo.access_token;
-
-    const res = await fetch(server+"/exterminator/workinglist/3/", {
-      
-      method: 'GET',
-      headers: {
-        'Content-Type': "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        length = data.length;
-        //console.log(length);
-        console.log(data)
-        setDataList(data)
-        //return data
-      });
-    //console.log(res.endDate)
-  }
-
 
 
   useEffect(() => {
-    getWorkStatus()
+
+
+    const fetchinfo = async () => {
+    const getWorkStatusData = await getWorkStatus();
+    setDataList(getWorkStatusData);
+    }
+    fetchinfo();
   }, []);
 
 
@@ -137,11 +120,11 @@ const Adjustment = () => {
           </RowView2>
 
           <FilterBox>
-            <div className={isSelect("미정산")} onClick={() => setFilter(0)}>
+            <div className={isSelect(0)} onClick={() => setFilter(0)}>
               미정산({getcountlength(0)})
             </div>
             <span>▶︎</span>
-            <div className={isSelect("정산완료")} onClick={() => setFilter(1)}>
+            <div className={isSelect(1)} onClick={() => setFilter(1)}>
               정산 완료({getcountlength(1)})
             </div>
           </FilterBox>

@@ -6,40 +6,46 @@ import {
   RowView,
   RowView2,
 } from "../../../Component/common_style";
-import { ContentArea_Pest_useList,
+import {
+  ContentArea_Pest_useList,
   FilterBox_Pest_useList,
   TableHeader_Pest_useList,
   TableList_Pest_useList,
   BtnArea_Pest_useList
- } from "./css/FarmerCss";
+} from "./css/FarmerCss";
 import PagingControl from "../../../Component/UI/PagingControl";
 import PerPageControl from "../../../Component/UI/PerPageControl";
 import SideMenuBar from "../SideMenuBar";
 import PestControl_useListModal from "./Modal/PestControl_useListModal";
 import { server } from "../../url";
+import { getLandcounts, load_API } from "../../../Api/Farmer";
 
 
 const PestControl_useList = () => {
   const [cnt, setCnt] = useState(0); // 전체 개시글 갯수
-  const [perPage, setPerPage] = useState(20); // 페이지당 게시글 갯수 (디폴트:20)
+  const [perPage, setPerPage] = useState(5); // 페이지당 게시글 갯수 (디폴트:10)
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지
 
-  // const [count_매칭중, setCount_매칭중] = useState(12);
-  // const [count_작업대기중, setCount_작업대기중] = useState(3);
-  // const [count_작업중, setCount_작업중] = useState(3);
-  // const [count_작업확인, setCount_작업확인] = useState(13);
-  const [filter, setFilter] = useState("");
-  const setting_reset = () => setFilter("");
-  // const setting_매칭중 = () => setFilter("매칭중");
-  // const setting_작업대기중 = () => setFilter("작업대기중");
-  // const setting_작업중 = () => setFilter("작업중");
-  // const setting_작업확인 = () => setFilter("작업확인");
+
+  // back에서 카운트 되서 넘어옴옴
+  const [done_count, setDone_count] = useState(''); // 작업 확인
+  const [exterminating_count, setExterminating_count] = useState(''); // 작업중
+  const [matching_count, setMatching_count] = useState('') // 매칭중
+  const [perparing_count, setPreparing_count] = useState(''); // 작업대기중
+  const [before_pay_count, setBefore_pay_count] = useState(''); // 결제 대기기
+  const [requestDepositState, setrequestDepositState ] = useState(''); //requestDepositState값 변경하여 load_API실행
+  const [exterminateState, setExterminateState ] = useState(''); // exterminateState값 변경하여 load_API실행
+  const [filter, setFilter] = useState(-1);
+  const setting_reset = () => setrequestDepositState('')
+
 
   // 필터 선택 판별 className
   const isSelect = (menu) => {
     if (filter === menu) return "this";
     return "";
   };
+
+
   // 작업확인 버튼 state 판별 className
   const isFinalCheck = (state_btn) => {
     if (state_btn === "확인 완료") return "gray";
@@ -48,129 +54,55 @@ const PestControl_useList = () => {
 
   // 농지 데이터 load
   const [dataList, setDataList] = useState([]);
-  // 이건 테스트 데이터
-  // const testData = Array(parseInt(perPage)).fill({
-  //   name: "김가네벼",
-  //   date: "2024.12.12",
-  //   company: "홍길동 방제",
-  //   addr: "전북특별자치도 김제시 백산읍 공덕 2길",
-  //   tel: "010-1010-1010",
-  //   state: "매칭중", // 매칭중/작업대기중/작업중/작업확인
-  //   state_btn: "최종 확인", //최종 확인 / 확인 완료
-  // });
-  // const load_API = () => {
-  //   // 호출 성공시
-  //   setCnt(960);
-  //   setDataList(testData);
-  // };
-  const load_API = async () => {
-    // 액세스 토큰과 리프레시 토큰을 갱신하는 함수
-    const refreshAccessToken = async () => {
-      const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
-      const refreshToken = userInfo?.refresh_token;
 
-      const res = await fetch(server+'/user/token/refresh/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          refresh: refreshToken,
-        }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        // 액세스 토큰과 리프레시 토큰을 로컬스토리지에 갱신
-        userInfo.access_token = data.access;
-        localStorage.setItem('User_Credential', JSON.stringify(userInfo));
-        return data.access; // 새로운 액세스 토큰 반환
-      } else {
-        // 리프레시 토큰이 만료되었거나 유효하지 않을 경우 처리
-        alert('다시 로그인해주세요'); // 경고창 표시
-        localStorage.removeItem('User_Credential'); // 로컬 스토리지에서 정보 제거
-        window.location.replace('/'); // 첫 페이지로 리다이렉트
-        return null;
-      }
-    };
-
-    const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
-    let accessToken = userInfo?.access_token;
-
-    // 첫 번째 API 호출
-    let res = await fetch(server+"/farmrequest/requests/", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-
-    // 401 에러가 발생하면 리프레시 토큰으로 액세스 토큰 갱신 후 다시 시도
-    if (res.status === 401) {
-      accessToken = await refreshAccessToken();
-      if (accessToken) {
-        // 새로운 액세스 토큰으로 다시 시도
-        res = await fetch(server+"/farmrequest/requests/", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        console.log(res);
-      }
-    }
-
-    // 응답이 성공했을 때 데이터 처리
-    if (res.ok) {
-      const data = await res.json();
-      setCnt(data.length); // 전체 게시글 수 설정
-      setDataList(data); // 데이터 목록 설정
-      // console.log(data);
-    } else {
-      console.error('데이터 로드 실패');
-    }
-  };
   useEffect(() => {
-    load_API();
-  }, [currentPage, perPage]);
+    load_API(setDataList, setCnt, currentPage, perPage,requestDepositState, exterminateState );
+    getLandcounts(setDone_count, setExterminating_count, setMatching_count, setPreparing_count, setBefore_pay_count);
+    // load_API();
+  }, [currentPage, perPage,requestDepositState,exterminateState]);
 
   //필터 로직
-  const filterData = () => {
+  // 필터링된 데이터 반환 및 카운트 계산 로직
+  const processData = (filterType) => {
     if (!dataList || dataList.length === 0) {
-      return [];  // data가 undefined 또는 빈 배열일 때 빈 배열 반환
+      return { filteredData: [], count: 0 }; // 데이터가 없을 경우 빈 배열과 0 반환
     }
-    if (filter === 0) {
-      return dataList.filter((item) => item.exterminateState === 0);
+
+    // 기본 상태: 모든 데이터를 반환
+    if (filterType === null || filterType === undefined || filterType === -1) {
+      return { filteredData: dataList, count: dataList.length };
     }
-    else if (filter === 1) {
-      return dataList.filter(item => item.exterminateState === 1);
-    }
-    else if (filter === 2) {
-      return dataList.filter(item => item.exterminateState === 2);
-    }
-    else if (filter === 3) {
-      return dataList.filter(item => item.exterminateState === 3);
-    }
-    else {
-      return dataList;
-    }
+
+    // 특정 필터 처리
+    const filteredData = dataList.filter((item) => {
+      if (filterType === 4) {
+        // 결제 대기 상태 필터
+        return item.requestDepositState === 0; // 결제 대기중
+      }
+
+      // 나머지 필터 (매칭중, 작업대기중 등)
+      return (
+        item.exterminateState === filterType &&
+        item.requestDepositState !== 0 // 결제 대기중 제외
+      );
+    });
+
+    return { filteredData, count: filteredData.length };
+  };
+  // 필터 로직
+  const filterData = () => {
+    return processData(filter).filteredData; // 선택된 필터에 해당하는 데이터 반환
   };
 
-  // 필터 후 카운트 로직
+  // 카운트 로직
   const getcountlength = (filterType) => {
-    if (filterType === 0) {
-      return dataList.filter(item => item.exterminateSate === 0).length;
-    }
-    else if (filterType === 1) {
-      return dataList.filter(item => item.exterminateSate === 1).length;
-    } else if (filterType === 2) {
-      return dataList.filter(item => item.exterminateSate === 2).length;
-    } else if (filterType === 3) {
-      return dataList.filter(item => item.exterminateSate === 3).length;
-    }
-    return dataList.length;
+    return processData(filterType).count; // 선택된 필터에 해당하는 데이터 개수 반환
+  };
+
+  const handlePaymentClick = (data) => {
+    console.log("결제하기 버튼 클릭:", data);
+    alert("결제 처리를 시작합니다.");
+    // 결제 API 호출 로직 구현
   };
 
 
@@ -200,27 +132,30 @@ const PestControl_useList = () => {
           <RowView2 className="title">
             방제이용목록
             <Icon
-              onClick={setting_reset}
+              onClick={() => {setrequestDepositState('');setExterminateState('')}}
               src={require("../../../img/icon_reset.png")}
             />
           </RowView2>
 
           <FilterBox_Pest_useList>
-            <div className={isSelect("매칭중")} onClick={() => setFilter(0)}>
-              매칭중 ({getcountlength(0)})
+            <div className={isSelect(4)} onClick={() => setrequestDepositState(0)}>
+              결제 대기 ({before_pay_count})</div>
+            <span>▶︎</span>
+            <div className={isSelect(0)} onClick={() => {setExterminateState(0);setrequestDepositState(1)}}>
+              매칭중 ({matching_count})
             </div>
             <span>▶︎</span>
             <div
-              className={isSelect("작업대기중")} onClick={() => setFilter(1)}>
-              작업대기중({getcountlength(1)})
+              className={isSelect(1)} onClick={() => {setExterminateState(1);setrequestDepositState(1)}}>
+              작업대기중({perparing_count})
             </div>
             <span>▶︎</span>
-            <div className={isSelect("작업중")} onClick={() => setFilter(2)}>
-              작업중({getcountlength(2)})
+            <div className={isSelect(2)} onClick={() => {setExterminateState(2);setrequestDepositState(1)}}>
+              작업중({exterminating_count})
             </div>
             <span>▶︎</span>
-            <div className={isSelect("작업확인")} onClick={() => setFilter(3)}>
-              작업확인({getcountlength(3)})
+            <div className={isSelect(3)} onClick={() => {setExterminateState(3);setrequestDepositState(1)}}>
+              작업확인({done_count})
             </div>
           </FilterBox_Pest_useList>
 
@@ -247,20 +182,8 @@ const PestControl_useList = () => {
           </TableHeader_Pest_useList>
 
           {filterData().map((data, idx) => {
-            // 테스트용 state
-            // const testState =
-            //   filter !== ""
-            //     ? filter
-            //     : (idx + 1) % 3 === 0
-            //       ? "매칭중"
-            //       : (idx + 1) % 2 === 0
-            //         ? "작업대기중"
-            //         : "작업확인";
-            // const testState_btn =
-            //   idx === 0 || idx === 1 ? "확인 완료" : "최종 확인";
-
-            // 필터가 작업대기중도, 작업중도 아니라면 버튼 보여줌
-            // const isBtnShow = filter !== "작업대기중" && filter !== "작업중";
+            // 결제 대기 상태 확인
+            const isPaymentPending = data.requestDepositState === 0;
 
             return (
               <TableList_Pest_useList
@@ -268,42 +191,52 @@ const PestControl_useList = () => {
                 className={(idx + 1) % 2 === 0 ? "x2" : ""}
                 onClick={() => openModal(data)}
               >
-                <div>{data.landInfo.landNickName}</div>
-                <div>{data.landInfo.lastUpdtDt}</div>
-                <div>{data.exterminatorinfo != null ? data.exterminatorinfo.name : ""}</div>
-                <div>{data.exterminatorinfo != null ? data.exterminatorinfo.phone_number : ""}</div>
-                <div className="addr">{data.landInfo.address.jibunAddress}</div>
-                <div>{data.exterminateSate}</div>
+                <div>{data.landNickName}</div>
+                <div>{data.startDate}</div>
+                <div>{data.exterminator ? data.exterminator.name : "미지정"}</div>
+                <div>{data.exterminator ? data.exterminator.phone_number : "미지정"}</div>
+                <div className="addr">{data.jibun}</div>
+                <div>
+                  {data.requestDepositState === 0
+                    ? "결제 대기"
+                    : data.exterminateState === 0
+                      ? "매칭 중"
+                      : data.exterminateState === 1
+                        ? "작업 대기"
+                        : data.exterminateState === 2
+                          ? "작업 중"
+                          : "작업 완료"}
+                </div>
 
 
                 <BtnArea_Pest_useList>
-                  {data.exterminateSate === 0 ? (
-                    <span className="yellow">
-                      매칭 중
-                    </span>
-                  ) : (
-                    data.exterminateSate === 1 ? (
-                      <span className="green" >
-                        작업 대기
-                      </span>
-                    ) : (
-                      data.exterminateSate === 2 ? (
-                        <span className="blue" >
-                          작업 중
-                        </span>
-                      ) : (
-                        data.exterminateSate === 3 && (
-                          <span className="gray">
-                            작업 완료
-                          </span>
-                        )
-                      )
-                    ))}
+                  {isPaymentPending && (
+                    <button
+                      className="payment-button"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Row 클릭 이벤트와 분리
+                        handlePaymentClick(data); // 결제 처리 함수 호출
+                      }}
+                    >
+                      결제하기
+                    </button>
+                  )}
+                  {/* 작업 완료 상태에 버튼 추가 */}
+                  {data.exterminateState === 3 && (
+                    <div>
+                      <button
+                        className="completed-button"
+                        onClick={() => console.log('상세확인')}
+                      >
+                        상세 확인
+                      </button>
+                    </div>
+                  )}
                 </BtnArea_Pest_useList>
-
               </TableList_Pest_useList>
             );
           })}
+
 
           <PagingControl
             cnt={cnt}

@@ -12,13 +12,13 @@ const NicePassPopUp = () => {
   const integrity_value = queryParams.get("integrity_value");
 
   if (token_version_id && enc_data && integrity_value) {
-    fetch(server + "/validation/nicepasscallback/", {
+    fetch(server + "/user/nice-callback/", {
       method: "POST",
       headers: { "Content-Type": "application/json", },
       credentials: "include",
       body: JSON.stringify({
-        token_version_id: token_version_id,
         enc_data: enc_data,
+        token_version_id: token_version_id,
         integrity_value: integrity_value,
       }),
     })

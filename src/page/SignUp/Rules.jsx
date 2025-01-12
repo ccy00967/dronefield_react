@@ -73,8 +73,7 @@ const Rules = () => {
       credentials: "include",
       body: JSON.stringify(state),
     });
-
-    console.log(res);
+    
 
     if (true) {
       // 회원가입 성공

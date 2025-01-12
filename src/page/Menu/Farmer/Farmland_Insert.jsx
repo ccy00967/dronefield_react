@@ -5,21 +5,16 @@ import {
   CheckBox,
   RowView2
 } from "../../../Component/common_style";
-import { InsertBox_Farmland_Insert,InputBox_Farmland_Insert, InputDiv_Farmland_Insert,Btn_Farmland_Insert
- } from "./css/FarmerCss";
-import Component_mapList, { globalSearchAddressToCoordinate } from "./Component_mapList";
-//import { globalSearchAddressToCoordinate } from "../../../Component/naver_maps/NaverMaps";
+import {
+  InsertBox_Farmland_Insert, InputBox_Farmland_Insert, InputDiv_Farmland_Insert, Btn_Farmland_Insert
+} from "./css/FarmerCss";
+
 import $ from 'jquery';
 import { server } from "../../url";
+import { globalSearchAddressToCoordinate } from "./init_naver_map";
+import Component_mapList from "./Component_mapList";
+import { get_pnu_api, search_area_api, cd_for_accessToken, getCdApi, insert_API } from "../../../Api/Farmer";
 
-
-// 농지 데이터
-
-// 디지털트윈국토 for 토지임야정보: 개발용 KEY임 나중에 변경 필요 - 127.0.0.1이 허용됨
-const KEY = "6C934ED4-5978-324D-B7DE-AC3A0DDC3B38"
-// kosis 단계별 행정구역 and 검색API for cd값
-const consumer_KEY = "fb0450ed86ba405ba3ec"
-const consumer_SECRET = "a7ec04e5c1f8401594d5"
 
 // 농지를 등록하는 페이지
 const Farmland_Insert = () => {
@@ -43,18 +38,30 @@ const Farmland_Insert = () => {
   const [additionalPhoneNum, setAdditionalPhoneNum] = useState("");
   const adlndpclArup = Math.ceil(lndpclAr * 0.3025);
   const landinfo = {
-    "address": {
-      "roadaddress": window.addressInfo.roadAddress || "값이 없음",
-      "jibunAddress": window.addressInfo.jibunAddress || "값이 없음",
-      "detailAddress": "값이 없음"
-    },
     "pnu": pnu || "값이 없음",
     "lndpclAr": lndpclAr,
     "cd": cd || "값이 없음",
     "landNickName": landNickName || "별명 없음",
     "cropsInfo": cropsInfo || "값이 없음",
-    "additionalPhoneNum": "값이 없음"
+    "additionalPhoneNum": "값이 없음",
+    "road": window.addressInfo.roadAddress || "값이 없음",
+    "jibun": window.addressInfo.jibunAddress || "값이 없음",
+    "detail": "값이 없음"
   };
+  // const landinfo = {
+  //   "address": {
+  //     "roadaddress": window.addressInfo.roadAddress || "값이 없음",
+  //     "jibunAddress": window.addressInfo.jibunAddress || "값이 없음",
+  //     "detailAddress": "값이 없음"
+  //   },
+  //   "pnu": pnu || "값이 없음",
+  //   "lndpclAr": lndpclAr,
+  //   "cd": cd || "값이 없음",
+  //   "landNickName": landNickName || "별명 없음",
+  //   "cropsInfo": cropsInfo || "값이 없음",
+  //   "additionalPhoneNum": "값이 없음"
+  // };
+
 
   const setting_addr = (e) => setSearchAddr(e.target.value)
   const setting_name = (e) => setLandNickName(e.target.value);
@@ -64,88 +71,71 @@ const Farmland_Insert = () => {
   const setting_plant = (e) => setCropsInfo(e.target.value);
   const setting_check = () => setCheck(!check);
 
-  //농지 주소 -> PNU 정보 변환
-  const get_pnu_api = async () => {
-    const getPnu = "https://api.vworld.kr/req/search?key=" + KEY;
-    $.ajax({
-      type: "GET",
-      url: getPnu + "&request=search" + `&query=${window.addressInfo.jibunAddress}` + "&type=address" + "&category=parcel" + "&format=json",
-      dataType: "jsonp",
-      success: function (res) {
-        const pnuValue = res.response.result.items[0].id;
-        console.log(pnuValue);
-        setPnu(pnuValue); // Update the PNU state
-      },
-      // error: function (e) {
-      //   alert(e.responseText);
-      // }
-    });
+  // const fetchpnu = async () =>{
+  //   const pnuValue = await get_pnu_api();
+  //   setPnu(pnuValue);
+  // }
+
+  // const PutSerchApi = async (pnu) =>{
+  //   const area = await search_area_api(pnu);
+  //   setLndpclAr(area);
+  // }
+  const fetchpnu = async () => {
+    try {
+      const pnuValue = await get_pnu_api(); // PNU 값을 비동기적으로 가져옴
+      console.log("fetchpnu", pnuValue); // 가져온 PNU 값 로그 출력
+      setPnu(pnuValue); // 상태 업데이트
+
+      await PutSerchApi(pnuValue); // 가져온 PNU 값을 즉시 사용하여 API 호출
+    } catch (error) {
+      console.error("Error fetching PNU:", error); // 오류 처리
+    }
   };
+
+  const PutSerchApi = async (pnu) => {
+    try {
+      if (!pnu) {
+        return;
+      }
+
+      const area = await search_area_api(pnu); // PNU를 기반으로 API 호출
+      console.log("PutSerchApi", area); // 가져온 Land Area 값 로그 출력
+      setLndpclAr(area); // 상태 업데이트
+    } catch (error) {
+      console.error("Error fetching Land Area:", error); // 오류 처리
+    }
+  };
+
 
   useEffect(() => {
     if (pnu) {
-      search_area_api();
+      console.log("useEffectPnu", pnu); // PNU 값 변경 로그
+      // 필요한 추가 작업이 있다면 여기서 수행
     }
+  }, [pnu]);
+
+  useEffect(() => {
     if (lndpclAr) {
-      search_area_api();
+      console.log("useEffectLndpclAr", lndpclAr); // Land Area 값 변경 로그
+      // Land Area 변경 시 추가 작업 수행
     }
-  }, [pnu, lndpclAr]);
+  }, [lndpclAr]);
 
-  // 주소검색으로 농지 제곱미터 받는 api
-  const search_area_api = async () => {
-    const getLndpclAr = "https://api.vworld.kr/ned/data/ladfrlList?key=" + KEY;
-    $.ajax({
-      type: "POST",
-      url: getLndpclAr + `&pnu=${pnu}` + "&format=json",
-      dataType: "jsonp",
-      success: function (respnu) {
-        const area = respnu.ladfrlVOList.ladfrlVOList[0].lndpclAr;
-        console.log(area);
-        setLndpclAr(area);
-      },
-      // error: function (e) {
-      //   alert(e.responseText);
-      // }
-    });
+
+  //cd값을 가져오는 함수
+  const handleFetchCd = async (token) => {
+    // getCdApi를 호출하여 CD 값을 비동기적으로 가져옴
+    // token은 인증 토큰이며, getCdApi에서 요청 시 사용
+    const cd = await getCdApi(token);
+
+    // CD 값이 유효하면 상태를 업데이트하고 로그를 출력
+    if (cd) {
+      setCd(cd); // CD 값을 React 상태로 저장
+      console.log("Fetched CD:", cd); // CD 값 출력 (디버깅용)
+    } else {
+      console.log("CD 값이 반환되지 않았습니다."); // CD 값이 없을 경우 로그 출력
+    }
   };
-
-  // cd값을 받기 위한 엑세스토큰 발급 API
-  const cd_for_accessToken = async () => {
-    const res = await fetch("https://sgisapi.kostat.go.kr/OpenAPI3/auth/authentication.json" +
-      "?consumer_key=" + consumer_KEY +
-      "&consumer_secret=" + consumer_SECRET,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      });
-    const data = await res.json();
-    const accessToken = data.result.accessToken;
-    //setcdtoken(accessToken);
-    return accessToken;
-  }
-
-  // 발급받은 토큰으로 주소검색하여 cd값 받기
-  const get_cd_api = async (cdAccesstoken) => {
-    try {
-      const res = await fetch(`https://sgisapi.kostat.go.kr/OpenAPI3/addr/geocode.json?address=${window.addressInfo.jibunAddress}&accessToken=${cdAccesstoken}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      });
-      const data = await res.json();
-      if (data.result && data.result.resultdata && data.result.resultdata[0] && data.result.resultdata[0].adm_cd) {
-        const cd = data.result.resultdata[0].adm_cd;
-        setCd(cd);
-      } else {
-        console.error("CD값이 없습니다.");
-      }
-    } catch (error) {
-      console.error("Fetch 에러:", error);
-    }
-  }
 
 
   // 주소 찾기
@@ -163,100 +153,21 @@ const Farmland_Insert = () => {
   };
 
   // 농지 등록
-  const insert_API = async () => {
-    handleSearch()
-    if (lndpclAr == "") {
-      return alert("검색하기를 눌러서 면적을 입력해주세요");
-    }
+  
 
-    if (!check) {
-      alert("동의를 체크해주세요!")
-      return
-    }
-
-    // 액세스 토큰과 리프레시 토큰을 갱신하는 함수
-    const refreshAccessToken = async () => {
-      const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
-      const refreshToken = userInfo?.refresh_token;
-
-      const res = await fetch(server + '/user/token/refresh/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          refresh: refreshToken,
-        }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        // 액세스 토큰을 로컬스토리지에 갱신
-        userInfo.access_token = data.access;
-        localStorage.setItem('User_Credential', JSON.stringify(userInfo));
-        return data.access; // 새로운 액세스 토큰 반환
-      } else {
-        // 리프레시 토큰이 만료되었거나 유효하지 않을 경우 처리
-        alert('다시 로그인해주세요'); // 경고창 표시
-        localStorage.removeItem('User_Credential'); // 로컬 스토리지에서 정보 제거
-        window.location.replace('/'); // 첫 페이지로 리다이렉트
-        return null;
-      }
-    };
-
-    const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
-    let accessToken = userInfo?.access_token;
-    console.log(landinfo);
-
-    // 첫 번째 POST 요청
-    let res = await fetch(server + "/customer/lands/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify(landinfo),
-    });
-
-    // 401 에러 발생 시 토큰 갱신 후 다시 시도
-    if (res.status === 401) {
-      accessToken = await refreshAccessToken();
-      if (accessToken) {
-        // 새로운 액세스 토큰으로 다시 시도
-        res = await fetch(server + "/customer/lands/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify(landinfo),
-        });
-      }
-    }
-
-    // 응답이 성공했을 때 데이터 처리
-    if (res.ok) {
-      const result = await res.json();
-      alert("농지 등록이 완료되었습니다.");
-      console.log("Success:", result);
-      // 페이지 새로고침
-      window.location.reload();
-    } else {
-      console.error('요청 실패');
-    }
-  };
   //주소 찾기를 클릭하면 순차적으로 실행되도록 하는 함수
-  const handleSearch = async () => {
+  const handleSearch = async (searchAddr) => {
     if (!searchAddr) {
-      return alert("농지 주소를 입력하세요.");
+      // return alert("농지 주소를 입력하세요.");
     }
 
     // 순차 실행 전부 for pnu, cd 등등
-    await search_addr_API();
+    await search_addr_API(searchAddr);
     const token = await cd_for_accessToken();
-    await get_cd_api(token);
-    await get_pnu_api();
-    await search_area_api();
+    await handleFetchCd(token);
+    await fetchpnu();
+    //await get_pnu_api();
+    await PutSerchApi();
   };
 
 
@@ -357,8 +268,9 @@ const Farmland_Insert = () => {
             본인 토지가 아닌 경우 책임은 등록/신청자에게 있습니다.
             <span> (필수)</span>
           </RowView2>
+          {/* <Btn_Farmland_Insert onClick={() =>  console.log(landinfo)}>농지등록</Btn_Farmland_Insert> */}
+          <Btn_Farmland_Insert onClick={() => { insert_API(landinfo,lndpclAr,check) }}>농지등록</Btn_Farmland_Insert>
 
-          <Btn_Farmland_Insert onClick={insert_API}>농지등록</Btn_Farmland_Insert>
 
           {/* <Btn onClick={() => {
             console.log(window.addressInfo.jibunAddress)

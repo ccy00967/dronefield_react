@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { GreenColor, Icon, RowView, RowView2 } from "../common_style";
 import { useUser } from "../userContext";
+import { logout } from "../../Api/api";
 
 const Container = styled(RowView)`
   position: fixed;
@@ -59,6 +60,7 @@ const TopBar = (props) => {
   const Logout_API = () => {
     // localStorage에 userInfo가 저장되어있기 때문에
     // 로그아웃 API sucess 후 해당 코드가 꼭 실행되어야 합니다.
+    // logout();
     localStorage.removeItem("User_Credential");
     window.location.replace("/");
   };

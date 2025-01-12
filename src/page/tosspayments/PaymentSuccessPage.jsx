@@ -15,16 +15,15 @@ export function PaymentSuccessPage() {
         async function confirm() {
             const requestData = {
                 paymentKey: searchParams.get("paymentKey"),
-                amount: searchParams.get("amount"),
+                // amount: searchParams.get("amount"),
                 orderId: searchParams.get("orderId"),
                 orderidlist: [searchParams.get("orderId")],
             };
 
-            console.log("bbbbbbbbbbbbbb")
+            console.log("bbbbbbbbbbbbb")
             console.log(requestData)
             const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
             const accessToken = userInfo.access_token;
-
             const response = await fetch(server + `/payments/success/`, {
                 method: "POST",
                 headers: {
@@ -32,7 +31,7 @@ export function PaymentSuccessPage() {
                     'Authorization': `Bearer ${accessToken}`,
                     // "X-CSRFToken": csrfToken,  // CSRF 토큰 헤더에 추가
                 },
-                body: JSON.stringify(requestData),
+                body: JSON.stringify(requestData), 
                 credentials: "include",
             });
 
