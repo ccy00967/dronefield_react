@@ -535,17 +535,35 @@ export const insert_API = async (landinfo, lndpclAr, check) => {
 
 //농지정보 수정함수
 export const editLandInfo = async (uuid, landinfo) => {
+  console.log("landinfo", landinfo);
   const userInfo = JSON.parse(localStorage.getItem("User_Credential"));
-  let accessToken = userInfo?.access_token;
-  const res = await fetch(server + `/farmer/land/${uuid}/`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify(landinfo), // 수정할 내용이 없으��로 {}를 ��어요청
-  })
-}
+  const accessToken = userInfo?.access_token;
+
+  try {
+    const res = await fetch(server + `/farmer/land/${uuid}/`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(landinfo),
+    });
+
+    console.log("Response status:", res.status);
+
+    // 성공 상태 반환
+    if (res.ok) {
+      return true; // 수정 성공 시 true 반환
+    } else {
+      console.error("Edit failed with status:", res.status);
+      return false; // 수정 실패 시 false 반환
+    }
+  } catch (error) {
+    console.error("EditLandInfo Error:", error);
+    return false; // 예외 발생 시 false 반환
+  }
+};
+
 
 
 

@@ -53,20 +53,7 @@ const Component_mapList = (props) => {
 
 
   }, []);
-  //농지 전체보기 > 농지 수정 함수
-  const edit_func = async (uuid) => {
-    const is_edited = await editLandInfo(uuid);
-
-    if (is_edited) {
-      alert("수정이 완료 되었습니다.")
-    }
-    else if (!is_edited) {
-      // alert("editLandInfo url ��려주면 바���기")
-      alert("수정 에러!!!")
-    }
-
-    await farmlands_load()
-  }
+ 
   //수정하기 모달
   const ModalRef = useRef();
   const openModal = (data) => {
