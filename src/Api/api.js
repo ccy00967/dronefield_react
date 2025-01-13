@@ -24,6 +24,7 @@ export const logout = async () => {
     try {
         const userInfo = JSON.parse(localStorage.getItem("User_Credential"));
         const refreshToken = userInfo?.refresh_token;
+        console.log(refreshToken)
 
         if (!refreshToken) {
             console.error("Refresh token is not available.");
@@ -37,7 +38,7 @@ export const logout = async () => {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                refresh_token: refreshToken, // 서버에 전달할 refresh token
+                refresh: refreshToken, // 서버에 전달할 refresh token
             }),
         });
 
@@ -48,9 +49,9 @@ export const logout = async () => {
         // 서버 요청 성공 시 처리
         console.log("Logout successful.");
         localStorage.removeItem("User_Credential"); // 로컬 스토리지에서 사용자 정보 제거
-        window.location.href = "/login"; // 로그인 페이지로 리다이렉션
+        window.location.href = "/"; // 로그인 페이지로 리다이렉션
     } catch (error) {
         console.error("Logout failed:", error);
-        alert("로그아웃에 실패했습니다. 다시 시도해주세요.");
+       
     }
 };

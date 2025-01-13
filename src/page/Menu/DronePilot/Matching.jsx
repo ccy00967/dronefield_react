@@ -52,7 +52,7 @@ const Matching = ({ }) => {
   const amount = pilotdata?.requestAmount || 0;
   const email = pilotdata?.email || "이메일 없음";
   const serviceAmount = checkedList.length * 1000;
-  const payorderid = checkedList[0] || "";
+  const payorderid = checkedList || "";
   const totalAmount = amount + serviceAmount;
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("CARD");
 
@@ -530,6 +530,7 @@ const Matching = ({ }) => {
                     {/* <Btn onClick={() => { requestPayment(selectedPaymentMethod, totalAmount, name, phone, email, payorderid); }}>결제하기</Btn> */}
                     {/* orderid는 checkedList로 보내기 */}
                     <Btn onClick={() => { buttonfunc(); requestPayment(selectedPaymentMethod, totalAmount, name, phone, email, payorderid); }}>결제하기</Btn>
+                    <Btn onClick={() => { console.log('matching',payorderid) }}>Tlqkf</Btn>
 
                   </div>
 

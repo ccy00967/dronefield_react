@@ -231,7 +231,7 @@ export const getWorkStatus = async () => {
         }
 
         const accessToken = User_Credential.access_token;
-        const res = await fetch(`${server}/exterminator/workinglist/3/`, {
+        const res = await fetch(`${server}/trade/work-list/?exterminateState=3`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -243,13 +243,14 @@ export const getWorkStatus = async () => {
             if (res.status === 401) {
                 // 인증 실패 처리
                 console.error("Unauthorized. Redirecting to login.");
-                window.location.href = "/login"; // 로그인 페이지로 리다이렉트
+                window.location.href = "/"; // 로그인 페이지로 리다이렉트
             }
             const errorText = await res.text();
             throw new Error(`HTTP error! status: ${res.status}, message: ${errorText}`);
         }
 
         const data = await res.json();
+        console.log("Work Status List:", data);
         return data;
     } catch (error) {
         console.error("Error fetching work status:", error);

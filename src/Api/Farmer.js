@@ -478,8 +478,9 @@ export const load_API = async (
 
 //농지등록 함수
 export const insert_API = async (landinfo, lndpclAr, check) => {
-  const polygonData = await get_polygon_api()
-  console.log(polygonData)
+  console.log("landinfo",landinfo)
+  // const polygonData = await get_polygon_api()
+  // console.log(polygonData)
   if (lndpclAr == "") {
     return alert("검색하기를 눌러서 면적을 입력해주세요");
   }

@@ -13,14 +13,16 @@ export function PaymentSuccessPage() {
 
     useEffect(() => {
         async function confirm() {
+            const payorderidList = JSON.parse(localStorage.getItem("payorderid")) || []; //나중에 url형식으로 바꾸기
+            console.log('payorderid',payorderidList);
             const requestData = {
                 paymentKey: searchParams.get("paymentKey"),
                 // amount: searchParams.get("amount"),
-                orderId: searchParams.get("orderId"),
-                orderidlist: [searchParams.get("orderId")],
+                tossOrderId: searchParams.get("orderId"), 
+                // orderidlist: [searchParams.get("payorderid")],
+                orderidlist: payorderidList,
             };
 
-            console.log("bbbbbbbbbbbbb")
             console.log(requestData)
             const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
             const accessToken = userInfo.access_token;

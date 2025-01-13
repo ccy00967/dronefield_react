@@ -132,29 +132,29 @@ const PestControl_useList = () => {
           <RowView2 className="title">
             방제이용목록
             <Icon
-              onClick={() => {setrequestDepositState('');setExterminateState('')}}
+              onClick={() => {setFilter(-1);setrequestDepositState('');setExterminateState('')}}
               src={require("../../../img/icon_reset.png")}
             />
           </RowView2>
 
           <FilterBox_Pest_useList>
-            <div className={isSelect(4)} onClick={() => setrequestDepositState(0)}>
+            <div className={isSelect(4)} onClick={() => {setFilter(4);setrequestDepositState(0)}}>
               결제 대기 ({before_pay_count})</div>
             <span>▶︎</span>
-            <div className={isSelect(0)} onClick={() => {setExterminateState(0);setrequestDepositState(1)}}>
+            <div className={isSelect(0)} onClick={() => {setFilter(0);setExterminateState(0);setrequestDepositState(1)}}>
               매칭중 ({matching_count})
             </div>
             <span>▶︎</span>
             <div
-              className={isSelect(1)} onClick={() => {setExterminateState(1);setrequestDepositState(1)}}>
+              className={isSelect(1)} onClick={() => {setFilter(1);setExterminateState(1);setrequestDepositState(1)}}>
               작업대기중({perparing_count})
             </div>
             <span>▶︎</span>
-            <div className={isSelect(2)} onClick={() => {setExterminateState(2);setrequestDepositState(1)}}>
+            <div className={isSelect(2)} onClick={() => {setFilter(2);setExterminateState(2);setrequestDepositState(1)}}>
               작업중({exterminating_count})
             </div>
             <span>▶︎</span>
-            <div className={isSelect(3)} onClick={() => {setExterminateState(3);setrequestDepositState(1)}}>
+            <div className={isSelect(3)} onClick={() => {setFilter(3);setExterminateState(3);setrequestDepositState(1)}}>
               작업확인({done_count})
             </div>
           </FilterBox_Pest_useList>

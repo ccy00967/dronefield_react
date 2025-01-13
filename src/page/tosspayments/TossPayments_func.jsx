@@ -9,6 +9,8 @@ import { v4 as uuidv4 } from "uuid";
 export async function requestPayment(selectedPaymentMethod, totalAmount, name, phonenum, email, payorderid) {
     const orderid = uuidv4()
     const userid = JSON.parse(localStorage.getItem('User_Credential'));
+    localStorage.setItem("payorderid", JSON.stringify(payorderid)); //나중에 url형식으로 보내는걸로 바꾸기
+    console.log('repayorderid',payorderid); //
     const customerKey = userid.user.uuid;
     console.log('orderid',orderid)
     const clientKey = "test_ck_LlDJaYngro2ZZaqGR00xVezGdRpX";

@@ -18,6 +18,10 @@ const WorkStatus = () => {
   const [perPage, setPerPage] = useState(20); // 페이지당 게시글 갯수 (디폴트:20)
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지
   const [filter, setFilter] = useState([]);
+  const [preparing_count,setPreparing_count] = useState('')
+  const [exterminating_count,setExterminating_count] = useState('')
+  const [done_count,setDone_count] = useState('')
+  
   const setting_reset = () => setFilter("");
 
   const [dataList, setDataList] = useState([]);
@@ -44,15 +48,41 @@ const WorkStatus = () => {
         //store.dispatch(workdatalistSlice.actions.setWorkData(data));
         //console.log(length);
         setDataList(data)
-        console.log(data)
+        console.log('응애에오',data)
 
         //return data
       });
   }
 
+  const getcount = async () => {
+    const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
+    const accessToken = userInfo.access_token;
+
+    const res = await fetch(server + "/trade/counts/?type=3",{
+
+      method: 'GET',
+      headers: {
+        'Content-Type': "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    const data = await res.json();
+    setPreparing_count(data.preparing_count)
+    setExterminating_count(data.exterminating_count)
+    setDone_count(data.done_count)
+
+
+    console.log('getcounts',data)
+  }
+
+
   useEffect(() => {
     getWorkStatus()
+    getcount()
   }, []);
+
+
+
 
   //필터 함수
 
@@ -139,15 +169,15 @@ const WorkStatus = () => {
 
           <FilterBox>
             <div className={isSelect(1)} onClick={() => setFilter(1)}>
-              작업 준비 중({getcountlength(1)})
+              작업 준비 중({preparing_count})
             </div>
             <span>▶︎</span>
             <div className={isSelect(2)} onClick={() => setFilter(2)}>
-              작업 중({getcountlength(2)})
+              작업 중({exterminating_count})
             </div>
             <span>▶︎</span>
             <div className={isSelect(3)} onClick={() => setFilter(3)}>
-              작업 완료({getcountlength(3)})
+              작업 완료({done_count})
             </div>
           </FilterBox>
 
@@ -183,11 +213,11 @@ const WorkStatus = () => {
                   className={(idx + 1) % 2 === 0 ? "x2" : ""}
                   onDoubleClick={() => openModal(data)}
                 >
-                  <div>{data.landInfo.landNickName}</div>
+                  <div>{data.landNickName}</div>
                   <div>{data.startDate}</div>
-                  <div>{data.owner.name}</div>
-                  <div>{data.owner.mobileno}</div>
-                  <div className="addr">{data.owner.address.jibunAddress}</div>
+                  <div>{data.owner_name}</div>
+                  <div>{data.owner_mobileno}</div>
+                  <div className="addr">{data.jibun}</div>
                   <div>{data.exterminateState === 1 ? ("작업 준비 중") : (data.exterminateState === 2 ? ("작업 중") : data.exterminateState === 3 && ("작업완료"))}</div>
 
 
