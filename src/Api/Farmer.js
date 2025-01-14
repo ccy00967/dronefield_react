@@ -493,7 +493,7 @@ export const insert_API = async (landinfo, lndpclAr, check) => {
   console.log('landinfo', landinfo);
   const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
   let accessToken = userInfo?.access_token;
-  console.log('landinfo', landinfo);
+  console.log('lndpclAr', lndpclAr);
   // 첫 번째 POST 요청
   let res = await fetch(server + "/farmer/land/", {
     // let res = await fetch(server + "/customer/lands/", {
