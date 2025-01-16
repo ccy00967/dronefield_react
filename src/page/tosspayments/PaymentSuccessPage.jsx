@@ -13,7 +13,24 @@ export function PaymentSuccessPage() {
 
     useEffect(() => {
         async function confirm() {
-            const payorderidList = JSON.parse(localStorage.getItem("payorderid")) || []; //나중에 url형식으로 바꾸기
+            const storedPayorderid = localStorage.getItem("payorderid");
+            let payorderidList = [];
+      
+            if (storedPayorderid) {
+              try {
+                // JSON 파싱 시도 (여러 개 값인 경우)
+                payorderidList = JSON.parse(storedPayorderid);
+              } catch {
+                // 파싱 실패 시 (단일 값인 경우)
+                payorderidList = [storedPayorderid];
+              }
+            }
+      
+            // **배열 평탄화 처리**
+            payorderidList = Array.isArray(payorderidList)
+              ? payorderidList.flat() // 중첩 배열을 1차원 배열로 변환
+              : [payorderidList]; // 배열이 아닌 경우 배열로 변환
+      
             console.log('payorderid',payorderidList);
             const requestData = {
                 paymentKey: searchParams.get("paymentKey"),

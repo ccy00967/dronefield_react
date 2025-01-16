@@ -270,16 +270,16 @@ const WorkStatus = () => {
                   <BtnArea>
 
                     {data.exterminateState === 1 ? (
-                      <span className="green" onClick={() => workStart_API(data.orderid)}>
+                      <span className="green" onClick={() => workStart_API(data.orderId)}>
                         시작
                       </span>
                     ) : (
                       data.exterminateState === 2 ? (
                         <RowView2>
-                          <span className="blue" onClick={() => workFin_API(data.orderid)}>
+                          <span className="blue" onClick={() => workFin_API(data.orderId)}>
                             완료
                           </span>
-                          <span className="yellow" onClick={() => cancel1_API(data.orderid)}>
+                          <span className="yellow" onClick={() => cancel1_API(data.orderId)}>
                             취소
                           </span>
                         </RowView2>
@@ -290,7 +290,7 @@ const WorkStatus = () => {
                             {/* <span className="gray">
                               완료
                             </span> */}
-                            <span className="yellow" onClick={() => cancel2_API(data.orderid)}>취소</span>
+                            <span className="yellow" onClick={() => cancel2_API(data.orderId)}>취소</span>
                           </RowView>
                         )
                       )

@@ -114,7 +114,7 @@ export const getLandcounts = async (setDone_count, setExterminating_count, setMa
   const accessToken = loadAccessToken();
 
   try {
-    const res = await fetch(server + `/trade/counts/?type=4`, {
+    const res = await fetch(server + `/trade/counts/`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -145,29 +145,43 @@ export const getLandcounts = async (setDone_count, setExterminating_count, setMa
  * @param {*} uuid 
  * @returns 
  */
-export const deleteLandInfo = async (uuid) => {
-  const accessToken = loadAccessToken();
+export const deleteLandInfo = async (landId) => {
+  const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
+  const accessToken = userInfo?.access_token;
+
+  console.log("Access Token:", accessToken); // 디버깅용
+  console.log("Land ID:", landId); // 디버깅용
+
   try {
-    const res = await fetch(server + `/customer/landinfo/${uuid}/`, {
+    const res = await fetch(`${server}/farmer/land/${landId}/`, {
       method: "DELETE",
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`, // Postman과 동일한 형식
       },
     });
-    if (res.status == 401) {
-      return await refreshAccessToken(deleteLandInfo);
-    }
-    else if (!res.ok) {
-      console.error("여기인가요")
-      throw new Error(`Error: ${res.statusText}`);
+
+    console.log("Response Status:", res.status); // 응답 상태 확인
+
+    if (res.status === 401) {
+      console.log("Access token expired. Refreshing token...");
+      return await refreshAccessToken(() => deleteLandInfo(landId));
     }
 
-    return true;
+    if (!res.ok) {
+      const error = await res.json();
+      console.error("Error deleting land:", error);
+      throw new Error(error.message || `Error: ${res.statusText}`);
+    }
+
+    console.log("Land deleted successfully.");
+    return true; // 삭제 성공
   } catch (e) {
-    return false;
+    console.error("Delete Land Error:", e.message || e);
+    return false; // 삭제 실패
   }
-}
+};
+
+
 
 // 농지 Polygon 객체 받기
 export const get_polygon_api = async (x, y) => {
@@ -585,11 +599,54 @@ export const allLndpclAr_API = async (setAllLndpclAr) => {
       Authorization: `Bearer ${accessToken}`,
     },
   });
-
+  
   const data = await res.json();
+  setAllLndpclAr(data.total_lndpclAr);
   console.log('123', data);
 
 }
+/**
+ * 쌍방 확인용 api
+ */
+export const updateCheckState = async (orderId, checkState) => {
+  const User_Credential = JSON.parse(localStorage.getItem("User_Credential"));
+
+  if (!User_Credential || !User_Credential.access_token) {
+    alert("로그인이 필요합니다. 다시 로그인해주세요.");
+    return;
+  }
+
+  const accessToken = User_Credential.access_token;
+
+  try {
+    const res = await fetch(`${server}/trade/check/${orderId}/`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded", // x-www-form-urlencoded 형식
+        Authorization: `Bearer ${accessToken}`, // 인증 토큰
+      },
+      body: `checkState=${encodeURIComponent(checkState)}`, // URL-encoded Body
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      console.error("Error updating checkState:", errorData);
+      alert(`상태 업데이트 중 문제가 발생했습니다: ${errorData.error || "알 수 없는 오류"}`);
+      return null;
+    }
+
+    const data = await res.json();
+    console.log("Check state updated successfully:", data);
+    return data;
+  } catch (error) {
+    console.error("Fetch error:", error);
+    alert("네트워크 오류로 상태 업데이트를 완료할 수 없습니다.");
+    return null;
+  }
+};
+
+
+
 
 
 /** 농지

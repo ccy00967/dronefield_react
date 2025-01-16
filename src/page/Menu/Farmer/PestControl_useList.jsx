@@ -16,6 +16,7 @@ import {
 import PagingControl from "../../../Component/UI/PagingControl";
 import PerPageControl from "../../../Component/UI/PerPageControl";
 import SideMenuBar from "../SideMenuBar";
+import CheckButton from "../../../Component/UI/CheckButton";
 import PestControl_useListModal from "./Modal/PestControl_useListModal";
 import { server } from "../../url";
 import { getLandcounts, load_API } from "../../../Api/Farmer";
@@ -23,7 +24,7 @@ import { getLandcounts, load_API } from "../../../Api/Farmer";
 
 const PestControl_useList = () => {
   const [cnt, setCnt] = useState(0); // 전체 개시글 갯수
-  const [perPage, setPerPage] = useState(5); // 페이지당 게시글 갯수 (디폴트:10)
+  const [perPage, setPerPage] = useState(10); // 페이지당 게시글 갯수 (디폴트:10)
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지
 
 
@@ -33,10 +34,9 @@ const PestControl_useList = () => {
   const [matching_count, setMatching_count] = useState('') // 매칭중
   const [perparing_count, setPreparing_count] = useState(''); // 작업대기중
   const [before_pay_count, setBefore_pay_count] = useState(''); // 결제 대기기
-  const [requestDepositState, setrequestDepositState ] = useState(''); //requestDepositState값 변경하여 load_API실행
-  const [exterminateState, setExterminateState ] = useState(''); // exterminateState값 변경하여 load_API실행
+  const [requestDepositState, setrequestDepositState] = useState(''); //requestDepositState값 변경하여 load_API실행
+  const [exterminateState, setExterminateState] = useState(''); // exterminateState값 변경하여 load_API실행
   const [filter, setFilter] = useState(-1);
-  const setting_reset = () => setrequestDepositState('')
 
 
   // 필터 선택 판별 className
@@ -56,10 +56,10 @@ const PestControl_useList = () => {
   const [dataList, setDataList] = useState([]);
 
   useEffect(() => {
-    load_API(setDataList, setCnt, currentPage, perPage,requestDepositState, exterminateState );
+    load_API(setDataList, setCnt, currentPage, perPage, requestDepositState, exterminateState);
     getLandcounts(setDone_count, setExterminating_count, setMatching_count, setPreparing_count, setBefore_pay_count);
     // load_API();
-  }, [currentPage, perPage,requestDepositState,exterminateState]);
+  }, [currentPage, perPage, requestDepositState, exterminateState]);
 
   //필터 로직
   // 필터링된 데이터 반환 및 카운트 계산 로직
@@ -94,13 +94,12 @@ const PestControl_useList = () => {
     return processData(filter).filteredData; // 선택된 필터에 해당하는 데이터 반환
   };
 
-  // 카운트 로직
-  const getcountlength = (filterType) => {
-    return processData(filterType).count; // 선택된 필터에 해당하는 데이터 개수 반환
-  };
+
 
   const handlePaymentClick = (data) => {
+    const selectedPaymentMethod = "CARD"
     console.log("결제하기 버튼 클릭:", data);
+    // requestPayment(selectedPaymentMethod, totalAmount, name, phonenum, email, payorderid)
     alert("결제 처리를 시작합니다.");
     // 결제 API 호출 로직 구현
   };
@@ -132,29 +131,29 @@ const PestControl_useList = () => {
           <RowView2 className="title">
             방제이용목록
             <Icon
-              onClick={() => {setFilter(-1);setrequestDepositState('');setExterminateState('')}}
+              onClick={() => { setFilter(-1); setrequestDepositState(''); setExterminateState('') }}
               src={require("../../../img/icon_reset.png")}
             />
           </RowView2>
 
           <FilterBox_Pest_useList>
-            <div className={isSelect(4)} onClick={() => {setFilter(4);setrequestDepositState(0)}}>
+            <div className={isSelect(4)} onClick={() => { setFilter(4); setrequestDepositState(0) }}>
               결제 대기 ({before_pay_count})</div>
             <span>▶︎</span>
-            <div className={isSelect(0)} onClick={() => {setFilter(0);setExterminateState(0);setrequestDepositState(1)}}>
+            <div className={isSelect(0)} onClick={() => { setFilter(0); setExterminateState(0); setrequestDepositState(1) }}>
               매칭중 ({matching_count})
             </div>
             <span>▶︎</span>
             <div
-              className={isSelect(1)} onClick={() => {setFilter(1);setExterminateState(1);setrequestDepositState(1)}}>
+              className={isSelect(1)} onClick={() => { setFilter(1); setExterminateState(1); setrequestDepositState(1) }}>
               작업대기중({perparing_count})
             </div>
             <span>▶︎</span>
-            <div className={isSelect(2)} onClick={() => {setFilter(2);setExterminateState(2);setrequestDepositState(1)}}>
+            <div className={isSelect(2)} onClick={() => { setFilter(2); setExterminateState(2); setrequestDepositState(1) }}>
               작업중({exterminating_count})
             </div>
             <span>▶︎</span>
-            <div className={isSelect(3)} onClick={() => {setFilter(3);setExterminateState(3);setrequestDepositState(1)}}>
+            <div className={isSelect(3)} onClick={() => { setFilter(3); setExterminateState(3); setrequestDepositState(1) }}>
               작업확인({done_count})
             </div>
           </FilterBox_Pest_useList>
@@ -194,7 +193,7 @@ const PestControl_useList = () => {
                 <div>{data.landNickName}</div>
                 <div>{data.startDate}</div>
                 <div>{data.exterminator ? data.exterminator.name : "미지정"}</div>
-                <div>{data.exterminator ? data.exterminator.phone_number : "미지정"}</div>
+                <div>{data.exterminator ? data.exterminator.mobileno : "미지정"}</div>
                 <div className="addr">{data.jibun}</div>
                 <div>
                   {data.requestDepositState === 0
@@ -215,7 +214,8 @@ const PestControl_useList = () => {
                       className="payment-button"
                       onClick={(e) => {
                         e.stopPropagation(); // Row 클릭 이벤트와 분리
-                        handlePaymentClick(data); // 결제 처리 함수 호출
+                        handlePaymentClick(data)
+                          ; // 결제 처리 함수 호출
                       }}
                     >
                       결제하기
@@ -224,14 +224,14 @@ const PestControl_useList = () => {
                   {/* 작업 완료 상태에 버튼 추가 */}
                   {data.exterminateState === 3 && (
                     <div>
-                      <button
-                        className="completed-button"
-                        onClick={() => console.log('상세확인')}
-                      >
-                        상세 확인
-                      </button>
+                      <CheckButton
+                        orderId={data.orderId}
+                        checkState={data.checkState} // data의 checkState 값을 전달
+                        onButtonClick={(e) => e.stopPropagation()} // Row 클릭 이벤트 차단
+                      />
                     </div>
                   )}
+
                 </BtnArea_Pest_useList>
               </TableList_Pest_useList>
             );

@@ -13,20 +13,20 @@ import { refreshAccessToken } from "./Farmer";
  * @returns 
  */
 export const fetchToken = async () => {
-    try {
-        const response = await fetch(
-            "https://sgisapi.kostat.go.kr/OpenAPI3/auth/authentication.json?consumer_key=fb0450ed86ba405ba3ec&consumer_secret=a7ec04e5c1f8401594d5"
-        );
-        if (response.status === 200) {
-            const data = await response.json();
-            return data.result.accessToken; // 받아온 토큰 값
-        } else {
-            throw new Error("Failed to fetch token");
-        }
-    } catch (error) {
-        console.error("Error fetching token:", error);
-        return null;
+  try {
+    const response = await fetch(
+      "https://sgisapi.kostat.go.kr/OpenAPI3/auth/authentication.json?consumer_key=fb0450ed86ba405ba3ec&consumer_secret=a7ec04e5c1f8401594d5"
+    );
+    if (response.status === 200) {
+      const data = await response.json();
+      return data.result.accessToken; // 받아온 토큰 값
+    } else {
+      throw new Error("Failed to fetch token");
     }
+  } catch (error) {
+    console.error("Error fetching token:", error);
+    return null;
+  }
 };
 
 
@@ -35,48 +35,48 @@ export const fetchToken = async () => {
  * 토스api를 사용하는데 필요한 유저정보 가져오기
  */
 export const fetchUserInfo = async () => {
-    const User_Credential = JSON.parse(localStorage.getItem("User_Credential"));
-    if (!User_Credential || !User_Credential.access_token) {
-      throw new Error("Access token is missing. Please log in again.");
+  const User_Credential = JSON.parse(localStorage.getItem("User_Credential"));
+  if (!User_Credential || !User_Credential.access_token) {
+    throw new Error("Access token is missing. Please log in again.");
+  }
+
+  let accessToken = User_Credential.access_token;
+
+  // 요청 처리 함수
+  const fetchRequest = async () => {
+    const res = await fetch(`${server}/user/profile/`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! Status: ${res.status}`);
     }
-  
-    let accessToken = User_Credential.access_token;
-  
-    // 요청 처리 함수
-    const fetchRequest = async () => {
-      const res = await fetch(`${server}/user/profile/`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        credentials: "include",
-      });
-  
-      if (!res.ok) {
-        throw new Error(`HTTP error! Status: ${res.status}`);
-      }
-  
-      const data = await res.json();
-      // console.log("userinfo", data);
-      return data;
-    };
-  
-    try {
-      return await fetchRequest(); // 첫 요청 시도
-    } catch (error) {
-      if (error.message.includes("401")) {
-        // Access Token 만료 처리
-        console.warn("Access token expired. Attempting to refresh token...");
-  
-        return await refreshAccessToken(fetchRequest); // 토큰 갱신 후 재시도
-      }
-  
-      console.error("Error fetching user info:", error);
-      return { error: true, message: error.message }; // 기타 에러 반환
-    }
+
+    const data = await res.json();
+    // console.log("userinfo", data);
+    return data;
   };
-  
+
+  try {
+    return await fetchRequest(); // 첫 요청 시도
+  } catch (error) {
+    if (error.message.includes("401")) {
+      // Access Token 만료 처리
+      console.warn("Access token expired. Attempting to refresh token...");
+
+      return await refreshAccessToken(fetchRequest); // 토큰 갱신 후 재시도
+    }
+
+    console.error("Error fetching user info:", error);
+    return { error: true, message: error.message }; // 기타 에러 반환
+  }
+};
+
 
 
 
@@ -89,50 +89,50 @@ export const fetchUserInfo = async () => {
  */
 
 export const putfarmrequest = async (checkedList) => {
-    const User_Credential = JSON.parse(localStorage.getItem("User_Credential"));
-    if (!User_Credential || !User_Credential.access_token) {
-      throw new Error("Access token is missing. Please log in again.");
+  const User_Credential = JSON.parse(localStorage.getItem("User_Credential"));
+  if (!User_Credential || !User_Credential.access_token) {
+    throw new Error("Access token is missing. Please log in again.");
+  }
+
+  let accessToken = User_Credential.access_token;
+
+  // 요청 처리 함수
+  const fetchRequest = async () => {
+    console.log("Checked List:", checkedList);
+
+    const response = await fetch(`${server}/exterminator/accept/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ orderidlist: checkedList }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
     }
-  
-    let accessToken = User_Credential.access_token;
-  
-    // 요청 처리 함수
-    const fetchRequest = async () => {
-      console.log("Checked List:", checkedList);
-  
-      const response = await fetch(`${server}/exterminator/accept/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({ orderidlist: checkedList }),
-      });
-  
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-  
-      const data = await response.json();
-      console.log("Response Data:", data);
-      return data;
-    };
-  
-    try {
-      return await fetchRequest(); // 첫 요청 시도
-    } catch (error) {
-      if (error.message.includes("401")) {
-        // Access Token 만료 처리
-        console.warn("Access token expired. Attempting to refresh token...");
-  
-        return await refreshAccessToken(fetchRequest); // 토큰 갱신 후 재시도
-      }
-  
-      console.error("Error in putFarmRequest:", error);
-      return { error: true, message: error.message }; // 기타 에러 반환
-    }
+
+    const data = await response.json();
+    console.log("Response Data:", data);
+    return data;
   };
-  
+
+  try {
+    return await fetchRequest(); // 첫 요청 시도
+  } catch (error) {
+    if (error.message.includes("401")) {
+      // Access Token 만료 처리
+      console.warn("Access token expired. Attempting to refresh token...");
+
+      return await refreshAccessToken(fetchRequest); // 토큰 갱신 후 재시도
+    }
+
+    console.error("Error in putFarmRequest:", error);
+    return { error: true, message: error.message }; // 기타 에러 반환
+  }
+};
+
 
 
 
@@ -140,30 +140,30 @@ export const putfarmrequest = async (checkedList) => {
  * sgis 단계별 주소조회 api를 이용한 cd값으로 지역정보 불러오기
  */
 export const fetchAddressData = async (code, setData, token) => {
-    try {
-        const _code = code ? `&cd=${code}` : "";
-        const apiUrl = `https://sgisapi.kostat.go.kr/OpenAPI3/addr/stage.json?accessToken=${token}${_code}`;
-        const response = await fetch(apiUrl);
-        if (response.status === 200) {
-            const data = await response.json();
-            const result = data.result.map((item) => addressDepthServerModel(item));
-            setData(result);
-        } else {
-            setData([]);
-        }
-    } catch (error) {
-        setData([]);
+  try {
+    const _code = code ? `&cd=${code}` : "";
+    const apiUrl = `https://sgisapi.kostat.go.kr/OpenAPI3/addr/stage.json?accessToken=${token}${_code}`;
+    const response = await fetch(apiUrl);
+    if (response.status === 200) {
+      const data = await response.json();
+      const result = data.result.map((item) => addressDepthServerModel(item));
+      setData(result);
+    } else {
+      setData([]);
     }
+  } catch (error) {
+    setData([]);
+  }
 
 };
 
 
 
 const addressDepthServerModel = (json) => {
-    return {
-        code: json.cd,
-        name: json.addr_name,
-    };
+  return {
+    code: json.cd,
+    name: json.addr_name,
+  };
 };
 
 
@@ -174,47 +174,47 @@ const addressDepthServerModel = (json) => {
  * @return {Promise<[OrderInfo]>} 
  */
 export const getfarmrequest = async (cdInfo) => {
-    const User_Credential = JSON.parse(localStorage.getItem("User_Credential"));
-    let accessToken = User_Credential?.access_token;
-  
-    // 요청 처리 함수
-    const fetchRequest = async () => {
-      const cdInfoURL = cdInfo ? `${cdInfo}` : "";
-      const url = `${server}/trade/lists/?cd=${cdInfoURL}`;
-  
-      const res = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`, // 기존 Access Token 사용
-        },
-      });
-  
-      if (!res.ok) {
-        throw new Error(`HTTP error! Status: ${res.status}`); // HTTP 오류 발생 시 throw
-      }
-  
-      const data = await res.json();
-      console.log("getfarmre", data); // 결과 출력
-      return data; // 성공 시 데이터 반환
-    };
-  
-    try {
-      return await fetchRequest(); // 첫 요청 시도
-    } catch (error) {
-      if (error.message.includes("401")) {
-        // Access Token이 만료된 경우
-        console.warn("Access token expired. Attempting to refresh token...");
-  
-        return await refreshAccessToken(fetchRequest); // 토큰 갱신 후 재시도
-      }
-  
-      console.error("Error fetching farm requests:", error);
-      return { error: true, message: error.message }; // 기타 에러 반환
+  const User_Credential = JSON.parse(localStorage.getItem("User_Credential"));
+  let accessToken = User_Credential?.access_token;
+
+  // 요청 처리 함수
+  const fetchRequest = async () => {
+    const cdInfoURL = cdInfo ? `${cdInfo}` : "";
+    const url = `${server}/trade/lists/?cd=${cdInfoURL}`;
+
+    const res = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`, // 기존 Access Token 사용
+      },
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! Status: ${res.status}`); // HTTP 오류 발생 시 throw
     }
+
+    const data = await res.json();
+    console.log("getfarmre", data); // 결과 출력
+    return data; // 성공 시 데이터 반환
   };
-  
-  
+
+  try {
+    return await fetchRequest(); // 첫 요청 시도
+  } catch (error) {
+    if (error.message.includes("401")) {
+      // Access Token이 만료된 경우
+      console.warn("Access token expired. Attempting to refresh token...");
+
+      return await refreshAccessToken(fetchRequest); // 토큰 갱신 후 재시도
+    }
+
+    console.error("Error fetching farm requests:", error);
+    return { error: true, message: error.message }; // 기타 에러 반환
+  }
+};
+
+
 
 
 
@@ -226,74 +226,76 @@ export const getfarmrequest = async (cdInfo) => {
 /**
  * 공통 API 함수 작업 현재상황 리스트 상태변환
  */
-export const updateExterminateState = async (orderid, exterminateState, confirmMessage, successMessage) => {
-    const User_Credential = JSON.parse(localStorage.getItem("User_Credential"));
-    if (!User_Credential || !User_Credential.access_token) {
-      alert("로그인이 필요합니다. 다시 로그인해주세요.");
-      return;
-    }
-  
-    let accessToken = User_Credential.access_token;
-  
-    // 요청 처리 함수
-    const fetchRequest = async () => {
-      try {
-        const res = await fetch(`${server}/exterminator/exterminatestate/${orderid}/`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify({ exterminateState }),
-        });
-  
-        if (res.ok) {
-          alert(successMessage); // 성공 메시지 표시
-          window.location.reload(); // 페이지 새로고침
-        } else {
-          const errorData = await res.json();
-          console.error("Error updating state:", errorData);
-          alert("상태 업데이트 중 문제가 발생했습니다.");
-        }
-      } catch (error) {
-        console.error("Fetch error:", error);
-        alert("네트워크 오류로 상태 업데이트를 완료할 수 없습니다.");
+export const updateExterminateState = async (orderid, exterminatedata, confirmMessage, successMessage) => {
+  const User_Credential = JSON.parse(localStorage.getItem("User_Credential"));
+
+  if (!User_Credential || !User_Credential.access_token) {
+    alert("로그인이 필요합니다. 다시 로그인해주세요.");
+    return;
+  }
+
+  const accessToken = User_Credential.access_token;
+
+  console.log("orderid:", orderid);
+  console.log("exterminatedata:", exterminatedata); // 데이터 확인
+
+  const fetchRequest = async () => {
+    try {
+      // JSON 형식으로 데이터 생성
+      const bodyData = JSON.stringify({ exterminateState: exterminatedata });
+
+      const res = await fetch(`${server}/trade/exterminate/${orderid}/`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json", // JSON 형식 설정
+          Authorization: `Bearer ${accessToken}`, // 인증 토큰 추가
+        },
+        body: bodyData, // JSON 데이터 전송
+      });
+
+      if (res.ok) {
+        alert(successMessage); // 성공 메시지
+        window.location.reload(); // 새로고침
+      } else {
+        const errorData = await res.json();
+        console.error("Error updating state:", errorData);
+        alert(`상태 업데이트 중 문제가 발생했습니다: ${errorData.error || "알 수 없는 오류"}`);
       }
-    };
-  
-    // 사용자 확인 메시지
-    if (window.confirm(confirmMessage)) {
-      try {
-        return await fetchRequest(); // 첫 요청 시도
-      } catch (error) {
-        if (error.message.includes("401")) {
-          // 401 에러 처리: Access Token 갱신 후 재시도
-          console.warn("Access token expired. Attempting to refresh token...");
-          return await refreshAccessToken(fetchRequest); // 토큰 갱신 후 재시도
-        }
-  
-        console.error("Error updating state:", error);
-        alert("상태 업데이트 중 문제가 발생했습니다.");
-      }
-    } else {
-      alert("작업이 취소되었습니다."); // 취소 시 알림
+    } catch (error) {
+      console.error("Fetch error:", error);
+      alert("네트워크 오류로 상태 업데이트를 완료할 수 없습니다.");
     }
   };
-  
+
+  if (window.confirm(confirmMessage)) {
+    try {
+      return await fetchRequest();
+    } catch (error) {
+      console.error("Error:", error);
+      alert("작업 중 문제가 발생했습니다.");
+    }
+  } else {
+    alert("작업이 취소되었습니다.");
+  }
+};
+
+
+
+
 
 
 // API 함수 정의
 export const cancel1_API = (orderid) =>
-    updateExterminateState(orderid, 1, "취소하시겠습니까?", "취소되었습니다.");
+  updateExterminateState(orderid, 1, "취소하시겠습니까?", "취소되었습니다.");
 
 export const cancel2_API = (orderid) =>
-    updateExterminateState(orderid, 2, "취소하시겠습니까?", "취소되었습니다.");
+  updateExterminateState(orderid, 2, "취소하시겠습니까?", "취소되었습니다.");
 
 export const workFin_API = (orderid) =>
-    updateExterminateState(orderid, 3, "작업이 끝났습니까?", "작업이 완료되었습니다.");
+  updateExterminateState(orderid, 3, "작업이 끝났습니까?", "작업이 완료되었습니다.");
 
 export const workStart_API = (orderid) =>
-    updateExterminateState(orderid, 2, "시작하시겠습니까?", "작업이 시작되었습니다.");
+  updateExterminateState(orderid, 2, "시작하시겠습니까?", "작업이 시작되었습니다.");
 
 //Workstatus 여기까지
 
@@ -308,51 +310,51 @@ export const workStart_API = (orderid) =>
  */
 
 export const getWorkStatus = async () => {
-    const User_Credential = JSON.parse(localStorage.getItem("User_Credential"));
-    if (!User_Credential || !User_Credential.access_token) {
-      throw new Error("Access token is missing. Please log in again.");
-    }
-  
-    let accessToken = User_Credential.access_token;
-  
-    // 요청 처리 함수
-    const fetchRequest = async () => {
-      const res = await fetch(`${server}/trade/work-list/?exterminateState=3`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-  
-      if (!res.ok) {
-        if (res.status === 401) {
-          throw new Error("Unauthorized");
-        }
-        const errorText = await res.text();
-        throw new Error(`HTTP error! Status: ${res.status}, Message: ${errorText}`);
+  const User_Credential = JSON.parse(localStorage.getItem("User_Credential"));
+  if (!User_Credential || !User_Credential.access_token) {
+    throw new Error("Access token is missing. Please log in again.");
+  }
+
+  let accessToken = User_Credential.access_token;
+
+  // 요청 처리 함수
+  const fetchRequest = async () => {
+    const res = await fetch(`${server}/trade/work-list/?exterminateState=3`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!res.ok) {
+      if (res.status === 401) {
+        throw new Error("Unauthorized");
       }
-  
-      const data = await res.json();
-      console.log("Work Status List:", data);
-      return data;
-    };
-  
-    try {
-      return await fetchRequest(); // 첫 요청 시도
-    } catch (error) {
-      if (error.message.includes("Unauthorized")) {
-        // 401 에러 처리: Access Token 갱신 후 재시도
-        console.warn("Access token expired. Attempting to refresh token...");
-  
-        return await refreshAccessToken(fetchRequest); // 토큰 갱신 후 재시도
-      }
-  
-      console.error("Error fetching work status:", error);
-      return { error: true, message: error.message }; // 기타 에러 반환
+      const errorText = await res.text();
+      throw new Error(`HTTP error! Status: ${res.status}, Message: ${errorText}`);
     }
+
+    const data = await res.json();
+    console.log("Work Status List:", data);
+    return data;
   };
-  
+
+  try {
+    return await fetchRequest(); // 첫 요청 시도
+  } catch (error) {
+    if (error.message.includes("Unauthorized")) {
+      // 401 에러 처리: Access Token 갱신 후 재시도
+      console.warn("Access token expired. Attempting to refresh token...");
+
+      return await refreshAccessToken(fetchRequest); // 토큰 갱신 후 재시도
+    }
+
+    console.error("Error fetching work status:", error);
+    return { error: true, message: error.message }; // 기타 에러 반환
+  }
+};
+
 
 /**
  * @typedef {Object} Address
