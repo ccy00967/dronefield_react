@@ -12,6 +12,7 @@ import { deleteLandInfo, getLandInfo, editLandInfo } from "../../../Api/Farmer";
 import initMap from "./init_naver_map";
 import Component_mapList_editModal from "./Modal/Component_mapList_editModal";
 import { server } from "../../url";
+import { globalSearchAddressToCoordinate } from "./init_naver_map";
 
 const loadScript = (src, callback, naver, infoWindow, setSearchAddr) => {
   const script = document.createElement('script');
@@ -146,16 +147,24 @@ const Component_mapList = (props) => {
 
 
   const farmlands_load = async () => {
-    const data = await getLandInfo(perPage, currentPage);
-    setDataList(data.data);
-    setCnt(data.total_items)
-
-    // 받아온 데이터를 상태에 저장
-    // 총 면적과 필지 개수를 계산하고 부모 컴포넌트로 전달
-    //const totalArea = data.reduce((sum, item) => sum + parseFloat(item.lndpclAr), 0);
-    //setTotalArea(totalArea);
-    //setLandCount(data.length);
-  }
+    try {
+      console.log("Fetching farmlands...");
+      const data = await getLandInfo(perPage, currentPage);
+      if (data.data && data.total_items) {
+        setDataList(data.data); // 데이터 상태 업데이트
+        setCnt(data.total_items); // 총 항목 수 업데이트
+        console.log("Updated data list:", data.data);
+      } else {
+        console.warn("Empty or invalid data received:", data);
+        setDataList([]); // 빈 데이터 처리
+        setCnt(0); // 항목 수 초기화
+      }
+    } catch (e) {
+      console.error("Error loading farmlands:", e.message);
+      alert("데이터를 로드하는 중 오류가 발생했습니다. 다시 시도해주세요.");
+    }
+  };
+  
 
   // 방재신청 > 농지선택
   const selectFarmland = (data) => {
@@ -164,7 +173,7 @@ const Component_mapList = (props) => {
       const farmland = `${data.landNickName}(${data.jibun})`;
       setSelectFarmland(data);
       ScrollToTop_smooth();
-      //globalSearchAddressToCoordinate(data.address.jibunAddress);
+      globalSearchAddressToCoordinate(data.jibun);
     }
   };
 

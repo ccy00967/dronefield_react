@@ -8,11 +8,13 @@ import {
   RowView2,
 } from "../../../Component/common_style";
 
-import { InsertBox_Pest_apply,
-   InputBox_Pest_apply,
-    DateBox_Pest_apply,
-    LightBtn_Pest_apply,
-  Btn_Pest_apply } from "./css/FarmerCss";
+import {
+  InsertBox_Pest_apply,
+  InputBox_Pest_apply,
+  DateBox_Pest_apply,
+  LightBtn_Pest_apply,
+  Btn_Pest_apply, StyledDatePicker
+} from "./css/FarmerCss";
 import Component_mapList from "./Component_mapList";
 import PestControl_applyModal from "./Modal/PestControl_applyModal";
 import { server } from "../../url";
@@ -31,6 +33,7 @@ const PestControl_apply = () => {
   const [uuid, setUuid] = useState("");
   const [dummy, setDummy] = useState("");
   const [selectlndpclAr, setSelectlndpclAr] = useState(0);
+  const [endDate, setEndDate] = useState("");
   const totalPrice = price * selectlndpclAr;
 
   const setting_General = () => setTransaction("일반거래");
@@ -45,25 +48,38 @@ const PestControl_apply = () => {
     }
     return "";
   };
-  
+
 
   // 모달 열기
   const applyRef = useRef();
   const openModal = (postData) => {
     applyRef.current.visible(postData);
-    console.log("apply",postData);
+    console.log("apply", postData);
   };
 
- 
+
+
+  const handleStartDateChange = (e) => {
+    const selectedDate = new Date(e.target.value); // 선택된 날짜
+    setStartDate(e.target.value); // 시작일 설정
+
+    // 2주 후 날짜 계산
+    const twoWeeksLater = new Date(selectedDate);
+    twoWeeksLater.setDate(selectedDate.getDate() + 14); // 14일 추가
+
+    // YYYY-MM-DD 형식으로 endDate 설정
+    const formattedEndDate = twoWeeksLater.toISOString().split("T")[0];
+    setEndDate(formattedEndDate);
+  };
   const apply = () => {
     const postData = {
       dealmothod: transaction === "일반거래" ? 0 : 1,
       setAveragePrice: price,
       startDate: startDate || "2024-10-30",
-      endDate: "2021-11-03",
+      endDate: endDate || "2021-11-03",
       pesticide: pesticidesUsed,
     };
-  
+
     applyPestControl(postData, uuid, openModal); // 토큰 갱신은 applyPestControl 내부에서 처리
   };
 
@@ -130,11 +146,44 @@ const PestControl_apply = () => {
           <span>일반거래의 평단가는 30원입니다.</span>
 
           <div className="subtitle">시작일</div>
-          <RowView>
-            <DateBox_Pest_apply onClick={() => setting_startDate('2024-08-30')}>8/30</DateBox_Pest_apply>
-            <DateBox_Pest_apply onClick={() => setting_startDate('2024-09-06')}>9/6</DateBox_Pest_apply>
-            <DateBox_Pest_apply onClick={() => setting_startDate('2024-09-13')}>9/13</DateBox_Pest_apply>
-          </RowView>
+          <RowView2>
+            <StyledDatePicker
+              type="date"
+              value={startDate}
+              onChange={(e) => {
+                const selectedDate = new Date(e.target.value); // 선택된 시작일
+                setStartDate(e.target.value); // 시작일 설정
+
+                // 2주 뒤 날짜 계산
+                const twoWeeksLater = new Date(selectedDate);
+                twoWeeksLater.setDate(selectedDate.getDate() + 14); // 14일 추가
+
+                // YYYY-MM-DD 형식으로 종료일 설정
+                const formattedEndDate = twoWeeksLater.toISOString().split("T")[0];
+                setEndDate(formattedEndDate); // 종료일 업데이트
+              }}
+            />
+          </RowView2>
+
+          <div className="subtitle">종료일</div>
+          <RowView2>
+            <StyledDatePicker
+              type="date"
+              value={endDate}
+              readOnly // 종료일은 읽기 전용
+              style={{
+                backgroundColor: "#f9f9f9", // 읽기 전용 스타일
+                color: "#999", // 텍스트 색상 변경
+                cursor: "not-allowed", // 마우스 커서 변경
+              }}
+            />
+            <span style={{ marginLeft: "8px", fontSize: "14px", color: "gray" }}>
+              (신청일 기준 2주 후 마감입니다)
+            </span>
+          </RowView2>
+
+
+
           <span>신청일 기준 2주 후 마감입니다.</span>
 
           <div className="subtitle">사용 농약</div>

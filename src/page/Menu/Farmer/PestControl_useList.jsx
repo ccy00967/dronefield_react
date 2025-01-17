@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import Common_Layout from "../../../Component/common_Layout";
 import {
+  CheckBox,
   Icon,
   RowView,
   RowView2,
@@ -11,7 +12,8 @@ import {
   FilterBox_Pest_useList,
   TableHeader_Pest_useList,
   TableList_Pest_useList,
-  BtnArea_Pest_useList
+  BtnArea_Pest_useList,
+  Btn
 } from "./css/FarmerCss";
 import PagingControl from "../../../Component/UI/PagingControl";
 import PerPageControl from "../../../Component/UI/PerPageControl";
@@ -20,6 +22,7 @@ import CheckButton from "../../../Component/UI/CheckButton";
 import PestControl_useListModal from "./Modal/PestControl_useListModal";
 import { server } from "../../url";
 import { getLandcounts, load_API } from "../../../Api/Farmer";
+import HeaderCheckBox from "../../../Component/UI/HeaderCheckBox";
 
 
 const PestControl_useList = () => {
@@ -37,7 +40,8 @@ const PestControl_useList = () => {
   const [requestDepositState, setrequestDepositState] = useState(''); //requestDepositState값 변경하여 load_API실행
   const [exterminateState, setExterminateState] = useState(''); // exterminateState값 변경하여 load_API실행
   const [filter, setFilter] = useState(-1);
-
+  const [dataList, setDataList] = useState([]);
+  const [checkedOrderIds, setCheckedOrderIds] = useState([]);
 
   // 필터 선택 판별 className
   const isSelect = (menu) => {
@@ -53,11 +57,11 @@ const PestControl_useList = () => {
   };
 
   // 농지 데이터 load
-  const [dataList, setDataList] = useState([]);
 
   useEffect(() => {
     load_API(setDataList, setCnt, currentPage, perPage, requestDepositState, exterminateState);
     getLandcounts(setDone_count, setExterminating_count, setMatching_count, setPreparing_count, setBefore_pay_count);
+
     // load_API();
   }, [currentPage, perPage, requestDepositState, exterminateState]);
 
@@ -95,14 +99,22 @@ const PestControl_useList = () => {
   };
 
 
-
-  const handlePaymentClick = (data) => {
-    const selectedPaymentMethod = "CARD"
-    console.log("결제하기 버튼 클릭:", data);
-    // requestPayment(selectedPaymentMethod, totalAmount, name, phonenum, email, payorderid)
-    alert("결제 처리를 시작합니다.");
-    // 결제 API 호출 로직 구현
+  // 체크박스 클릭 시 orderId 업데이트
+  const handleCheckboxChange = (orderId, isChecked) => {
+    setCheckedOrderIds((prevCheckedOrderIds) => {
+      if (isChecked) {
+        // 체크된 경우 배열에 추가
+        return [...prevCheckedOrderIds, orderId];
+      } else {
+        // 체크 해제된 경우 배열에서 제거
+        return prevCheckedOrderIds.filter((id) => id !== orderId);
+      }
+    });
   };
+  const handleButtonClick = () => {
+    console.log("Checked Order IDs:", checkedOrderIds);
+  };
+
 
 
   const refund_API = () => {
@@ -177,7 +189,13 @@ const PestControl_useList = () => {
             <div>업체전화번호</div>
             <div className="addr">농지주소</div>
             <div>상태</div>
-            {/* {filter !== "작업대기중" && filter !== "작업중" && <span />} */}
+            {/* 헤더 체크박스 */}
+            <HeaderCheckBox
+              filterData={filterData} // 필터링된 데이터 전달
+              checkedOrderIds={checkedOrderIds} // 선택된 orderId 전달
+              setCheckedOrderIds={setCheckedOrderIds} // 상태 업데이트 함수 전달
+            />
+            <div className="custom-div" />
           </TableHeader_Pest_useList>
 
           {filterData().map((data, idx) => {
@@ -210,16 +228,16 @@ const PestControl_useList = () => {
 
                 <BtnArea_Pest_useList>
                   {isPaymentPending && (
-                    <button
-                      className="payment-button"
-                      onClick={(e) => {
-                        e.stopPropagation(); // Row 클릭 이벤트와 분리
-                        handlePaymentClick(data)
-                          ; // 결제 처리 함수 호출
-                      }}
-                    >
-                      결제하기
-                    </button>
+                    <CheckBox
+                      type="checkbox"
+                      $color="#555555"
+                      id={data.orderId}
+                      checked={checkedOrderIds.includes(data.orderId)} // 체크 상태 유지
+                      onClick={(e) => e.stopPropagation()} // Row 클릭 이벤트 차단
+                      onChange={(e) => handleCheckboxChange(data.orderId, e.target.checked)} // 체크 상태 변경
+                    />
+
+
                   )}
                   {/* 작업 완료 상태에 버튼 추가 */}
                   {data.exterminateState === 3 && (
@@ -236,7 +254,12 @@ const PestControl_useList = () => {
               </TableList_Pest_useList>
             );
           })}
+          {/* 조건부로 버튼 렌더링 */}
+          {checkedOrderIds.length > 0 && (
 
+            <Btn size="small" onClick={handleButtonClick}>결제하기</Btn>
+
+          )}
 
           <PagingControl
             cnt={cnt}

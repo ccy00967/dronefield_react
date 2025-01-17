@@ -82,10 +82,10 @@ export const refreshAccessToken = async (reTryFunc) => {
  * @returns {Promise<LandInfo[]>} 
 */
 export const getLandInfo = async (perPage, currentPage) => {
-  const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
-  const accessToken = loadAccessToken();
-  const actualCurrentPage = currentPage || 1;
+  const accessToken = loadAccessToken(); // 토큰 로드
+  const actualCurrentPage = currentPage || 1; // 페이지 초기값 설정
   const actualPerPage = perPage || 10;
+
   try {
     const res = await fetch(server + `/farmer/lands/?page=${actualCurrentPage}&page_size=${actualPerPage}`, {
       method: "GET",
@@ -94,21 +94,26 @@ export const getLandInfo = async (perPage, currentPage) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    if (res.status == 401) {
-      return await refreshAccessToken(getLandInfo);
+
+    if (res.status === 401) {
+      console.log("Access token expired. Refreshing...");
+      return await refreshAccessToken(() => getLandInfo(perPage, currentPage));
     }
-    else if (!res.ok) {
+
+    if (!res.ok) {
       throw new Error(`Error: ${res.statusText}`);
     }
 
     const data = await res.json();
-    console.log(data);
-    return data;
+    console.log("Fetched land info:", data);
+    return data; // 올바른 데이터 반환
   } catch (e) {
-    alert("정보를 가져오는 중 오류가 발생했습니다. 다시 시도해 주세요.");
-    return [];
+    console.error("Error fetching land info:", e.message);
+    alert("정보를 가져오는 중 오류가 발생했습니다. 다시 시도해주세요.");
+    return { data: [], total_items: 0 }; // 기본값 반환
   }
-}
+};
+
 export const getLandcounts = async (setDone_count, setExterminating_count, setMatching_count, setPreparing_count, setBefore_pay_count) => {
   const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
   const accessToken = loadAccessToken();
