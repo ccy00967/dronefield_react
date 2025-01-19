@@ -57,7 +57,7 @@ export const logout = async () => {
     }
 };
 
-
+//토스결제 시 필요한 유저정보
 export const fetchUserInfo = async () => {
     const User_Credential = JSON.parse(localStorage.getItem("User_Credential"));
     if (!User_Credential || !User_Credential.access_token) {
@@ -82,7 +82,6 @@ export const fetchUserInfo = async () => {
         }
 
         const data = await res.json();
-        // console.log("userinfo", data);
         return data;
     };
 

@@ -170,7 +170,6 @@ const addressDepthServerModel = (json) => {
 /**
  * 거래매칭 화면 리스트 불러오기
  * 행정구역 cd에 따라 거래 리스트 받는다
- * 나중에는 서버에서 필터링 요청
  * @return {Promise<[OrderInfo]>} 
  */
 export const getfarmrequest = async (cdInfo) => {

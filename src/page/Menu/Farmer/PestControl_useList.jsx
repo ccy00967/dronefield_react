@@ -21,8 +21,11 @@ import SideMenuBar from "../SideMenuBar";
 import CheckButton from "../../../Component/UI/CheckButton";
 import PestControl_useListModal from "./Modal/PestControl_useListModal";
 import { server } from "../../url";
-import { getLandcounts, load_API } from "../../../Api/Farmer";
+import { getLandcounts, load_API,getTradeDetail } from "../../../Api/Farmer";
 import HeaderCheckBox from "../../../Component/UI/HeaderCheckBox";
+import { fetchUserInfo } from "../../../Api/api";
+import { requestPayment } from "../../tosspayments/TossPayments_func";
+import { cancelPayment } from "../../tosspayments/cancelPayment";
 
 
 const PestControl_useList = () => {
@@ -42,6 +45,35 @@ const PestControl_useList = () => {
   const [filter, setFilter] = useState(-1);
   const [dataList, setDataList] = useState([]);
   const [checkedOrderIds, setCheckedOrderIds] = useState([]);
+  const [userdata, setUserData] = useState([]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("CARD");
+
+  const handleRefundRequest = async (orderId) => {
+    try {
+      // 1. orderId로 tossOrderId 가져오기
+      const tossOrderId = await getTradeDetail(orderId);
+
+      if (!tossOrderId) {
+        console.error("tossOrderId가 없습니다.");
+        return;
+      }
+
+      // 2. tossOrderId로 결제 취소 요청
+      const cancelReason = "사용자 요청에 의한 환불";
+      const orderidlist = [orderId];
+      await cancelPayment(tossOrderId, cancelReason, orderidlist);
+
+      // 성공 메시지
+      alert("환불이 성공적으로 처리되었습니다.");
+      await load_API(setDataList, setCnt, currentPage, perPage, requestDepositState, exterminateState);
+    } catch (error) {
+      console.error("환불 요청 중 오류 발생:", error);
+      alert("환불 요청 중 오류가 발생했습니다.");
+    }
+  };
+
+
+
 
   // 필터 선택 판별 className
   const isSelect = (menu) => {
@@ -111,9 +143,31 @@ const PestControl_useList = () => {
       }
     });
   };
-  const handleButtonClick = () => {
-    console.log("Checked Order IDs:", checkedOrderIds);
+  const handleButtonClick = async () => {
+    try {
+      const userdata = await fetchUserInfo(); // 비동기 함수 완료 대기 유저정보 받아오기
+      setUserData(userdata); // userdata를 상태로 설정
+
+      // userdata 기반 값 계산
+      const name = userdata?.name || "이름 없음";
+      const phone = userdata?.mobileno || "번호 없음";
+      const email = userdata?.email || "이메일 없음";
+      const amount = userdata?.requestAmount || 0;
+      const serviceAmount = checkedOrderIds.length * 10000;
+      const payorderid = checkedOrderIds || "";
+      const totalAmount = amount + serviceAmount;
+
+      console.log('userdata', amount,{ selectedPaymentMethod, totalAmount, name, phone, email, payorderid }); // 데이터 출력
+      console.log("Checked Order IDs:", checkedOrderIds);
+
+      // 비동기 결제 요청 (주석 해제 가능)
+      await requestPayment(selectedPaymentMethod, totalAmount, name, phone, email, payorderid);
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    }
   };
+
+
 
 
 
@@ -238,6 +292,20 @@ const PestControl_useList = () => {
                     />
 
 
+                  )}
+                  {/* 매칭중 상태에 '환불하기' 버튼 추가 */}
+                  {data.exterminateState === 0 && data.requestDepositState === 1 && (
+                    <div>
+                      <Btn
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation(); // Row 클릭 이벤트 차단
+                          handleRefundRequest(data.orderId);;
+                        }}
+                      >
+                        환불하기
+                      </Btn>
+                    </div>
                   )}
                   {/* 작업 완료 상태에 버튼 추가 */}
                   {data.exterminateState === 3 && (

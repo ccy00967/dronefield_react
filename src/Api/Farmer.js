@@ -448,10 +448,11 @@ export const load_API = async (
 
     // 조건 처리
     if (requestDepositState === 0) {
-      // 조건 1: requestDepositState가 0일 경우, exterminateState 상관 없이 requestDepositState만 추가
       params.append("requestDepositState", 0);
+    } else if (requestDepositState === 2) {
+      // requestDepositState가 2일 경우 추가
+      params.append("requestDepositState", 2);
     } else if ([0, 1, 2, 3].includes(exterminateState)) {
-      // 조건 2: exterminateState가 0, 1, 2, 3일 경우 requestDepositState를 1로 추가
       params.append("exterminateState", exterminateState);
       params.append("requestDepositState", 1);
     }
@@ -497,7 +498,7 @@ export const load_API = async (
 
 //농지등록 함수
 export const insert_API = async (landinfo, lndpclAr, check) => {
-  console.log("landinfo",landinfo)
+  console.log("landinfo", landinfo)
   // const polygonData = await get_polygon_api()
   // console.log(polygonData)
   if (lndpclAr == "") {
@@ -604,7 +605,7 @@ export const allLndpclAr_API = async (setAllLndpclAr) => {
       Authorization: `Bearer ${accessToken}`,
     },
   });
-  
+
   const data = await res.json();
   setAllLndpclAr(data.total_lndpclAr);
   console.log('123', data);
@@ -649,6 +650,50 @@ export const updateCheckState = async (orderId, checkState) => {
     return null;
   }
 };
+
+
+/**
+ * orderId로 tossOrderId를 가져오는 API 요청
+ * @param {string} orderId - 주문 ID
+ * @returns {Promise<string>} tossOrderId
+ */
+
+export const getTradeDetail = async (orderId) => {
+  try {
+    // 로컬 스토리지에서 토큰 가져오기
+    const User_Credential = JSON.parse(localStorage.getItem("User_Credential"));
+    const accessToken = User_Credential?.access_token;
+
+    if (!accessToken) {
+      throw new Error("Access token is missing. Please log in again.");
+    }
+
+    // 요청 보내기
+    const response = await fetch(`${server}/trade/detail/${orderId}/`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`, // 헤더에 토큰 추가
+      },
+    });
+
+    // 응답 확인
+    if (!response.ok) {
+      throw new Error(`Failed to fetch tossOrderId: ${response.statusText}`);
+    }
+
+    // JSON 데이터 파싱
+    const data = await response.json();
+    console.log("detaildata", data);
+
+    return data.requestTosspayments; // tossOrderId 반환
+  } catch (error) {
+    console.error("Error fetching tossOrderId:", error);
+    throw error; // 에러를 호출한 곳으로 전달
+  }
+};
+
+
 
 
 

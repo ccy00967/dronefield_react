@@ -530,7 +530,6 @@ const Matching = ({ }) => {
                     {/* <Btn onClick={() => { requestPayment(selectedPaymentMethod, totalAmount, name, phone, email, payorderid); }}>결제하기</Btn> */}
                     {/* orderid는 checkedList로 보내기 */}
                     <Btn onClick={() => { buttonfunc(); requestPayment(selectedPaymentMethod, totalAmount, name, phone, email, payorderid); }}>결제하기</Btn>
-                    <Btn onClick={() => { console.log('matching',payorderid) }}>Tlqkf</Btn>
 
                   </div>
 

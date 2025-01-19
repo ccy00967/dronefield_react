@@ -10,6 +10,7 @@ const NicePassPopUp = () => {
   const token_version_id = queryParams.get("token_version_id");
   const enc_data = queryParams.get("enc_data");
   const integrity_value = queryParams.get("integrity_value");
+  console.log("Received Params:", { token_version_id, enc_data, integrity_value });
 
   if (token_version_id && enc_data && integrity_value) {
     fetch(server + "/user/nice-callback/", {
