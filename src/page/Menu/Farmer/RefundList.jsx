@@ -51,7 +51,7 @@ const RefundList = () => {
               <div>{data.exterminator ? data.exterminator.name : "미지정"}</div>
               <div>{data.exterminator ? data.exterminator.mobileno : "미지정"}</div>
               <div className="addr">{data.jibun}</div>
-              <div>{`환불 완료: ${Number(data.lndpclAr).toLocaleString()}원`}</div>
+              <div>{`환불 완료: ${Number(data.requestAmount+10000).toLocaleString()}원`}</div>
             
             </TableList_Pest_useList>
           ))}

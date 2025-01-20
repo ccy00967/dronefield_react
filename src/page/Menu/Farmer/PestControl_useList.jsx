@@ -40,9 +40,9 @@ const PestControl_useList = () => {
   const [matching_count, setMatching_count] = useState('') // 매칭중
   const [perparing_count, setPreparing_count] = useState(''); // 작업대기중
   const [before_pay_count, setBefore_pay_count] = useState(''); // 결제 대기기
-  const [requestDepositState, setrequestDepositState] = useState(''); //requestDepositState값 변경하여 load_API실행
-  const [exterminateState, setExterminateState] = useState(''); // exterminateState값 변경하여 load_API실행
-  const [filter, setFilter] = useState(-1);
+  const [requestDepositState, setrequestDepositState] = useState(1); //requestDepositState값 변경하여 load_API실행
+  const [exterminateState, setExterminateState] = useState(0); // exterminateState값 변경하여 load_API실행
+  const [filter, setFilter] = useState(0);
   const [dataList, setDataList] = useState([]);
   const [checkedOrderIds, setCheckedOrderIds] = useState([]);
   const [userdata, setUserData] = useState([]);
@@ -131,49 +131,6 @@ const PestControl_useList = () => {
   };
 
 
-  // 체크박스 클릭 시 orderId 업데이트
-  const handleCheckboxChange = (orderId, isChecked) => {
-    setCheckedOrderIds((prevCheckedOrderIds) => {
-      if (isChecked) {
-        // 체크된 경우 배열에 추가
-        return [...prevCheckedOrderIds, orderId];
-      } else {
-        // 체크 해제된 경우 배열에서 제거
-        return prevCheckedOrderIds.filter((id) => id !== orderId);
-      }
-    });
-  };
-  const handleButtonClick = async () => {
-    try {
-      const userdata = await fetchUserInfo(); // 비동기 함수 완료 대기 유저정보 받아오기
-      setUserData(userdata); // userdata를 상태로 설정
-
-      // userdata 기반 값 계산
-      const name = userdata?.name || "이름 없음";
-      const phone = userdata?.mobileno || "번호 없음";
-      const email = userdata?.email || "이메일 없음";
-      const amount = userdata?.requestAmount || 0;
-      const serviceAmount = checkedOrderIds.length * 10000;
-      const payorderid = checkedOrderIds || "";
-      const totalAmount = amount + serviceAmount;
-
-      console.log('userdata', amount,{ selectedPaymentMethod, totalAmount, name, phone, email, payorderid }); // 데이터 출력
-      console.log("Checked Order IDs:", checkedOrderIds);
-
-      // 비동기 결제 요청 (주석 해제 가능)
-      await requestPayment(selectedPaymentMethod, totalAmount, name, phone, email, payorderid);
-    } catch (error) {
-      console.error("Error fetching user info:", error);
-    }
-  };
-
-
-
-
-
-  const refund_API = () => {
-    alert("환불되었습니다.");
-  };
   const final_check_API = (state_btn) => {
     if (state_btn === "확인 완료") {
       return;
@@ -196,16 +153,16 @@ const PestControl_useList = () => {
         <ContentArea_Pest_useList>
           <RowView2 className="title">
             방제이용목록
-            <Icon
+            {/* <Icon
               onClick={() => { setFilter(-1); setrequestDepositState(''); setExterminateState('') }}
               src={require("../../../img/icon_reset.png")}
-            />
+            /> */}
           </RowView2>
 
           <FilterBox_Pest_useList>
-            <div className={isSelect(4)} onClick={() => { setFilter(4); setrequestDepositState(0) }}>
+            {/* <div className={isSelect(4)} onClick={() => { setFilter(4); setrequestDepositState(0) }}>
               결제 대기 ({before_pay_count})</div>
-            <span>▶︎</span>
+            <span>▶︎</span> */}
             <div className={isSelect(0)} onClick={() => { setFilter(0); setExterminateState(0); setrequestDepositState(1) }}>
               매칭중 ({matching_count})
             </div>
@@ -243,18 +200,14 @@ const PestControl_useList = () => {
             <div>업체전화번호</div>
             <div className="addr">농지주소</div>
             <div>상태</div>
-            {/* 헤더 체크박스 */}
-            <HeaderCheckBox
-              filterData={filterData} // 필터링된 데이터 전달
-              checkedOrderIds={checkedOrderIds} // 선택된 orderId 전달
-              setCheckedOrderIds={setCheckedOrderIds} // 상태 업데이트 함수 전달
-            />
+           
+            
             <div className="custom-div" />
           </TableHeader_Pest_useList>
 
           {filterData().map((data, idx) => {
             // 결제 대기 상태 확인
-            const isPaymentPending = data.requestDepositState === 0;
+           
 
             return (
               <TableList_Pest_useList
@@ -268,9 +221,8 @@ const PestControl_useList = () => {
                 <div>{data.exterminator ? data.exterminator.mobileno : "미지정"}</div>
                 <div className="addr">{data.jibun}</div>
                 <div>
-                  {data.requestDepositState === 0
-                    ? "결제 대기"
-                    : data.exterminateState === 0
+                  {
+                    data.exterminateState === 0
                       ? "매칭 중"
                       : data.exterminateState === 1
                         ? "작업 대기"
@@ -281,18 +233,7 @@ const PestControl_useList = () => {
 
 
                 <BtnArea_Pest_useList>
-                  {isPaymentPending && (
-                    <CheckBox
-                      type="checkbox"
-                      $color="#555555"
-                      id={data.orderId}
-                      checked={checkedOrderIds.includes(data.orderId)} // 체크 상태 유지
-                      onClick={(e) => e.stopPropagation()} // Row 클릭 이벤트 차단
-                      onChange={(e) => handleCheckboxChange(data.orderId, e.target.checked)} // 체크 상태 변경
-                    />
-
-
-                  )}
+               
                   {/* 매칭중 상태에 '환불하기' 버튼 추가 */}
                   {data.exterminateState === 0 && data.requestDepositState === 1 && (
                     <div>
@@ -322,12 +263,7 @@ const PestControl_useList = () => {
               </TableList_Pest_useList>
             );
           })}
-          {/* 조건부로 버튼 렌더링 */}
-          {checkedOrderIds.length > 0 && (
-
-            <Btn size="small" onClick={handleButtonClick}>결제하기</Btn>
-
-          )}
+     
 
           <PagingControl
             cnt={cnt}

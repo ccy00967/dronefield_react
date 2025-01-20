@@ -152,6 +152,14 @@ const PestControl_apply = () => {
               value={startDate}
               onChange={(e) => {
                 const selectedDate = new Date(e.target.value); // 선택된 시작일
+                const currentDate = new Date(); // 현재 날짜
+                currentDate.setHours(0, 0, 0, 0); // 시간 정보를 제거해 비교
+
+                if (selectedDate < currentDate) {
+                  alert("유효한 날짜를 선택해주세요."); // 경고 메시지 표시
+                  return; // 처리 중단
+                }
+
                 setStartDate(e.target.value); // 시작일 설정
 
                 // 2주 뒤 날짜 계산
@@ -163,6 +171,7 @@ const PestControl_apply = () => {
                 setEndDate(formattedEndDate); // 종료일 업데이트
               }}
             />
+
           </RowView2>
 
           <div className="subtitle">종료일</div>

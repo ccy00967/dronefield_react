@@ -429,33 +429,22 @@ export const applyPestControl = async (postData, uuid, openModal) => {
 export const load_API = async (
   setDataList,
   setCnt,
-  currentPage,
-  perPage,
-  requestDepositState,
-  exterminateState
+  currentPage = 1, // 기본값: 1
+  perPage = 10, // 기본값: 10
+  requestDepositState = 1, // 기본값: 1 (결제 완료 상태)
+  exterminateState = 0 // 기본값: 0 (매칭 중 상태)
 ) => {
-  const actualCurrentPage = currentPage || 1;
-  const actualPerPage = perPage || 10;
   const userInfo = JSON.parse(localStorage.getItem("User_Credential"));
   const accessToken = userInfo?.access_token;
 
   const fetchData = async () => {
-    // 기본 URL 매개변수 설정
+    // URL 매개변수 설정
     const params = new URLSearchParams({
-      page: actualCurrentPage,
-      page_size: actualPerPage,
+      page: currentPage, // 기본값 1
+      page_size: perPage, // 기본값 10
+      exterminateState, // 기본값 0 (매칭 중)
+      requestDepositState, // 기본값 1 (결제 완료)
     });
-
-    // 조건 처리
-    if (requestDepositState === 0) {
-      params.append("requestDepositState", 0);
-    } else if (requestDepositState === 2) {
-      // requestDepositState가 2일 경우 추가
-      params.append("requestDepositState", 2);
-    } else if ([0, 1, 2, 3].includes(exterminateState)) {
-      params.append("exterminateState", exterminateState);
-      params.append("requestDepositState", 1);
-    }
 
     // URL 생성
     const url = `${server}/trade/list/?${params.toString()}`;
@@ -490,6 +479,8 @@ export const load_API = async (
     throw e;
   }
 };
+
+
 
 
 
