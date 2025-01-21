@@ -32,20 +32,23 @@ function makeAddress(item) {
 // 현재 지도에 표시된 폴리곤 객체를 저장하는 전역 변수
 let currentPolygon = null;
 let lastSearchedLocation = null; // 사용자가 마지막으로 검색한 좌표 저장
-
-const initMap = (naver, infoWindow, setSearchAddr) => {
+let infoWindow = null;
+const initMap = (naver, setSearchAddr) => {
     // 네이버 Maps API 사용 지도 생성
     const map = new naver.maps.Map('map', {
         center: new naver.maps.LatLng(35.1409402, 126.925774), // 초기값: 우리기업 위치
         zoom: 15,
     });
+
+
+    infoWindow = new naver.maps.InfoWindow({ anchorSkew: true });
     map.setOptions("mapTypeControl", true); //지도 유형 컨트롤의 표시 여부
     // ------------------------------
     // 검색된 좌표로 돌아가는 버튼 추가
     // ------------------------------
     const returnToSearchButton = document.createElement('button');
     returnToSearchButton.innerHTML = `
-    <div style="
+      <div style="
       display: inline-block;
       width: 40px;
       height: 40px;
@@ -56,25 +59,11 @@ const initMap = (naver, infoWindow, setSearchAddr) => {
       justify-content: center;
       align-items: center;
     ">
-      <img src="${jidoIcon}" alt="검색 위치로 돌아가기" style="width: 20px; height: 22px;" />
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="22" fill="none" viewBox="0 0 24 24" stroke="#2dcc71" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 2.25c5.385 0 9.75 4.365 9.75 9.75s-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12 6.615 2.25 12 2.25zm0 4.5a5.25 5.25 0 100 10.5 5.25 5.25 0 000-10.5z"/>
+      </svg>
     </div>
-  `;
-//   <div style="
-//   display: inline-block;
-//   width: 40px;
-//   height: 40px;
-//   background-color: #ffffff; /* 버튼 바탕색 */
-//   border-radius: 50%; /* 원형 버튼 */
-//   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* 버튼 그림자 */
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-// ">
-//   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="22" fill="none" viewBox="0 0 24 24" stroke="#2dcc71" stroke-width="2">
-//     <path stroke-linecap="round" stroke-linejoin="round" d="M12 2.25c5.385 0 9.75 4.365 9.75 9.75s-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12 6.615 2.25 12 2.25zm0 4.5a5.25 5.25 0 100 10.5 5.25 5.25 0 000-10.5z"/>
-//   </svg>
-// </div>
-// `;
+    `;
     returnToSearchButton.title = '검색 위치로 돌아가기'; // 툴팁 텍스트 설정 (마우스 오버 시 표시)
     returnToSearchButton.style.position = 'absolute';
     returnToSearchButton.style.bottom = '20px';

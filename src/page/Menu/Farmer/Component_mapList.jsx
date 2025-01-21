@@ -34,9 +34,7 @@ window.addressInfo = {
 const Component_mapList = (props) => {
   const { naver } = window;
 
-  const infoWindow = new naver.maps.InfoWindow({
-    anchorSkew: true,
-  });
+ 
 
 
   useEffect(() => {
@@ -46,11 +44,10 @@ const Component_mapList = (props) => {
         'https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=YOUR_CLIENT_ID',
         initMap,
         naver,
-        infoWindow,
         setSearchAddr,
       );
     } else {
-      initMap(naver, infoWindow, setSearchAddr);
+      initMap(naver, setSearchAddr);
     }
 
 
