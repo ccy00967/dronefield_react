@@ -16,6 +16,7 @@ const Farmland_All = () => {
   const [landCount, setLandCount] = useState(0); // 필지 개수
   const [plantRate, setPlantRate] = useState("현재 서비스 준비중입니다.");
   const [searchAddr, setSearchAddrr] = useState("");
+  const [AllLndpclAr,setAllLndpclAr] = useState("");
 
 
   const calculate_farm = async () => {
@@ -29,7 +30,7 @@ const Farmland_All = () => {
 
   useEffect(() => {
     calculate_farm();
-    allLndpclAr_API();
+    allLndpclAr_API(setAllLndpclAr);
   }, [landCount])
 
   return (
@@ -52,7 +53,7 @@ const Farmland_All = () => {
               <div className="hightLight" />
             </TitleBox>
 
-            <div>{totalArea}㎡</div>
+            <div>{AllLndpclAr}㎡</div>
           </DataBox>
           <DataBox>
             <Icon src={require("../../../img/icon_plant_rate.png")} />

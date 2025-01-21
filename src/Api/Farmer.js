@@ -82,10 +82,10 @@ export const refreshAccessToken = async (reTryFunc) => {
  * @returns {Promise<LandInfo[]>} 
 */
 export const getLandInfo = async (perPage, currentPage) => {
-  const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
-  const accessToken = loadAccessToken();
-  const actualCurrentPage = currentPage || 1;
+  const accessToken = loadAccessToken(); // 토큰 로드
+  const actualCurrentPage = currentPage || 1; // 페이지 초기값 설정
   const actualPerPage = perPage || 10;
+
   try {
     const res = await fetch(server + `/farmer/lands/?page=${actualCurrentPage}&page_size=${actualPerPage}`, {
       method: "GET",
@@ -94,27 +94,32 @@ export const getLandInfo = async (perPage, currentPage) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    if (res.status == 401) {
-      return await refreshAccessToken(getLandInfo);
+
+    if (res.status === 401) {
+      console.log("Access token expired. Refreshing...");
+      return await refreshAccessToken(() => getLandInfo(perPage, currentPage));
     }
-    else if (!res.ok) {
+
+    if (!res.ok) {
       throw new Error(`Error: ${res.statusText}`);
     }
 
     const data = await res.json();
-    console.log(data);
-    return data;
+    console.log("Fetched land info:", data);
+    return data; // 올바른 데이터 반환
   } catch (e) {
-    alert("정보를 가져오는 중 오류가 발생했습니다. 다시 시도해 주세요.");
-    return [];
+    console.error("Error fetching land info:", e.message);
+    alert("정보를 가져오는 중 오류가 발생했습니다. 다시 시도해주세요.");
+    return { data: [], total_items: 0 }; // 기본값 반환
   }
-}
+};
+
 export const getLandcounts = async (setDone_count, setExterminating_count, setMatching_count, setPreparing_count, setBefore_pay_count) => {
   const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
   const accessToken = loadAccessToken();
 
   try {
-    const res = await fetch(server + `/trade/counts/?type=4`, {
+    const res = await fetch(server + `/trade/counts/`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -145,29 +150,43 @@ export const getLandcounts = async (setDone_count, setExterminating_count, setMa
  * @param {*} uuid 
  * @returns 
  */
-export const deleteLandInfo = async (uuid) => {
-  const accessToken = loadAccessToken();
+export const deleteLandInfo = async (landId) => {
+  const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
+  const accessToken = userInfo?.access_token;
+
+  console.log("Access Token:", accessToken); // 디버깅용
+  console.log("Land ID:", landId); // 디버깅용
+
   try {
-    const res = await fetch(server + `/customer/landinfo/${uuid}/`, {
+    const res = await fetch(`${server}/farmer/land/${landId}/`, {
       method: "DELETE",
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`, // Postman과 동일한 형식
       },
     });
-    if (res.status == 401) {
-      return await refreshAccessToken(deleteLandInfo);
-    }
-    else if (!res.ok) {
-      console.error("여기인가요")
-      throw new Error(`Error: ${res.statusText}`);
+
+    console.log("Response Status:", res.status); // 응답 상태 확인
+
+    if (res.status === 401) {
+      console.log("Access token expired. Refreshing token...");
+      return await refreshAccessToken(() => deleteLandInfo(landId));
     }
 
-    return true;
+    if (!res.ok) {
+      const error = await res.json();
+      console.error("Error deleting land:", error);
+      throw new Error(error.message || `Error: ${res.statusText}`);
+    }
+
+    console.log("Land deleted successfully.");
+    return true; // 삭제 성공
   } catch (e) {
-    return false;
+    console.error("Delete Land Error:", e.message || e);
+    return false; // 삭제 실패
   }
-}
+};
+
+
 
 // 농지 Polygon 객체 받기
 export const get_polygon_api = async (x, y) => {
@@ -410,32 +429,22 @@ export const applyPestControl = async (postData, uuid, openModal) => {
 export const load_API = async (
   setDataList,
   setCnt,
-  currentPage,
-  perPage,
-  requestDepositState,
-  exterminateState
+  currentPage = 1, // 기본값: 1
+  perPage = 10, // 기본값: 10
+  requestDepositState = 1, // 기본값: 1 (결제 완료 상태)
+  exterminateState = 0 // 기본값: 0 (매칭 중 상태)
 ) => {
-  const actualCurrentPage = currentPage || 1;
-  const actualPerPage = perPage || 10;
   const userInfo = JSON.parse(localStorage.getItem("User_Credential"));
   const accessToken = userInfo?.access_token;
 
   const fetchData = async () => {
-    // 기본 URL 매개변수 설정
+    // URL 매개변수 설정
     const params = new URLSearchParams({
-      page: actualCurrentPage,
-      page_size: actualPerPage,
+      page: currentPage, // 기본값 1
+      page_size: perPage, // 기본값 10
+      exterminateState, // 기본값 0 (매칭 중)
+      requestDepositState, // 기본값 1 (결제 완료)
     });
-
-    // 조건 처리
-    if (requestDepositState === 0) {
-      // 조건 1: requestDepositState가 0일 경우, exterminateState 상관 없이 requestDepositState만 추가
-      params.append("requestDepositState", 0);
-    } else if ([0, 1, 2, 3].includes(exterminateState)) {
-      // 조건 2: exterminateState가 0, 1, 2, 3일 경우 requestDepositState를 1로 추가
-      params.append("exterminateState", exterminateState);
-      params.append("requestDepositState", 1);
-    }
 
     // URL 생성
     const url = `${server}/trade/list/?${params.toString()}`;
@@ -476,10 +485,13 @@ export const load_API = async (
 
 
 
+
+
 //농지등록 함수
 export const insert_API = async (landinfo, lndpclAr, check) => {
-  const polygonData = await get_polygon_api()
-  console.log(polygonData)
+  console.log("landinfo", landinfo)
+  // const polygonData = await get_polygon_api()
+  // console.log(polygonData)
   if (lndpclAr == "") {
     return alert("검색하기를 눌러서 면적을 입력해주세요");
   }
@@ -492,7 +504,7 @@ export const insert_API = async (landinfo, lndpclAr, check) => {
   console.log('landinfo', landinfo);
   const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
   let accessToken = userInfo?.access_token;
-  console.log('landinfo', landinfo);
+  console.log('lndpclAr', lndpclAr);
   // 첫 번째 POST 요청
   let res = await fetch(server + "/farmer/land/", {
     // let res = await fetch(server + "/customer/lands/", {
@@ -535,17 +547,35 @@ export const insert_API = async (landinfo, lndpclAr, check) => {
 
 //농지정보 수정함수
 export const editLandInfo = async (uuid, landinfo) => {
+  console.log("landinfo", landinfo);
   const userInfo = JSON.parse(localStorage.getItem("User_Credential"));
-  let accessToken = userInfo?.access_token;
-  const res = await fetch(server + `/farmer/land/${uuid}/`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify(landinfo), // 수정할 내용이 없으��로 {}를 ��어요청
-  })
-}
+  const accessToken = userInfo?.access_token;
+
+  try {
+    const res = await fetch(server + `/farmer/land/${uuid}/`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(landinfo),
+    });
+
+    console.log("Response status:", res.status);
+
+    // 성공 상태 반환
+    if (res.ok) {
+      return true; // 수정 성공 시 true 반환
+    } else {
+      console.error("Edit failed with status:", res.status);
+      return false; // 수정 실패 시 false 반환
+    }
+  } catch (error) {
+    console.error("EditLandInfo Error:", error);
+    return false; // 예외 발생 시 false 반환
+  }
+};
+
 
 
 
@@ -568,9 +598,96 @@ export const allLndpclAr_API = async (setAllLndpclAr) => {
   });
 
   const data = await res.json();
+  setAllLndpclAr(data.total_lndpclAr);
   console.log('123', data);
 
 }
+/**
+ * 쌍방 확인용 api
+ */
+export const updateCheckState = async (orderId, checkState) => {
+  const User_Credential = JSON.parse(localStorage.getItem("User_Credential"));
+
+  if (!User_Credential || !User_Credential.access_token) {
+    alert("로그인이 필요합니다. 다시 로그인해주세요.");
+    return;
+  }
+
+  const accessToken = User_Credential.access_token;
+
+  try {
+    const res = await fetch(`${server}/trade/check/${orderId}/`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded", // x-www-form-urlencoded 형식
+        Authorization: `Bearer ${accessToken}`, // 인증 토큰
+      },
+      body: `checkState=${encodeURIComponent(checkState)}`, // URL-encoded Body
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      console.error("Error updating checkState:", errorData);
+      alert(`상태 업데이트 중 문제가 발생했습니다: ${errorData.error || "알 수 없는 오류"}`);
+      return null;
+    }
+
+    const data = await res.json();
+    console.log("Check state updated successfully:", data);
+    return data;
+  } catch (error) {
+    console.error("Fetch error:", error);
+    alert("네트워크 오류로 상태 업데이트를 완료할 수 없습니다.");
+    return null;
+  }
+};
+
+
+/**
+ * orderId로 tossOrderId를 가져오는 API 요청
+ * @param {string} orderId - 주문 ID
+ * @returns {Promise<string>} tossOrderId
+ */
+
+export const getTradeDetail = async (orderId) => {
+  try {
+    // 로컬 스토리지에서 토큰 가져오기
+    const User_Credential = JSON.parse(localStorage.getItem("User_Credential"));
+    const accessToken = User_Credential?.access_token;
+
+    if (!accessToken) {
+      throw new Error("Access token is missing. Please log in again.");
+    }
+
+    // 요청 보내기
+    const response = await fetch(`${server}/trade/detail/${orderId}/`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`, // 헤더에 토큰 추가
+      },
+    });
+
+    // 응답 확인
+    if (!response.ok) {
+      throw new Error(`Failed to fetch tossOrderId: ${response.statusText}`);
+    }
+
+    // JSON 데이터 파싱
+    const data = await response.json();
+    console.log("detaildata", data);
+
+    return data.requestTosspayments; // tossOrderId 반환
+  } catch (error) {
+    console.error("Error fetching tossOrderId:", error);
+    throw error; // 에러를 호출한 곳으로 전달
+  }
+};
+
+
+
+
+
 
 
 /** 농지

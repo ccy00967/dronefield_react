@@ -157,7 +157,7 @@ const UserMenu_농업인 = (props) => {
           방제
         </MainMenuBox>
 
-        <SubMenuBox className={openMenu("방제")} $height={4}>
+        <SubMenuBox className={openMenu("방제")} $height={8}>
           <Menu
             className={selectSub("방제신청")}
             onClick={() => Navigate(menu_url["방제신청"])}
@@ -170,7 +170,20 @@ const UserMenu_농업인 = (props) => {
           >
             ･방제이용목록
           </Menu>
+          <Menu
+            className={selectSub("결제대기")}
+            onClick={() => Navigate(menu_url["결제대기"])}
+          >
+            ･결제대기
+          </Menu>
+          <Menu
+            className={selectSub("환불목록")}
+            onClick={() => Navigate(menu_url["환불목록"])}
+          >
+            ･환불목록
+          </Menu>
         </SubMenuBox>
+
       </div>
       {/* <div>
         <MainMenuBox

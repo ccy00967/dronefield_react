@@ -52,7 +52,7 @@ const Matching = ({ }) => {
   const amount = pilotdata?.requestAmount || 0;
   const email = pilotdata?.email || "이메일 없음";
   const serviceAmount = checkedList.length * 1000;
-  const payorderid = checkedList[0] || "";
+  const payorderid = checkedList || "";
   const totalAmount = amount + serviceAmount;
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("CARD");
 
@@ -247,7 +247,7 @@ const Matching = ({ }) => {
   //cd값을 받아서 정보를 뿌려줌
   const fetchfarmrequest = async () => {
     const farmdata = await getfarmrequest(cdInfo);
-    setDataList(farmdata)
+    setDataList(farmdata.data)
     setCheckedList([]);
     setSelectData([]);
 
@@ -406,7 +406,7 @@ const Matching = ({ }) => {
 
                 {dataList.map((data, idx) => {
                   if (!data || data.length === 0) {
-                    return [];  // data가 undefined 또는 빈 배열일 때 빈 배열 반환
+                    return null;  // data가 undefined 또는 빈 배열일 때 빈 배열 반환
                   }
                   return (
                     <TableList
