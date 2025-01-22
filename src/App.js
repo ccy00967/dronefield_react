@@ -38,6 +38,9 @@ import { PaymentFailPage } from "./page/tosspayments/PaymentFailPage";
 import NicePassPopUp from "./page/SignUp/NicePassPopUp";
 import PaymentPending from "./page/Menu/Farmer/PaymentPending";
 import RefundList from "./page/Menu/Farmer/RefundList";
+//네이버 웹뷰 지도
+import NaverMap_WebView from "./page/flutteWebView/NaverMapWebView";
+
 
 
 function App() {
@@ -234,6 +237,9 @@ function App() {
           />
         }
       />
+      {/* 네이버 웹뷰 */}
+      <Route path="/naver-map" element={<NaverMap_WebView />} />
+
 
       {/* 토스 리다이렉트 페이지 */}
       <Route
@@ -245,6 +251,9 @@ function App() {
         element={<PrivateRoute isLogin={isLogin} component={PaymentFailPage} />}
       />
     </Routes>
+
+
+
   );
 }
 
