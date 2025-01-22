@@ -6,6 +6,8 @@ export const menu_url = {
   "농지 전체보기": "/mypage/all",
   방제신청: "/pestcontrol/apply",
   방제이용목록: "/pestcontrol/uselist",
+  결제대기: "/pestcontrol/payment-pending", // 결제대기 추가
+  환불목록: "/pestcontrol/refund-list", // 환불목록 추가
   농지분석신청: "/analysis/apply",
   "농지분석 이용목록": "/analysis/uselist",
   // 드론조종사

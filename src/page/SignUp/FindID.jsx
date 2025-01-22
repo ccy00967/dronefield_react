@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Common_Layout from "../../Component/common_Layout";
 import { FindBox, IDBOX, Btn } from "./css/FindIDCss";
+import NicePassBtn from "./NicePassBtn";
 
 
 const FindID = () => {
@@ -31,9 +32,10 @@ const FindID = () => {
         ) : (
           <>
             <div className="text">아이디 찾기</div>
-            <Btn className="light" onClick={PASS_API}>
+            {/* <Btn className="light" onClick={PASS_API}>
               본인인증하기
-            </Btn>
+            </Btn> */}
+            <NicePassBtn/>
           </>
         )}
       </FindBox>

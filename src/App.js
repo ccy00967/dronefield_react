@@ -36,6 +36,11 @@ import Adjustment2 from "./page/Menu/PesticideDealer/Adjustment";
 import { PaymentSuccessPage } from "./page/tosspayments/PaymentSuccessPage";
 import { PaymentFailPage } from "./page/tosspayments/PaymentFailPage";
 import NicePassPopUp from "./page/SignUp/NicePassPopUp";
+import PaymentPending from "./page/Menu/Farmer/PaymentPending";
+import RefundList from "./page/Menu/Farmer/RefundList";
+//네이버 웹뷰 지도
+import NaverMap_WebView from "./page/flutteWebView/NaverMapWebView";
+
 
 
 function App() {
@@ -98,6 +103,7 @@ function App() {
           }
         />
       </Route>
+
       {/* 방제 */}
       <Route path="/pestcontrol">
         <Route
@@ -120,7 +126,30 @@ function App() {
             />
           }
         />
+        {/* 결제대기 */}
+        <Route
+          path="payment-pending"
+          element={
+            <PrivateRoute
+              isLogin={isLogin}
+              isAccess={accessType1}
+              component={PaymentPending}
+            />
+          }
+        />
+        {/* 환불목록 */}
+        <Route
+          path="refund-list"
+          element={
+            <PrivateRoute
+              isLogin={isLogin}
+              isAccess={accessType1}
+              component={RefundList}
+            />
+          }
+        />
       </Route>
+
       {/* 농지분석 */}
       <Route path="/analysis">
         <Route
@@ -176,6 +205,7 @@ function App() {
           />
         }
       />
+
       {/* 농약상 메뉴 */}
       <Route
         path="/inventory"
@@ -207,26 +237,23 @@ function App() {
           />
         }
       />
+      {/* 네이버 웹뷰 */}
+      <Route path="/naver-map" element={<NaverMap_WebView />} />
+
+
       {/* 토스 리다이렉트 페이지 */}
       <Route
-        path="success"
-        element={
-          <PrivateRoute
-            isLogin={isLogin}
-            component={PaymentSuccessPage}
-          />
-        }
+        path="/success"
+        element={<PrivateRoute isLogin={isLogin} component={PaymentSuccessPage} />}
       />
       <Route
-        path="fail"
-        element={
-          <PrivateRoute
-            isLogin={isLogin}
-            component={PaymentFailPage}
-          />
-        }
+        path="/fail"
+        element={<PrivateRoute isLogin={isLogin} component={PaymentFailPage} />}
       />
     </Routes>
+
+
+
   );
 }
 

@@ -33,6 +33,7 @@ const Home = () => {
               <Icon
                 className="pointer"
                 src={require("../../img/store_google.png")}
+                onClick={() => {window.alert('app')}}
               />
             </div>
           </CenterView>

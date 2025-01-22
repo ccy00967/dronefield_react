@@ -52,15 +52,19 @@ const NicePassBtn = ({ isOpen, closeModal, setNicepass }) => {
             //if (event.origin !== window.location.href) return;
             if (event.data === "ok") {
                 dispatch(nicePassSuccess())
+                console.log('나이스 인증')
+                
             }
             if (event.data === "no") {
                 dispatch(nicePassFail())
+                console.log('나이스 인증2')
+
             }
             return;
         }
+
         window.addEventListener("message", receiveMessage, false);
 
-        window.postMessage("no");
     }
 
     return (

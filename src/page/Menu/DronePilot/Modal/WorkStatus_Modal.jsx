@@ -18,13 +18,14 @@ import {
 } from "../../../../Component/common_style";
 import noScroll from "../../../../Component/function/noScroll";
 import useEscapeKey from "../../../../Component/function/useEscapeKey";
+import { MapArea } from "../../Farmer/css/FarmerCss";
 
 
 
 const WorkStatus_Modal = forwardRef((props, ref) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [data, setData] = useState({});
-  console.log("123",data.landInfo);
+  // console.log("123",data.landInfo);
   //.lndpclAr
   useImperativeHandle(ref, () => ({
     visible: (data) => {
@@ -35,18 +36,18 @@ const WorkStatus_Modal = forwardRef((props, ref) => {
   // 모달 open시 스크롤방지F
   noScroll(modalOpen);
 
-  const name = data.owner?.name || "이름 없음"
-  const phonenum = data.owner?.phone_number || "번호 없음";
+  const name = data?.owner_name || "이름 없음"
+  const phonenum = data?.owner_mobileno || "번호 없음";
   // -
   const transaction = data.dealmothod === 0 ? "일반거래" : "개인거래";
-  const farmland = data.landInfo?.address.jibunAddress || "농지 없음";
+  const farmland = data?.jibun || "농지 없음";
   const date = data.endDate
   // const [date, setDate] = useState("8/19");
   const [price, setPrice] = useState("30원");
   const pesticidesUsed = data.pesticide || "농약 없음";
-  const amount =30 * Math.round(data.landInfo?.lndpclAr * 0.3025).toString() || "대금 없음";
+  const amount = 30 * Math.round(data?.lndpclAr * 0.3025).toString() || "대금 없음";
   // -
- // const [amount, setAmount] = useState(360000);
+  // const [amount, setAmount] = useState(360000);
   const [serviceAmount, setServiceAmount] = useState(1000);
   // -
 
@@ -109,6 +110,7 @@ const WorkStatus_Modal = forwardRef((props, ref) => {
             <TextMedium>사용농약</TextMedium>
             <div className="gray">{pesticidesUsed}</div>
           </DataRow>
+
 
           <Hr />
 

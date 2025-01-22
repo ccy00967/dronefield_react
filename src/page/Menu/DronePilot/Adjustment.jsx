@@ -165,7 +165,7 @@ const Adjustment = () => {
 
               return (
                 <TableList key={idx} className={(idx + 1) % 2 === 0 ? "x2" : ""}>
-                  <div>{data.landInfo.landNickName}</div>
+                  <div>{data.landNickName}</div>
                   <div>{data.startDate}</div>
                   <div>{data.owner.name}</div>
                   <div>{data.owner.mobileno}</div>

@@ -284,18 +284,28 @@ export const DateBox = styled.div`
 
 
 export const Btn = styled.div`
-  padding: 1rem;
+  padding: 1rem 0.5rem; /* 위아래는 1rem, 좌우는 0.5rem */
   margin-top: 1rem;
+  margin-left: auto; /* 왼쪽 여백을 자동으로 설정하여 오른쪽으로 밀기 */
+  margin-right: 0; /* 오른쪽 여백 제거 */
   font-family: var(--font-Pretendard-SemiBold);
   text-align: center;
   color: white;
   background-color: ${GreenColor};
   border-radius: 8px;
   cursor: pointer;
-  &:hover{
+
+  /* 버튼 hover 효과 */
+  &:hover {
     background-color: ${hoverGreen};
   }
+
+  /* 버튼 너비를 작게 조정 */
+  width: auto; /* 기본 크기 */
+  max-width: 170px; /* 최대 너비 제한 */
 `;
+
+
 
 
 
@@ -335,17 +345,17 @@ border-radius: 8px;
 
 export const InputBox_Farmland_InsertModal = styled.input`
   box-sizing: border-box;
-  width: 80%; /* 너비를 80%로 줄임 */
-  padding: 0.5rem 0.8rem; /* 내부 여백 축소 */
-  margin: 0.3rem 0; /* 위아래 간격 축소 */
-  font-size: 14px; /* 텍스트 크기 줄임 */
-  height: 36px; /* 고정된 높이 설정 */
-  outline: 0;
+  width: 60%; /* 너비를 부모의 60%로 설정 */
+  padding: 0.5rem 0.8rem; /* 내부 여백 */
+  font-size: 14px; /* 텍스트 크기 */
+  height: 36px; /* 입력 박스 높이 */
   border: 1px solid #dcdcdc; /* 테두리 색상 */
   border-radius: 6px; /* 모서리 둥글게 */
+  margin-left: auto; /* Flexbox로 오른쪽 배치 */
+  outline: 0;
   &::placeholder {
-    color: #aaaaaa; /* Placeholder 텍스트 색상 */
-    font-size: 13px; /* Placeholder 크기 */
+    color: #aaaaaa; /* Placeholder 색상 */
+    font-size: 13px;
   }
   &:focus {
     border: 1px solid ${GreenColor}; /* 포커스 시 테두리 색상 */
@@ -634,30 +644,41 @@ div.this {
 `;
 
 export const TableHeader_Pest_useList = styled(RowView)`
-height: 4rem;
-margin-top: 0.5rem;
-background-color: ${lightGreenColor};
-font-size: 18px;
-font-family: var(--font-Pretendard-Medium);
-div {
-  text-align: center;
-  flex: 1;
-}
-div.addr {
-  flex: 2;
-}
-select {
+  height: 4rem;
+  margin-top: 0.5rem;
+  background-color: ${lightGreenColor};
   font-size: 18px;
   font-family: var(--font-Pretendard-Medium);
-  background-color: ${lightGreenColor};
-  border: 0;
-  outline: 0;
-  cursor: pointer;
-}
-span {
-  width: 6rem;
-}
+
+  div {
+    display: flex;
+    align-items: center; /* 세로 중앙 정렬 */
+    justify-content: center; /* 가로 중앙 정렬 */
+    text-align: center; /* 텍스트 중앙 정렬 */
+    flex: 0.8; /* 모든 열 동일 비율 */
+  }
+
+  div.addr {
+    flex: 1.5; /* 농지주소 열은 더 넓게 */
+  }
+
+  
+  /* 특정 div 크기 조정 */
+  .custom-div {
+    flex: 0.1; /* 해당 div의 비율 설정 */
+    
+  }
+
+  select {
+    font-size: 18px;
+    font-family: var(--font-Pretendard-Medium);
+    background-color: ${lightGreenColor};
+    border: 0;
+    outline: 0;
+    cursor: pointer;
+  }
 `;
+
 
 export const TableList_Pest_useList = styled(RowView)`
 height: 4rem;
@@ -705,3 +726,34 @@ export const BtnArea_Pest_useList = styled.span`
   cursor: pointer;}
   }
 `;
+
+
+export const StyledDatePicker = styled.input`
+  width: 100%; /* 가로 길이 채우기 */
+  max-width: 300px; /* 적당한 크기로 제한 */
+  padding: 12px 16px; /* 내부 여백 */
+  font-size: 16px; /* 기본 텍스트 크기 */
+  font-family: var(--font-Pretendard-Medium); /* Pretendard Medium 폰트 */
+  color: #333; /* 텍스트 색상 */
+  border: 1px solid #f0f0f0; /* 기본 테두리 */
+  border-radius: 8px; /* 테두리 둥글게 */
+  background-color: #fff; /* 배경 흰색 */
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); /* 부드러운 그림자 */
+  transition: border-color 0.3s, box-shadow 0.3s;
+
+  &:hover {
+    border-color: ${GreenColor}; /* 강조 초록색 */
+  }
+
+  &:focus {
+    border-color: ${GreenColor}; /* 포커스 시 초록색 */
+    outline: none; /* 기본 포커스 제거 */
+    box-shadow: 0 0 6px rgba(76, 175, 80, 0.4); /* 초록색 포커스 효과 */
+  }
+
+  &::placeholder {
+    color: #aaa; /* 플레이스홀더 텍스트 색상 */
+    font-size: 14px; /* 플레이스홀더 텍스트 크기 */
+  }
+`;
+
