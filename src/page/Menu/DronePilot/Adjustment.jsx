@@ -167,9 +167,9 @@ const Adjustment = () => {
                 <TableList key={idx} className={(idx + 1) % 2 === 0 ? "x2" : ""}>
                   <div>{data.landNickName}</div>
                   <div>{data.startDate}</div>
-                  <div>{data.owner.name}</div>
-                  <div>{data.owner.mobileno}</div>
-                  <div className="addr">{data.owner.address.jibunAddress}</div>
+                  <div>{data.owner_name}</div>
+                  <div>{data.owner_mobileno}</div>
+                  <div className="addr">{data.jibun}</div>
                   <div>{data.calculation ===0 ?("정산대기"):data.calculation ===1&&("정산완료")}</div>
 
 

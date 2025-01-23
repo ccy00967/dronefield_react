@@ -317,6 +317,7 @@ const SignUp = () => {
         <Btn className="signUp" onClick={go_nextPage}>
           가입하기
         </Btn>
+        <Btn onClick={()=> Navigate("rules")} >얌마</Btn>
       </LoginBox>
       {
         addrmodalOpen &&

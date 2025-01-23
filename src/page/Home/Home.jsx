@@ -7,7 +7,7 @@ import {
   RowView,
 } from "../../Component/common_style";
 import { InsertRefreshAccessToken, refreshAccessToken } from "../../Api/Farmer";
-import { Section1, Section2, HomePic, Text, SectionLast } from "./HomeCss"
+import { Section1, Section2, HomePic, Text, SectionLast, Section3 } from "./HomeCss"
 import Login from "./Login";
 
 
@@ -43,7 +43,7 @@ const Home = () => {
         </RowView>
       </Section1>
 
-      <Section2>
+      <Section3>
         <CenterView className="flex">
           <Text>
             <div>
@@ -62,7 +62,7 @@ const Home = () => {
         <CenterView className="flex">
           <Icon src={require("../../img/home2.png")} />
         </CenterView>
-      </Section2>
+      </Section3>
 
       <Section1>
         <HomePic src={require("../../img/home3.png")} />
@@ -85,7 +85,7 @@ const Home = () => {
         </RowView>
       </Section1>
 
-      <Section2>
+      {/* <Section2>
         <CenterView className="flex">
           <Text>
             <div>
@@ -104,9 +104,9 @@ const Home = () => {
         <CenterView className="flex">
           <Icon src={require("../../img/home4.png")} />
         </CenterView>
-      </Section2>
+      </Section2> */}
 
-      <Section2 style={{ margin: 0 }}>
+      <Section2 style={{ margin: 100 }}>
         <div className="flex">
           <Text>
             <div className="green">준비 중인 제품 및 서비스ㅤㅤㅤㅤ </div>
