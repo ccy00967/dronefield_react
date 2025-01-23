@@ -262,14 +262,14 @@ export const search_area_api = async (pnu) => {
   // console.log("pnu1", pnu);
   return new Promise((resolve, reject) => {
     $.ajax({
-      type: "POST",
+      type: "GET",
       url: getLndpclAr + `&pnu=${pnu}` + "&format=json",
       dataType: "jsonp",
       success: function (respnu) {
         try {
           const area = respnu.ladfrlVOList.ladfrlVOList[0]?.lndpclAr; // 안전하게 데이터 접근
           // console.log("pnu2", pnu);
-          // console.log("LndcplAr1", area);
+          console.log("search_area_api", area);
           resolve(area); // area 값을 Promise 성공 상태로 반환
         } catch (error) {
           console.error("Error parsing response:", error, respnu);

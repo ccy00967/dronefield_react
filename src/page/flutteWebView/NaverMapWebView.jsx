@@ -4,6 +4,8 @@ import { server } from "../url";
 
 let currentPolygon = null; // 현재 지도에 표시된 폴리곤 객체
 let searchedCenter = null; // 검색된 주소의 중심 좌표를 저장
+let map = null; // 지도 객체를 전역 변수로 선언
+
 
 const NaverMap_WebView = () => {
   const { naver } = window;
@@ -15,6 +17,12 @@ const NaverMap_WebView = () => {
     } else {
       initMap(); // API가 이미 로드된 경우 바로 초기화
     }
+    window.addEventListener("hashchange", handleHashChange);
+
+    return () => {
+      window.removeEventListener("hashchange", handleHashChange); // 이벤트 정리
+    };
+
   }, []);
 
   // 네이버 지도 API 로드
@@ -49,7 +57,7 @@ const NaverMap_WebView = () => {
       mapTypeControl: false, // 지도 타입 컨트롤 비활성화
     };
 
-    const map = new naver.maps.Map("map", mapOptions);
+    map = new naver.maps.Map("map", mapOptions);
 
     // 확대/축소 시 검색된 좌표를 다시 중앙으로 고정
     naver.maps.Event.addListener(map, "zoom_changed", () => {
@@ -62,20 +70,40 @@ const NaverMap_WebView = () => {
     handleFlutterMessage(map);
   };
 
+
   // 플러터로부터 메시지를 받아 처리
   const handleFlutterMessage = (map) => {
     window.addEventListener("message", async (event) => {
       try {
+        if (!event.data) {
+          console.error("Empty message received from Flutter.");
+          return;
+        }
+
         const { action, payload } = JSON.parse(event.data);
 
-        if (action === "searchAddress") {
-          await searchAddressToCoordinate(payload.address, map);
+        // Action별 처리
+        switch (action) {
+          case "searchAddress":
+            if (payload?.address) {
+              await searchAddressToCoordinate(payload.address, map);
+            } else {
+              console.error("Invalid payload for searchAddress:", payload);
+              sendToFlutter("error", "Invalid address data received.");
+            }
+            break;
+
+          default:
+            console.warn("Unhandled action:", action);
+            sendToFlutter("error", `Unhandled action: ${action}`);
         }
       } catch (error) {
-        console.error("Failed to parse message from Flutter:", error);
+        console.error("Error while handling Flutter message:", error);
+        sendToFlutter("error", "Failed to process message from Flutter.");
       }
     });
   };
+
 
   // 주소 -> 좌표 변환 및 폴리곤 표시
   const searchAddressToCoordinate = async (address, map) => {
@@ -111,9 +139,24 @@ const NaverMap_WebView = () => {
     }
   };
 
+
+  const handleHashChange = () => {
+    const hash = window.location.hash.slice(1); // # 뒤의 값을 가져옴
+    const params = new URLSearchParams(hash);
+    const type = params.get("type");
+    const address = params.get("address");
+
+    if (type === "searchAddress" && address) {
+      searchAddressToCoordinate(address, map);
+    } else if (type === "error") {
+      console.error("Error from Flutter:", params.get("message"));
+    }
+  };
+
+
   // HTTPS URL을 활용해 데이터를 전달하는 함수
   const sendToFlutter = (eventType, data) => {
-    let url = `${server}/event?type=${eventType}`; // HTTPS URL 생성
+    let url = `#type=${eventType}`; // Hash 값 사용
 
     if (eventType === "searchAddress") {
       url += `&address=${encodeURIComponent(data)}`;
@@ -121,8 +164,9 @@ const NaverMap_WebView = () => {
       url += `&message=${encodeURIComponent(data)}`;
     }
 
-    window.location.href = url; // HTTPS URL을 WebView로 전달
+    window.location.href = url; // Hash 값 변경 (리로드 방지)
   };
+
 
   // 폴리곤 데이터 요청 및 지도에 표시
   const showPolygonData = async (point, map) => {
