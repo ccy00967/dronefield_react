@@ -29,13 +29,14 @@ const NaverMap_WebView = () => {
   const loadNaverMapAPI = () => {
     const script = document.createElement("script");
     script.src =
-      "https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=YOUR_CLIENT_ID";
+      "https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=YOUR_CLIENT_ID&submodules=geocoder";
     script.async = true;
-    script.onload = () => initMap(); // 스크립트 로드 완료 후 지도 초기화
+    script.onload = () => initMap();
     script.onerror = () =>
       console.error("Failed to load Naver Maps API. Check your client ID.");
     document.head.appendChild(script);
   };
+
 
   // 지도 초기화 함수
   const initMap = () => {
