@@ -336,7 +336,7 @@ export const getWorkStatus = async () => {
 
     const data = await res.json();
     console.log("Work Status List:", data);
-    return data;
+    return data.data;
   };
 
   try {

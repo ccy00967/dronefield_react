@@ -159,10 +159,7 @@ const Notice_detail = () => {
           );
         })} */}
 
-                {/* <InsertBox>
-          <TextareaBox placeholder="댓글 내용을 입력해주세요." />
-          <CenterView onClick={reply_insert_API}>등록</CenterView>
-        </InsertBox> */}
+                
             </ContentArea>
         </Common_Layout>
     );

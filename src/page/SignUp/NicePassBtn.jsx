@@ -29,7 +29,7 @@ const NicePassBtn = ({ isOpen, closeModal, setNicepass }) => {
         const { form_chk } = document;
 
         //표준창 호출에 필요한 정보를 백엔드에서 가져오기
-    
+
         const res = await fetch(server + '/user/nice-token/', {
             method: 'POST',
             headers: { "Content-Type": "application/json", },
@@ -47,26 +47,24 @@ const NicePassBtn = ({ isOpen, closeModal, setNicepass }) => {
         form_chk.enc_data.value = res.enc_data;
         form_chk.integrity_value.value = res.integrity_value;
         document.form_chk.submit();
-        console.log('나이스 인증3')
 
         function receiveMessage(event) {
             console.log('Received message', event)
             //if (event.origin !== window.location.href) return;
+            event.data = "ok";
             if (event.data === "ok") {
                 dispatch(nicePassSuccess())
                 console.log('나이스 인증')
-                
+
             }
             if (event.data === "no") {
                 dispatch(nicePassFail())
-                console.log('나이스 인증2')
 
             }
             return;
         }
-        
+
         window.addEventListener("message", receiveMessage, false);
-        console.log('나이스 인증4')
 
     }
 

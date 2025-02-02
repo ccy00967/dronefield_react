@@ -57,17 +57,17 @@ const TopBar = (props) => {
   // const goCs = () => Navigate("/Cs");
   // const goServiceInfo = () => Navigate("/ServiceInfo");
   const goUserGuide = () => Navigate("/UserGuide");
-  const goTradeMethodDescription = () => Navigate("/TradeMethodDescription");
-  const goB2bInquiry = () => Navigate("/B2bInquiry")
+  // const goTradeMethodDescription = () => Navigate("/TradeMethodDescription");
+  // const goB2bInquiry = () => Navigate("/B2bInquiry")
   const goNotice = () => Navigate("/Notice")
-  const goFaq = () => Navigate("/Faq")
-  const goTermsPrivacyConsent = () => Navigate("/TermsPrivacyConsent")
+  // const goFaq = () => Navigate("/Faq")
+  const goTerms = () => Navigate("/Terms")
 
   
   const Logout_API = () => {
     // localStorage에 userInfo가 저장되어있기 때문에
     // 로그아웃 API sucess 후 해당 코드가 꼭 실행되어야 합니다.
-    // logout();
+    logout();
     localStorage.removeItem("User_Credential");
     window.location.replace("/");
   };
@@ -86,7 +86,7 @@ const TopBar = (props) => {
         {/* <div className={isThisPage("고객센터")} onClick={goCs}>
           고객센터
         </div> */}
-        <div
+        {/* <div
           className={isThisPage("거래방식 설명")}
           onClick={goTradeMethodDescription}
         >
@@ -97,24 +97,24 @@ const TopBar = (props) => {
           onClick={goB2bInquiry}
         >
           B2B 문의
-        </div>
+        </div> */}
         <div
           className={isThisPage("공지사항")}
           onClick={goNotice}
         >
           공지사항
         </div>
-        <div
+        {/* <div
           className={isThisPage("자주 묻는 질문")}
           onClick={goFaq}
         >
           자주 묻는 질문
-        </div>
+        </div> */}
         <div
-          className={isThisPage("약관 개인정보 처리 동의")}
-          onClick={goTermsPrivacyConsent}
+          className={isThisPage("이용약관")}
+          onClick={goTerms}
         >
-          약관 개인정보 처리 동의
+          이용약관
         </div>
       </MenuArea>
 

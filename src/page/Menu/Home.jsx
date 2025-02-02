@@ -36,22 +36,22 @@ const MainMenu = () => {
 
   const Set_User_info = async () => {
     // const res = await fetch(server + '/user/userinfo/' + User_Credential.uuid + '/', {
-      const res = await fetch(server + '/user/profile/', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          authorization: "Bearer " + User_Credential.access_token,
-        },
-        // 나중에 동시 로그인, 다른 곳에서 로그인을 credentials의 정보로 찾기
-        credentials: "include",
-      })
+    const res = await fetch(server + '/user/profile/', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        authorization: "Bearer " + User_Credential.access_token,
+      },
+      // 나중에 동시 로그인, 다른 곳에서 로그인을 credentials의 정보로 찾기
+      credentials: "include",
+    })
       .then((res) => { return res.json(); })
       .then((data) => {
         return data
       });
 
     setUserInfo(res)
-    console.log('3434',User_Credential)
+    console.log('3434', User_Credential)
   }
 
 
@@ -75,7 +75,13 @@ const MainMenu = () => {
 
             <MenuIconArea>
               {userType === "농업인" && (
-                <CenterView className="center">
+                <CenterView className="center"
+                  style={{
+                    display: "flex", // Flexbox 활성화
+                    justifyContent: "center", // 수평 가운데 정렬
+                    alignItems: "center", // 수직 가운데 정렬
+                    flexWrap: "wrap", // 줄바꿈 활성화
+                  }}>
                   <IconBox onClick={() => Navigate(menu_url["농지등록"])}>
                     <Icon src={require("../../img/icon_menu_plus.png")} />
                     농지등록
@@ -84,10 +90,10 @@ const MainMenu = () => {
                     <Icon src={require("../../img/icon_menu_table.png")} />
                     농지 전체보기
                   </IconBox>
-                  <IconBox onClick={() => alert("준비중입니다.")}>
+                  {/* <IconBox onClick={() => alert("준비중입니다.")}>
                     <Icon src={require("../../img/icon_menu_solution.png")} />
                     맞춤형 솔루션
-                  </IconBox>
+                  </IconBox> */}
                   <IconBox onClick={() => Navigate(menu_url["방제신청"])}>
                     <Icon src={require("../../img/icon_menu_bug.png")} />
                     방제신청
@@ -97,15 +103,15 @@ const MainMenu = () => {
                     방제이용목록
                   </IconBox>
                   {/* <IconBox onClick={() => Navigate(menu_url["농지분석신청"])}> */}
-                  <IconBox onClick={() => alert("준비중입니다.")}>
+                  {/* <IconBox onClick={() => alert("준비중입니다.")}>
                     <Icon src={require("../../img/icon_menu_graph.png")} />
                     농지분석신청
-                  </IconBox>
+                  </IconBox> */}
                   {/* <IconBox onClick={() => Navigate(menu_url["농지분석 이용목록"])}> */}
-                  <IconBox onClick={() => alert("준비중입니다.")}>
+                  {/* <IconBox onClick={() => alert("준비중입니다.")}>
                     <Icon src={require("../../img/icon_menu_plant.png")} />
                     농지분석 이용목록
-                  </IconBox>
+                  </IconBox> */}
                   <IconBox onClick={() => Navigate(menu_url["내 정보 수정"])}>
                     <Icon src={require("../../img/icon_menu_profile.png")} />내
                     정보 수정
@@ -114,7 +120,13 @@ const MainMenu = () => {
               )}
 
               {userType === "드론조종사" && (
-                <CenterView className="center">
+                <CenterView className="center"
+                  style={{
+                    display: "flex", // Flexbox 활성화
+                    justifyContent: "center", // 수평 가운데 정렬
+                    alignItems: "center", // 수직 가운데 정렬
+                    flexWrap: "wrap", // 줄바꿈 활성화
+                  }}>
                   <IconBox
                     className="oneRow"
                     onClick={() => Navigate(menu_url["거래매칭"])}
@@ -136,7 +148,9 @@ const MainMenu = () => {
                     <Icon src={require("../../img/icon_pay.png")} />
                     정산
                   </IconBox>
-                  <IconBox onClick={() => Navigate(menu_url["내 정보 수정"])}>
+                  <IconBox
+                    className="oneRow"
+                    onClick={() => Navigate(menu_url["내 정보 수정"])}>
                     <Icon src={require("../../img/icon_menu_profile.png")} />내
                     정보 수정
                   </IconBox>

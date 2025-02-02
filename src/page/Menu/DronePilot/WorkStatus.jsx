@@ -63,7 +63,7 @@ const WorkStatus = () => {
         throw new Error(`HTTP error! Status: ${res.status}`);
       }
 
-      const data = await res.json();
+      const data = await res.json().data;
       setDataList(data); // 데이터를 상태로 설정
       console.log(`Work Status (${exterminateState || "전체"})`, data);
       return data;
