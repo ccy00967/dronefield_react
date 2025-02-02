@@ -99,3 +99,70 @@ export const fetchUserInfo = async () => {
         return { error: true, message: error.message }; // 기타 에러 반환
     }
 };
+
+export const sendResetPasswordCode = async (data) => {
+    const formData = new URLSearchParams();
+    formData.append("email", data.email);
+    formData.append("name", data.name);
+    formData.append("birthdate", data.dob);
+    formData.append("mobileno", data.phone);
+    console.log("body data", data);
+
+    try {
+        const response = await fetch(`${server}/user/resetpassword/sendcode/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: formData.toString(),
+        });
+
+        if (!response.ok) {
+            // 에러 응답 처리
+            const errorText = await response.text(); // 응답 텍스트를 읽어서 로깅
+            console.error("Error response text:", errorText);
+            throw new Error(`Error: ${response.statusText}`);
+        }
+
+        // JSON 응답을 처리
+        const jsonData = await response.json();
+        console.log("Response JSON:", jsonData);
+        return jsonData; // 성공적인 응답 반환
+    } catch (error) {
+        console.error("API Error:", error);
+        throw error; // 에러는 호출 측에서 처리
+    }
+};
+
+/**
+ * 비밀번호 재설정 API 호출
+ * @param {Object} data - 요청 데이터 (validate_key, password)
+ * @returns {Promise} - 서버 응답
+ */
+export const resetPassword = async (data) => {
+    const url = `${server}/user/resetpassword/checkcode/`;
+    const formData = new URLSearchParams();
+
+    formData.append("validate_key", data.validate_key);
+    formData.append("password", data.password);
+
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: formData.toString(),
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Error: ${response.statusText} - ${errorText}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("API Error:", error);
+        throw error;
+    }
+};

@@ -38,7 +38,7 @@ export const SearchBar = styled(RowView2)`
   }
 `;
 export const SearchSelect = styled.select`
-  width: 3rem;
+  width: 5rem;
   padding: 0.5rem 0rem;
   font-size: 16px;
   border: none;

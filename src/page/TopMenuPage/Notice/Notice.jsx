@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Common_Layout from "../../Component/common_Layout";
+import Common_Layout from "../../../Component/common_Layout";
 import {
   CenterView,
   Icon,
   RowView,
   RowView2,
-} from "../../Component/common_style";
-import PagingControl from "../../Component/UI/PagingControl";
+} from "../../../Component/common_style";
+import PagingControl from "../../../Component/UI/PagingControl";
 import {
   ContentArea,
   CSInfo,
@@ -17,10 +17,10 @@ import {
   TableHeader,
   TableList,
   Btn,
-} from "./css/CSCss";
+} from "../css/CSCss";
 
 
-const CS = () => {
+const Notice = () => {
   const Navigate = useNavigate();
 
   const [searchType, setSearchType] = useState("병원");
@@ -64,17 +64,17 @@ const CS = () => {
   const onFocus = () => setIsfocuse("on");
   const offFocus = () => setIsfocuse("off");
 
-  const go_write = () => Navigate("insert");
+//   const go_write = () => Navigate("insert");
 
   return (
-    <Common_Layout minWidth={700} topMenu={"고객센터"}>
+    <Common_Layout minWidth={700} topMenu={"공지사항"}>
       <CenterView>
         <ContentArea>
-          <div className="title">고객문의게시판</div>
-          <CSInfo>
-            고객문의게시판
+          <div className="title">공지사항</div>
+          {/* <CSInfo>
+            B2B 문의게시판
             <span>010-7735-3953</span>
-          </CSInfo>
+          </CSInfo> */}
 
           <RowView>
             <RowView2>
@@ -99,12 +99,12 @@ const CS = () => {
                 />
                 <Icon
                   onClick={search_API}
-                  src={require("../../img/icon_search.png")}
+                  src={require("../../../img/icon_search.png")}
                 />
               </SearchBar>
             </RowView2>
 
-            <Btn onClick={go_write}>글 작성</Btn>
+            {/* <Btn onClick={go_write}>글 작성</Btn> */}
           </RowView>
 
           <TableHeader>
@@ -125,9 +125,9 @@ const CS = () => {
                 onClick={go_detail}
               >
                 <span>{boardNum}</span>
-                <div className="long">비밀번호 어떻게 변경하나요?</div>
-                <div>홍길동</div>
-                <div>2021.02.02</div>
+                <div className="long">[공지사항] 서비스 점검 안내</div>
+                <div>관리자</div>
+                <div>2025년 1월 28일</div>
               </TableList>
             );
           })}
@@ -144,4 +144,4 @@ const CS = () => {
   );
 };
 
-export default CS;
+export default Notice;
