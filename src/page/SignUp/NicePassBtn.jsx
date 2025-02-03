@@ -47,7 +47,6 @@ const NicePassBtn = ({ isOpen, closeModal, setNicepass }) => {
         form_chk.enc_data.value = res.enc_data;
         form_chk.integrity_value.value = res.integrity_value;
         document.form_chk.submit();
-
         function receiveMessage(event) {
             console.log('Received message', event)
             //if (event.origin !== window.location.href) return;

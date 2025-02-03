@@ -29,7 +29,7 @@ const PaymentPending = () => {
 
   useEffect(() => {
     // 결제 대기 상태의 데이터만 로드
-    load_API(setDataList, setCnt, currentPage, perPage, 0, null);
+    load_API(setDataList, setCnt, currentPage, perPage, 0, 0);
   }, [currentPage, perPage]);
 
   // 전체 선택 상태 확인

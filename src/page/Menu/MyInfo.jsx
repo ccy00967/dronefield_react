@@ -712,19 +712,13 @@ const MyInfo = () => {
               </div>
 
               {/* 저장 버튼 */}
-              <Btn2
+              <Btn
                 className={themeColor()}
                 onClick={registerLicense}
-                style={{
-                  marginTop: "30px",
-                  backgroundColor: "#007BFF",
-                  color: "#FFF",
-                  padding: "10px 20px",
-                  borderRadius: "5px",
-                }}
+                
               >
                 라이센스 등록
-              </Btn2>
+              </Btn>
             </InfoBox>
 
 

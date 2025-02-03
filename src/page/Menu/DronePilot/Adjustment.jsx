@@ -152,7 +152,7 @@ const Adjustment = () => {
           </TableHeader>
 
           {filterData().map((data, idx) => {
-            if (data.exterminateState === 3) {
+            
               if (!data || data.length === 0) {
                 return [];
               }
@@ -187,7 +187,7 @@ const Adjustment = () => {
 
                 </TableList>
               );
-            }
+            
           })}
 
           <PagingControl
