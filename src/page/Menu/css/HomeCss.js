@@ -51,8 +51,8 @@ export const IconBox = styled(CenterView)`
   justify-content: center; /* 아이콘과 텍스트 수직 정렬 */
   align-items: center; /* 아이콘과 텍스트 수평 정렬 */
   margin: 1rem 2rem; /* 각 아이콘 박스의 간격 */
-  width: 120px; /* 고정된 너비 */
-  height: 120px; /* 고정된 높이 */
+  width: 150px; /* 고정된 너비 */
+  height: 150px; /* 고정된 높이 */
   font-family: var(--font-Pretendard-Medium);
   font-size: 16px; /* 텍스트 크기 조정 */
   color: white;
