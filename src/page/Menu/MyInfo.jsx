@@ -102,7 +102,7 @@ const MyInfo = () => {
     name: "",
     model: "",
     capacity: "",
-    
+
   });
 
   // 파일 상태 (드론 이미지, 자격증, 사업자 등록증)
@@ -112,31 +112,199 @@ const MyInfo = () => {
     businessImage: null,
   });
 
+  const [licenseData, setLicenseData] = useState({
+    title: "", // 자격증 명칭
+    nickname: "", // 자격증 별칭
+    number: "", // 자격증 번호
+    workerNumber: "", // 사업자 번호
+    businessType: "", // 사업자 구분 (개인, 법인 등)
+  });
 
-  
+
   const handleImageUpload = (e, type) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFiles((prevFiles) => ({
-          ...prevFiles,
-          [type]: reader.result, // 미리보기 이미지 URL 저장
-        }));
-      };
-      reader.readAsDataURL(file);
+      setFiles((prevFiles) => ({
+        ...prevFiles,
+        [type]: {
+          file, // 실제 파일
+          preview: URL.createObjectURL(file), // 미리보기 URL
+        },
+      }));
     }
   };
 
+
+  useEffect(() => {
+    return () => {
+      if (files.droneImage?.preview) {
+        URL.revokeObjectURL(files.droneImage.preview); // URL 해제
+      }
+    };
+  }, [files.droneImage]);
+
+
   const saveDroneInfo = () => {
-    alert("드론 정보가 저장되었습니다!");
-    console.log("droneInfo",droneInfo,files.droneImage)
+    if (!droneInfo.name || !droneInfo.model || !droneInfo.capacity || !files.droneImage) {
+      alert("모든 필드를 입력하고 이미지를 업로드해주세요.");
+      return;
+    }
+
+    console.log("등록할 드론 정보:", droneInfo, files.droneImage);
+
+    // 드론 등록 API 호출
+    registerDrone();
   };
 
   const saveCertificates = () => {
     alert("자격증 및 사업자 등록증이 저장되었습니다!");
-    console.log("files",files)
+    console.log("files", files)
   };
+
+
+
+  const convertToPng = (imageFile) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      // 파일을 읽어 데이터 URL로 변환
+      reader.onload = (e) => {
+        const img = new Image();
+        img.src = e.target.result;
+
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
+
+          // 캔버스를 PNG 데이터로 변환
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                const pngFile = new File([blob], "image.png", { type: "image/png" });
+                resolve(pngFile); // PNG 파일 반환
+              } else {
+                reject(new Error("PNG 변환 실패"));
+              }
+            },
+            "image/png",
+            1 // 이미지 품질 (1 = 최고 품질)
+          );
+        };
+
+        img.onerror = (err) => reject(err);
+      };
+
+      reader.onerror = (err) => reject(err);
+
+      // 파일 읽기 시작
+      reader.readAsDataURL(imageFile);
+    });
+  };
+
+
+  const registerDrone = async () => {
+    const formData = new FormData();
+
+    // 드론 명칭, 모델명, 용량 추가
+    formData.append("nickname", droneInfo.name);
+    formData.append("model_number", droneInfo.model);
+    formData.append("capacity", droneInfo.capacity);
+
+    try {
+      if (!files.droneImage) {
+        alert("드론 이미지를 업로드해주세요.");
+        return;
+      }
+
+      // 이미지 파일을 PNG로 변환
+      const pngImage = await convertToPng(files.droneImage.file);
+      formData.append("image", pngImage); // 변환된 PNG 이미지 추가
+
+      const userCredential = JSON.parse(localStorage.getItem("User_Credential"));
+      const accessToken = userCredential ? userCredential.access_token : null;
+
+      if (!accessToken) {
+        console.error("Access Token이 없습니다.");
+        return;
+      }
+
+      const response = await fetch(`${server}/exterminator/drone/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // 인증 헤더
+        },
+        body: formData, // form-data 전송
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        alert("드론 등록이 완료되었습니다!");
+        console.log("응답 데이터:", result);
+      } else {
+        const errorData = await response.json();
+        console.error("드론 등록 실패:", errorData);
+        alert("드론 등록에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("드론 등록 중 오류 발생:", error);
+      alert("오류가 발생했습니다. 다시 시도해주세요.");
+    }
+  };
+  const registerLicense = async () => {
+    const formData = new FormData();
+
+    // 텍스트 필드 추가
+    formData.append("license_title", licenseData.title); // 라이센스 명칭
+    formData.append("license_nickname", licenseData.nickname); // 라이센스 별칭
+    formData.append("license_number", licenseData.number); // 라이센스 번호
+    formData.append("worker_registration_number", licenseData.workerNumber); // 사업자 번호
+    formData.append("business_registration_type", licenseData.businessType); // 사업자 구분
+
+    // 파일 필드 추가
+    if (files.licenseImage?.file) {
+      formData.append("license_image", files.licenseImage.file); // 자격증 이미지
+    }
+    if (files.businessImage?.file) {
+      formData.append("business_registration_image", files.businessImage.file); // 사업자 등록증 이미지
+    }
+
+    try {
+      const userCredential = JSON.parse(localStorage.getItem("User_Credential"));
+      const accessToken = userCredential ? userCredential.access_token : null;
+
+      if (!accessToken) {
+        console.error("Access Token이 없습니다.");
+        return;
+      }
+
+      const response = await fetch(`${server}/exterminator/license/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // 인증 헤더 추가
+        },
+        body: formData, // form-data 전송
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        alert("라이센스 등록이 완료되었습니다!");
+        console.log("응답 데이터:", result);
+      } else {
+        const errorData = await response.json();
+        console.error("라이센스 등록 실패:", errorData);
+        alert("라이센스 등록에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("라이센스 등록 중 오류 발생:", error);
+      alert("오류가 발생했습니다. 다시 시도해주세요.");
+    }
+  };
+
+
 
 
   return (
@@ -335,7 +503,7 @@ const MyInfo = () => {
                       >
                         {files.droneImage ? (
                           <img
-                            src={files.droneImage}
+                            src={files.droneImage.preview}
                             alt="드론 이미지 미리보기"
                             style={{ width: "100%", height: "100%", objectFit: "cover" }}
                           />
@@ -364,35 +532,83 @@ const MyInfo = () => {
 
 
                 {/* 자격증 및 사업자 등록증 */}
-                <InfoBox style={{ width: "940px", height: "408px" }}>
-                  <Title $fontsize={22} style={{marginBottom:"20px"}}>자격증 및 사업자 등록증</Title>
-                  <RowView2>
-                    {/* 자격증 이미지 업로드 */}
-                    <div style={{ marginRight: "20px" }}>
-                      {/* <div className="label" style={{ marginBottom: "10px" }}>자격증 이미지 업로드</div> */}
+                <InfoBox style={{ width: "940px", height: "auto", padding: "20px" }}>
+                  <Title $fontsize={22} style={{ marginBottom: "20px" }}>라이센스 등록</Title>
+
+                  {/* 자격증 정보 섹션 */}
+                  <div style={{ marginBottom: "30px" }}>
+                    <Title $fontsize={18} style={{ marginBottom: "10px", color: "#007BFF" }}>자격증 정보</Title>
+                    <RowView>
+                      <div style={{ flex: 1, marginRight: "20px" }}>
+                        <div className="label">자격증 명칭</div>
+                        <InputBox
+                          placeholder="자격증 명칭 입력"
+                          value={licenseData.title}
+                          onChange={(e) => setLicenseData({ ...licenseData, title: e.target.value })}
+                        />
+                        <small style={{ color: "#888" }}>예: 드론 1종 조종 자격증</small>
+
+                        <div className="label" style={{ marginTop: "15px" }}>자격증 별칭</div>
+                        <InputBox
+                          placeholder="자격증 별칭 입력"
+                          value={licenseData.nickname}
+                          onChange={(e) => setLicenseData({ ...licenseData, nickname: e.target.value })}
+                        />
+                      </div>
+
+                      <div style={{ flex: 1 }}>
+                        <div className="label">자격증 번호</div>
+                        <InputBox
+                          placeholder="자격증 번호 입력"
+                          value={licenseData.number}
+                          onChange={(e) => setLicenseData({ ...licenseData, number: e.target.value })}
+                        />
+                        <small style={{ color: "#888" }}>예: 1234-5678</small>
+                      </div>
+                    </RowView>
+
+                    <div style={{ marginTop: "20px" }}>
+                      <div className="label" style={{ marginBottom: "10px" }}>자격증 이미지</div>
                       <label
                         style={{
-                          width: "425px",
-                          height: "269px",
-                          border: "2px solid #007BFF",
+                          width: "100%",
+                          height: "150px",
+                          border: "2px solid  #007BFF",
                           borderRadius: "8px",
                           display: "flex",
                           justifyContent: "center",
                           alignItems: "center",
-                          overflow: "hidden",
                           cursor: "pointer",
                           position: "relative",
                           backgroundColor: files.licenseImage ? "transparent" : "#F9F9F9",
                         }}
                       >
-                        {files.licenseImage ? (
-                          <img
-                            src={files.licenseImage}
-                            alt="자격증 이미지 미리보기"
-                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                          />
+                        {files.licenseImage?.preview ? (
+                          <>
+                            <img
+                              src={files.licenseImage.preview}
+                              alt="자격증 이미지 미리보기"
+                              style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                            />
+                            <button
+                              onClick={() => setFiles((prev) => ({ ...prev, licenseImage: null }))}
+                              style={{
+                                position: "absolute",
+                                top: "5px",
+                                right: "5px",
+                                backgroundColor: "#FF5252",
+                                color: "#FFF",
+                                border: "none",
+                                borderRadius: "50%",
+                                cursor: "pointer",
+                                padding: "5px",
+                              }}
+                            >
+                              ✕
+                            </button>
+                          </>
                         ) : (
-                          <span style={{ color: "#aaa" }}>자격증 이미지 업로드</span>
+                          <span style={{ color: "#aaa" }}>클릭하여 자격증 이미지 업로드</span>
                         )}
                         <input
                           type="file"
@@ -407,33 +623,74 @@ const MyInfo = () => {
                         />
                       </label>
                     </div>
+                  </div>
 
-                    {/* 사업자 이미지 업로드 */}
-                    <div>
-                      {/* <div className="label" style={{ marginBottom: "10px" }}>사업자 이미지 업로드</div> */}
+                  {/* 사업자 등록 정보 섹션 */}
+                  <div>
+                    <Title $fontsize={18} style={{ marginBottom: "10px", color: "#007BFF" }}>사업자 등록 정보</Title>
+                    <RowView>
+                      <div style={{ flex: 1, marginRight: "20px" }}>
+                        <div className="label">사업자 번호</div>
+                        <InputBox
+                          placeholder="사업자 번호 입력"
+                          value={licenseData.workerNumber}
+                          onChange={(e) => setLicenseData({ ...licenseData, workerNumber: e.target.value })}
+                        />
+                        <small style={{ color: "#888" }}>예: 123-45-67890</small>
+                      </div>
+
+                      <div style={{ flex: 1 }}>
+                        <div className="label">사업자 구분</div>
+                        <InputBox
+                          placeholder="사업자 구분 입력 (예: 개인, 법인)"
+                          value={licenseData.businessType}
+                          onChange={(e) => setLicenseData({ ...licenseData, businessType: e.target.value })}
+                        />
+                      </div>
+                    </RowView>
+
+                    <div style={{ marginTop: "20px" }}>
+                      <div className="label" style={{ marginBottom: "10px" }}>사업자 등록증 이미지</div>
                       <label
                         style={{
-                          width: "425px",
-                          height: "269px",
-                          border: "2px solid #007BFF",
+                          width: "100%",
+                          height: "150px",
+                          border: "2px solid  #007BFF",
                           borderRadius: "8px",
                           display: "flex",
                           justifyContent: "center",
                           alignItems: "center",
-                          overflow: "hidden",
                           cursor: "pointer",
                           position: "relative",
                           backgroundColor: files.businessImage ? "transparent" : "#F9F9F9",
                         }}
                       >
-                        {files.businessImage ? (
-                          <img
-                            src={files.businessImage}
-                            alt="사업자 이미지 미리보기"
-                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                          />
+                        {files.businessImage?.preview ? (
+                          <>
+                            <img
+                              src={files.businessImage.preview}
+                              alt="사업자 등록증 이미지 미리보기"
+                              style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                            />
+                            <button
+                              onClick={() => setFiles((prev) => ({ ...prev, businessImage: null }))}
+                              style={{
+                                position: "absolute",
+                                top: "5px",
+                                right: "5px",
+                                backgroundColor: "#FF5252",
+                                color: "#FFF",
+                                border: "none",
+                                borderRadius: "50%",
+                                cursor: "pointer",
+                                padding: "5px",
+                              }}
+                            >
+                              ✕
+                            </button>
+                          </>
                         ) : (
-                          <span style={{ color: "#aaa" }}>사업자 이미지 업로드</span>
+                          <span style={{ color: "#aaa" }}>클릭하여 사업자 등록증 이미지 업로드</span>
                         )}
                         <input
                           type="file"
@@ -448,12 +705,25 @@ const MyInfo = () => {
                         />
                       </label>
                     </div>
-                  </RowView2>
+                  </div>
 
-                  <Btn2 className={themeColor()} onClick={saveCertificates} style={{marginTop:"15px"}}>
-                    저장하기
+                  {/* 저장 버튼 */}
+                  <Btn2
+                    className={themeColor()}
+                    onClick={registerLicense}
+                    style={{
+                      marginTop: "30px",
+                      backgroundColor: "#007BFF",
+                      color: "#FFF",
+                      padding: "10px 20px",
+                      borderRadius: "5px",
+                    }}
+                  >
+                    라이센스 등록
                   </Btn2>
                 </InfoBox>
+
+
 
 
               </div>
