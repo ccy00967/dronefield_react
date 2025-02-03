@@ -218,7 +218,7 @@ const WorkStatus = () => {
             </div>
             <span>▶︎</span>
             <div className={isSelect(2)} onClick={() => handleFilterClick(2)}>
-              작업 중({exterminating_count})
+              작업 시작({exterminating_count})
             </div>
             <span>▶︎</span>
             <div className={isSelect(3)} onClick={() => handleFilterClick(3)}>

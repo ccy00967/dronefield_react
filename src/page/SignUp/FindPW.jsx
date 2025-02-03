@@ -1,171 +1,184 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Common_Layout from "../../Component/common_Layout";
-import { resetPassword, sendResetPasswordCode } from "../../Api/api";
-import {
-  RowView2,
-} from "../../Component/common_style";
-import {
-  FindBox,
-  InputBox,
-  MiniBtn,
-  Btn,
-} from "./css/FindPWCss";
+import { Container, Content, Title, InfoBox, InputBox, Btn } from "../Menu/css/MyInfoCss";
+import { server } from "../url";
 
 const FindPW = () => {
-  const Navigate = useNavigate();
-
   const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
-  const [password, setPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
   const [name, setName] = useState("");
-  const [dob, setDob] = useState(""); // Date of Birth
-  const [phone, setPhone] = useState("");
+  const [birthdate, setBirthdate] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [otp, setOtp] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [sessionId, setSessionId] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [passwordChanged, setPasswordChanged] = useState(false);
 
-  const setting_email = (e) => setEmail(e.target.value);
-  const setting_otp = (e) => setOtp(e.target.value);
-  const setting_pw = (e) => setPassword(e.target.value);
-  const setting_new_pw = (e) => setNewPassword(e.target.value);
-  const setting_name = (e) => setName(e.target.value);
-  const setting_dob = (e) => setDob(e.target.value);
-  const setting_phone = (e) => setPhone(e.target.value);
+  const sendOtp = async () => {
+    if (!email || !name || !birthdate || !mobile) {
+      alert("모든 필드를 입력해주세요.");
+      return;
+    }
 
-  // 확인 버튼 활성화 여부
-  const isOk = () => {
-    if (email.length !== 0 && otp.length === 6) return "ok";
-    return "";
+    try {
+      const response = await fetch(`${server}/user/resetpassword/sendcode/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          email,
+          name,
+          birthdate,
+          mobileno: mobile,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert("인증번호가 발송되었습니다.");
+        setSessionId(data.sessionid); // 세션 ID 저장
+        setOtpSent(true);
+      } else {
+        const error = await response.json();
+        alert(`인증번호 발송 실패: ${error.message}`);
+      }
+    } catch (error) {
+      console.error("인증번호 발송 오류:", error);
+      alert("오류가 발생했습니다. 다시 시도해주세요.");
+    }
   };
 
-  const handleResetPassword = async () => {
-    if (password !== newPassword) {
+  const verifyOtpAndResetPassword = async () => {
+    if (!otp || !newPassword || !confirmPassword) {
+      alert("모든 필드를 입력해주세요.");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
       alert("비밀번호가 일치하지 않습니다.");
       return;
     }
 
-    const requestData = {
-      validate_key: otp, // 인증번호
-      password, // 새 비밀번호
-    };
-
     try {
-      const result = await resetPassword(requestData);
-      console.log("Password reset successful:", result);
-      alert("비밀번호가 성공적으로 변경되었습니다!");
+      const response = await fetch(`${server}/user/resetpassword/checkcode/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          password: newPassword,
+          validate_key: otp,
+          sessionid: sessionId,
+        }),
+      });
+
+      if (response.ok) {
+        alert("비밀번호가 성공적으로 변경되었습니다!");
+        setPasswordChanged(true);
+      } else {
+        const error = await response.json();
+        alert(`비밀번호 변경 실패: ${error.message}`);
+      }
     } catch (error) {
-      console.error("Failed to reset password:", error);
-      alert("비밀번호 변경에 실패했습니다.");
+      console.error("비밀번호 변경 오류:", error);
+      alert("오류가 발생했습니다. 다시 시도해주세요.");
     }
   };
 
-  const send_otp_API = () => {
-    alert("인증번호 발송");
-  };
-  const check_otp_API = () => {
-    alert("인증번호 확인");
-  };
-  const FindPW_API = () => {
-    alert("비밀번호 변경");
-  };
-
-  const handleSubmit = async () => {
-    const requestData = { email, name, dob, phone };
-    console.log("Request Data:", requestData);
-    try {
-      const result = await sendResetPasswordCode(requestData);
-      console.log("Success:", result);
-      alert("요청이 성공적으로 완료되었습니다!");
-    } catch (error) {
-      alert("요청 중 오류가 발생했습니다.");
-    }
+  const resetForm = () => {
+    setEmail("");
+    setName("");
+    setBirthdate("");
+    setMobile("");
+    setOtp("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setSessionId("");
+    setOtpSent(false);
+    setPasswordChanged(false);
   };
 
   return (
-    <Common_Layout minWidth={1}>
-      <FindBox className="col">
-        <div className="title">비밀번호 찾기</div>
+    <Common_Layout minWidth={850}>
+      <Container>
+        <Content>
+          <Title $fontsize={28}>비밀번호 찾기</Title>
+          <InfoBox style={{ maxWidth: "570px", margin: "0 auto" }}>
+            {passwordChanged ? (
+              <>
+                <div className="label">비밀번호 변경 완료</div>
+                <div style={{ marginBottom: "1rem" }}>
+                  비밀번호가 성공적으로 변경되었습니다. 로그인 페이지로 이동해주세요.
+                </div>
+                <Btn className="green" onClick={resetForm}>
+                  다시 찾기
+                </Btn>
+              </>
+            ) : otpSent ? (
+              <>
+                <div className="label">인증번호</div>
+                <InputBox
+                  placeholder="발송된 인증번호를 입력해주세요."
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                />
 
+                <div className="label">새 비밀번호</div>
+                <InputBox
+                  type="password"
+                  placeholder="새 비밀번호를 입력해주세요."
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
 
-        <div className="text">이름</div>
-        <RowView2 className="text">
-          <InputBox
-            placeholder="이름을 입력해주세요."
-            value={name}
-            onChange={setting_name}
-          />
-        </RowView2>
+                <div className="label">비밀번호 확인</div>
+                <InputBox
+                  type="password"
+                  placeholder="비밀번호를 다시 입력해주세요."
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
 
-        <div className="text">생년월일</div>
-        <RowView2 className="text">
-          <InputBox
-            placeholder="생년월일을 입력해주세요."
-            value={dob}
-            onChange={setting_dob}
-          />
-        </RowView2>
-        <div className="text">전화번호</div>
-        <RowView2 className="text">
-          <InputBox
-            placeholder="전화번호을 입력해주세요."
-            value={phone}
-            onChange={setting_phone}
-          />
-        </RowView2>
+                <Btn className="green" onClick={verifyOtpAndResetPassword}>
+                  비밀번호 변경
+                </Btn>
+              </>
+            ) : (
+              <>
+                <div className="label">이름</div>
+                <InputBox
+                  placeholder="이름을 입력해주세요."
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
 
-        <div className="text">아이디(이메일) 인증</div>
-        <RowView2 className="text">
-          <InputBox
-            placeholder="이메일을 입력해주세요."
-            value={email}
-            onChange={setting_email}
-          />
-          <MiniBtn onClick={handleSubmit}>인증번호 발송</MiniBtn>
-        </RowView2>
+                <div className="label">생년월일</div>
+                <InputBox
+                  placeholder="YYYYMMDD 형식으로 입력해주세요."
+                  value={birthdate}
+                  onChange={(e) => setBirthdate(e.target.value)}
+                />
 
-        <div className="text">인증번호</div>
-        <RowView2 className="text">
-          <InputBox
-            placeholder="인증번호를 입력해주세요.(유효시간 5분)"
-            value={otp}
-            onChange={setting_otp}
-          />
-          {/* <MiniBtn onClick={check_otp_API}>확인</MiniBtn> */}
-        </RowView2>
+                <div className="label">휴대폰 번호</div>
+                <InputBox
+                  placeholder="휴대폰 번호를 입력해주세요."
+                  value={mobile}
+                  onChange={(e) => setMobile(e.target.value)}
+                />
 
-        {/* 비밀번호 재설정 UI: OTP가 6자리가 될 때 나타남 */}
-        {otp.length === 6 && (
-          <>
-            <div className="text">새 비밀번호</div>
-            <RowView2 className="text">
-              <InputBox
-                type={"password"}
-                className="none"
-                placeholder="새 비밀번호를 입력해주세요."
-                value={password}
-                onChange={setting_pw}
-              />
-            </RowView2>
-            <span>영문/숫자/특수문자 포함 10~16자</span>
+                <div className="label">이메일</div>
+                <InputBox
+                  placeholder="이메일을 입력해주세요."
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
 
-            <div className="text">새 비밀번호 확인</div>
-            <RowView2 className="text">
-              <InputBox
-                type={"password"}
-                placeholder="새 비밀번호를 한번 더 입력해주세요."
-                value={newPassword}
-                onChange={setting_new_pw}
-              />
-            </RowView2>
-            <Btn className="ok" onClick={handleResetPassword}>
-              비밀번호 변경
-            </Btn>
-          </>
-        )}
-
-        {/* <Btn className={isOk()} onClick={handleSubmit}>
-          확인
-        </Btn> */}
-      </FindBox>
+                <Btn className="green" onClick={sendOtp}>
+                  인증번호 발송
+                </Btn>
+              </>
+            )}
+          </InfoBox>
+        </Content>
+      </Container>
     </Common_Layout>
   );
 };

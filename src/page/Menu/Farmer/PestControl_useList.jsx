@@ -169,7 +169,7 @@ const PestControl_useList = () => {
             <span>▶︎</span>
             <div
               className={isSelect(1)} onClick={() => { setFilter(1); setExterminateState(1); setrequestDepositState(1) }}>
-              작업대기중({perparing_count})
+              작업 준비 중({perparing_count})
             </div>
             <span>▶︎</span>
             <div className={isSelect(2)} onClick={() => { setFilter(2); setExterminateState(2); setrequestDepositState(1) }}>
@@ -177,7 +177,7 @@ const PestControl_useList = () => {
             </div>
             <span>▶︎</span>
             <div className={isSelect(3)} onClick={() => { setFilter(3); setExterminateState(3); setrequestDepositState(1) }}>
-              작업확인({done_count})
+              작업 완료({done_count})
             </div>
           </FilterBox_Pest_useList>
 
