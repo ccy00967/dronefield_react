@@ -11,7 +11,7 @@ const api_farmer_farm = server + "/farmer/lands/";
 // const api_getAccessToken = server + "/user/token/refresh/"
 // const api_farmer_farm = server + "/customer/lands/";
 // 디지털트윈국토 for 토지임야정보: 개발용 KEY임 나중에 변경 필요 - 127.0.0.1이 허용됨
-const KEY = "6C934ED4-5978-324D-B7DE-AC3A0DDC3B38"
+export const KEY = "6C934ED4-5978-324D-B7DE-AC3A0DDC3B38"
 // kosis 단계별 행정구역 and 검색API for cd값
 const consumer_KEY = "fb0450ed86ba405ba3ec"
 const consumer_SECRET = "a7ec04e5c1f8401594d5"

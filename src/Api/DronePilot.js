@@ -1,14 +1,11 @@
 //lsy
 import { server } from "../page/url";
-import { refreshAccessToken } from "./Farmer";
+import { KEY, refreshAccessToken } from "./Farmer";
 
 // const uuid = User_Credential?.uuid
 
 
 //Matching
-
-
-
 
 /**
 
@@ -136,14 +133,84 @@ export const fetchToken = async () => {
 };
 
 
+// TODO: 단계별 행정구역 조회 API 변경
+// sgis.kostat 에서 디지털트윈으로 변경
+// 시/도 조회 https://api.vworld.kr/ned/data/admCodeList
+// 시군구 조회 https://api.vworld.kr/ned/data/admSiList
+// 읍면동 조회 https://api.vworld.kr/ned/data/admDongList
+
+
 /**
  * sgis 단계별 주소조회 api를 이용한 cd값으로 지역정보 불러오기
  */
-export const fetchAddressData = async (code, setData, token) => {
+// export const fetchAddressData = async (code, setData, token) => {
+//   try {
+//     const _code = code ? `&cd=${code}` : "";
+//     const apiUrl = `https://sgisapi.kostat.go.kr/OpenAPI3/addr/stage.json?accessToken=${token}${_code}`;
+//     const response = await fetch(apiUrl);
+//     if (response.status === 200) {
+//       const data = await response.json();
+//       const result = data.result.map((item) => addressDepthServerModel(item));
+//       setData(result);
+//     } else {
+//       setData([]);
+//     }
+//   } catch (error) {
+//     setData([]);
+//   }
+
+// };
+
+
+// 시/도 조회
+export const getSiDo = async (cd, setData) => {
   try {
-    const _code = code ? `&cd=${code}` : "";
-    const apiUrl = `https://sgisapi.kostat.go.kr/OpenAPI3/addr/stage.json?accessToken=${token}${_code}`;
-    const response = await fetch(apiUrl);
+    const url = "https://api.vworld.kr/ned/data/admCodeList";
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        key: KEY,
+        format: "json",
+        numOfRows: "1000",
+      }),
+    });
+
+    if (response.status === 200) {
+      const data = await response.json();
+      console.log(data)
+      const result = data.result.map((item) => addressDepthServerModel(item));
+      setData(result);
+    } else {
+      setData([]);
+    }
+  } catch (error) {
+    setData([]);
+  }
+}
+
+
+// 시군구 조회
+export const getSiGunGu = async (cd, setData) => {
+  try {
+    const url = "https://api.vworld.kr/ned/data/admSiList";
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        key: KEY,
+        format: "json",
+        numOfRows: "1000",
+        admCode: cd, // 시도 코드(2자리)
+      }),
+    });
+
     if (response.status === 200) {
       const data = await response.json();
       const result = data.result.map((item) => addressDepthServerModel(item));
@@ -154,15 +221,43 @@ export const fetchAddressData = async (code, setData, token) => {
   } catch (error) {
     setData([]);
   }
+}
 
-};
 
+// 읍면동 조회
+export const getEupMyeonDong = async (cd, setData) => {
+  try {
+    const url = "https://api.vworld.kr/ned/data/admDongList";
 
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        key: KEY,
+        format: "json",
+        numOfRows: "1000",
+        admCode: cd, // 시도/시군구 코드(5자리)
+      }),
+    });
+
+    if (response.status === 200) {
+      const data = await response.json();
+      const result = data.result.map((item) => addressDepthServerModel(item));
+      setData(result);
+    } else {
+      setData([]);
+    }
+  } catch (error) {
+    setData([]);
+  }
+}
 
 const addressDepthServerModel = (json) => {
   return {
-    code: json.cd,
-    name: json.addr_name,
+    code: json.admCode, // cd값
+    name: json.admCodeNm, // 한글주소
   };
 };
 

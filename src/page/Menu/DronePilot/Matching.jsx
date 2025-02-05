@@ -14,7 +14,7 @@ import PagingControl from "../../../Component/UI/PagingControl";
 import SideMenuBar from "../SideMenuBar";
 import { requestPayment } from "../../tosspayments/TossPayments_func";
 import { server } from "../../url";
-import { fetchToken, fetchUserInfo, fetchAddressData, getfarmrequest, putfarmrequest } from "../../../Api/DronePilot";
+import { fetchToken, fetchUserInfo, fetchAddressData, getfarmrequest, putfarmrequest, getSiDo, getSiGunGu, getEupMyeonDong } from "../../../Api/DronePilot";
 import {
   TextSemiBold, TextMedium,
   DataRow, ContentArea,
@@ -196,7 +196,8 @@ const Matching = ({ }) => {
       setToken(fetchedToken); // 토큰 상태 설정
 
       // 시/도 데이터를 가져오는 함수 호출 (처음에는 code 없이 전체 시/도 데이터를 불러옴)
-      fetchAddressData("", setProvinces, fetchedToken);
+      //fetchAddressData("", setProvinces, fetchedToken);
+      getSiDo("", setProvinces, fetchedToken);
     };
 
     fetchData();
@@ -205,7 +206,8 @@ const Matching = ({ }) => {
   // 시/군/구 데이터를 가져오는 로직
   useEffect(() => {
     if (selectedProvince) {
-      fetchAddressData(selectedProvince, setCities, token);
+      //fetchAddressData(selectedProvince, setCities, token);
+      getSiGunGu(selectedProvince, setCities, token);
       setSelectedCity("");
       setTowns([]);
     }
@@ -214,7 +216,7 @@ const Matching = ({ }) => {
   // 읍/면/동 데이터를 가져오는 로직
   useEffect(() => {
     if (selectedCity) {
-      fetchAddressData(selectedCity, setTowns, token);
+      getEupMyeonDong(selectedCity, setTowns, token);
     }
   }, [selectedCity, token]);
 
