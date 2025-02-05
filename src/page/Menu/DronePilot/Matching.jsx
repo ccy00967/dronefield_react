@@ -87,6 +87,10 @@ const Matching = ({ }) => {
       checkedList.length > 0 && checkedList.length === dataList.length
     );
   }, [checkedList, dataList]);
+  useEffect(() => {
+    fetchfarmrequest(currentPage, perPage); // 초기 데이터 가져오기
+  }, [currentPage, perPage]); // 페이지 번호나 페이지 크기 변경 시 호출
+
 
   //체크박스 로직
   const checkedItemHandler = (value, isChecked) => {
@@ -245,13 +249,14 @@ const Matching = ({ }) => {
 
 
   //cd값을 받아서 정보를 뿌려줌
-  const fetchfarmrequest = async () => {
-    const farmdata = await getfarmrequest(cdInfo);
-    setDataList(farmdata.data)
+  const fetchfarmrequest = async (page = 1, page_size = 10) => {
+    const farmdata = await getfarmrequest(cdInfo, page, page_size);
+    setDataList(farmdata.data); // 데이터 리스트 상태 업데이트
+    setCnt(farmdata.total_items || 0); // 전체 데이터 개수 업데이트 (백엔드가 제공해야 함)
     setCheckedList([]);
     setSelectData([]);
+  };
 
-  }
 
 
   useEffect(() => {
@@ -436,7 +441,10 @@ const Matching = ({ }) => {
                 <PagingControl
                   cnt={cnt}
                   currentPage={currentPage}
-                  setCurrentPage={setCurrentPage}
+                  setCurrentPage={(page) => {
+                    setCurrentPage(page);
+                    fetchfarmrequest(page, perPage); // 새로운 페이지 데이터 가져오기
+                  }}
                   perPage={perPage}
                 />
               </div>

@@ -1,113 +1,184 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Common_Layout from "../../Component/common_Layout";
-import {
-  RowView2,
-} from "../../Component/common_style";
-import {
-  FindBox,
-  InputBox,
-  MiniBtn,
-  Btn,
-} from "./css/FindPWCss";
-
+import { Container, Content, Title, InfoBox, InputBox, Btn } from "../Menu/css/MyInfoCss";
+import { server } from "../url";
 
 const FindPW = () => {
-  const Navigate = useNavigate();
-
-  const [findOk, setFindOk] = useState(false);
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [birthdate, setBirthdate] = useState("");
+  const [mobile, setMobile] = useState("");
   const [otp, setOtp] = useState("");
-  const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [sessionId, setSessionId] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [passwordChanged, setPasswordChanged] = useState(false);
 
-  const setting_email = (e) => setEmail(e.target.value);
-  const setting_otp = (e) => setOtp(e.target.value);
-  const setting_pw = (e) => setPassword(e.target.value);
-  const setting_new_pw = (e) => setNewPassword(e.target.value);
+  const sendOtp = async () => {
+    if (!email || !name || !birthdate || !mobile) {
+      alert("모든 필드를 입력해주세요.");
+      return;
+    }
 
-  // 확인을 눌러도 되는 상태인지 판별
-  const isOk = () => {
-    if (email.length !== 0 && otp !== 0) return "ok";
-    return "";
-  };
+    try {
+      const response = await fetch(`${server}/user/resetpassword/sendcode/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          email,
+          name,
+          birthdate,
+          mobileno: mobile,
+        }),
+      });
 
-  const next_page = () => {
-    if (isOk()) {
-      setFindOk(true);
+      if (response.ok) {
+        const data = await response.json();
+        alert("인증번호가 발송되었습니다.");
+        setSessionId(data.sessionid); // 세션 ID 저장
+        setOtpSent(true);
+      } else {
+        const error = await response.json();
+        alert(`인증번호 발송 실패: ${error.message}`);
+      }
+    } catch (error) {
+      console.error("인증번호 발송 오류:", error);
+      alert("오류가 발생했습니다. 다시 시도해주세요.");
     }
   };
-  const send_otp_API = () => {
-    alert("인증번호 발송");
+
+  const verifyOtpAndResetPassword = async () => {
+    if (!otp || !newPassword || !confirmPassword) {
+      alert("모든 필드를 입력해주세요.");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      alert("비밀번호가 일치하지 않습니다.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${server}/user/resetpassword/checkcode/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          password: newPassword,
+          validate_key: otp,
+          sessionid: sessionId,
+        }),
+      });
+
+      if (response.ok) {
+        alert("비밀번호가 성공적으로 변경되었습니다!");
+        setPasswordChanged(true);
+      } else {
+        const error = await response.json();
+        alert(`비밀번호 변경 실패: ${error.message}`);
+      }
+    } catch (error) {
+      console.error("비밀번호 변경 오류:", error);
+      alert("오류가 발생했습니다. 다시 시도해주세요.");
+    }
   };
-  const check_otp_API = () => {
-    alert("인증번호 확인");
-  };
-  const FindPW_API = () => {
-    alert("비밀번호 변경");
+
+  const resetForm = () => {
+    setEmail("");
+    setName("");
+    setBirthdate("");
+    setMobile("");
+    setOtp("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setSessionId("");
+    setOtpSent(false);
+    setPasswordChanged(false);
   };
 
   return (
-    <Common_Layout minWidth={1}>
-      <FindBox className="col">
-        {findOk ? (
-          <>
-            <div className="title">비밀번호 재설정</div>
+    <Common_Layout minWidth={850}>
+      <Container>
+        <Content>
+          <Title $fontsize={28}>비밀번호 찾기</Title>
+          <InfoBox style={{ maxWidth: "570px", margin: "0 auto" }}>
+            {passwordChanged ? (
+              <>
+                <div className="label">비밀번호 변경 완료</div>
+                <div style={{ marginBottom: "1rem" }}>
+                  비밀번호가 성공적으로 변경되었습니다. 로그인 페이지로 이동해주세요.
+                </div>
+                <Btn className="green" onClick={resetForm}>
+                  다시 찾기
+                </Btn>
+              </>
+            ) : otpSent ? (
+              <>
+                <div className="label">인증번호</div>
+                <InputBox
+                  placeholder="발송된 인증번호를 입력해주세요."
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                />
 
-            <div className="text">새 비밀번호</div>
-            <RowView2 className="text">
-              <InputBox
-                type={"password"}
-                className="none"
-                placeholder="새 비밀번호를 입력해주세요."
-                value={password}
-                onChange={setting_pw}
-              />
-            </RowView2>
-            <span>영문/숫자/특수문자 포함 10~16자</span>
+                <div className="label">새 비밀번호</div>
+                <InputBox
+                  type="password"
+                  placeholder="새 비밀번호를 입력해주세요."
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
 
-            <div className="text">새 비밀번호 확인</div>
-            <RowView2 className="text">
-              <InputBox
-                type={"password"}
-                placeholder="새 비밀번호를 한번 더 입력해주세요."
-                value={newPassword}
-                onChange={setting_new_pw}
-              />
-            </RowView2>
-            <Btn className={isOk()} onClick={FindPW_API}>
-              확인
-            </Btn>
-          </>
-        ) : (
-          <>
-            <div className="title">비밀번호 찾기</div>
+                <div className="label">비밀번호 확인</div>
+                <InputBox
+                  type="password"
+                  placeholder="비밀번호를 다시 입력해주세요."
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
 
-            <div className="text">아이디(이메일) 인증</div>
-            <RowView2 className="text">
-              <InputBox
-                placeholder="이메일을 입력해주세요."
-                value={email}
-                onChange={setting_email}
-              />
-              <MiniBtn onClick={send_otp_API}>인증번호 발송</MiniBtn>
-            </RowView2>
+                <Btn className="green" onClick={verifyOtpAndResetPassword}>
+                  비밀번호 변경
+                </Btn>
+              </>
+            ) : (
+              <>
+                <div className="label">이름</div>
+                <InputBox
+                  placeholder="이름을 입력해주세요."
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
 
-            <div className="text">인증번호</div>
-            <RowView2 className="text">
-              <InputBox
-                placeholder="인증번호를 입력해주세요.(유효시간 5분)"
-                value={otp}
-                onChange={setting_otp}
-              />
-              <MiniBtn onClick={check_otp_API}>확인</MiniBtn>
-            </RowView2>
-            <Btn className={isOk()} onClick={next_page}>
-              확인
-            </Btn>
-          </>
-        )}
-      </FindBox>
+                <div className="label">생년월일</div>
+                <InputBox
+                  placeholder="YYYYMMDD 형식으로 입력해주세요."
+                  value={birthdate}
+                  onChange={(e) => setBirthdate(e.target.value)}
+                />
+
+                <div className="label">휴대폰 번호</div>
+                <InputBox
+                  placeholder="휴대폰 번호를 입력해주세요."
+                  value={mobile}
+                  onChange={(e) => setMobile(e.target.value)}
+                />
+
+                <div className="label">이메일</div>
+                <InputBox
+                  placeholder="이메일을 입력해주세요."
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+
+                <Btn className="green" onClick={sendOtp}>
+                  인증번호 발송
+                </Btn>
+              </>
+            )}
+          </InfoBox>
+        </Content>
+      </Container>
     </Common_Layout>
   );
 };

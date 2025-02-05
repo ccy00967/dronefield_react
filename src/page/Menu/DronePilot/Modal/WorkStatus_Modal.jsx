@@ -42,8 +42,9 @@ const WorkStatus_Modal = forwardRef((props, ref) => {
   const transaction = data.dealmothod === 0 ? "일반거래" : "개인거래";
   const farmland = data?.jibun || "농지 없음";
   const date = data.endDate
+  const price = data?.price || "30원";
   // const [date, setDate] = useState("8/19");
-  const [price, setPrice] = useState("30원");
+  // const [price, setPrice] = useState("30원");
   const pesticidesUsed = data.pesticide || "농약 없음";
   const amount = 30 * Math.round(data?.lndpclAr * 0.3025).toString() || "대금 없음";
   // -
