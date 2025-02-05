@@ -16,6 +16,13 @@ import {
 export const Container = styled(RowView)`
   align-items: flex-start;
 `;
+export const Container2 = styled.div`
+display: flex;
+flex-direction: column; /* 세로 배치 */
+gap: 20px;
+align-items: center;
+width: 100%;
+`;
 export const Content = styled.div`
   flex: 1;
   padding: 2rem;
@@ -30,7 +37,7 @@ export const Content = styled.div`
   }
 `;
 export const Title = styled.div`
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   font-family: var(--font-Pretendard-SemiBold);
   font-size: ${(props) => `${props.$fontsize || 16}px`};
 `;
@@ -100,3 +107,44 @@ export const Btn = styled(CenterView)`
   }
 `;
 
+
+export const Btn2 = styled(CenterView)`
+  width: ${(props) => (props.$width ? `${props.$width}rem` : "auto")};
+  height: 3rem;
+  margin-top: ${(props) => (props.$width ? 0 : "0.5rem")};
+  border-radius: 8px;
+  cursor: pointer;
+  &.green {
+    color: white;
+    background-color: ${GreenColor};
+    &:hover {
+      background-color: ${hoverGreen};
+    }
+  }
+  &.blue {
+    color: white;
+    background-color: ${blueColor};
+  }
+  &.red {
+    color: white;
+    background-color: ${redColor};
+  }
+  &.greenlight {
+    color: ${GreenColor};
+    background-color: ${lightGreenColor};
+    &:hover {
+      background-color: ${hoverGreen};
+    }
+  }
+  &.bluelight {
+    color: ${blueColor};
+    background-color: ${lightBlueColor};
+  }
+  &.redlight {
+    color: ${redColor};
+    background-color: ${lightRedColor};
+    &:hover {
+      background-color: ${hoverRed};
+    }
+  }
+`;

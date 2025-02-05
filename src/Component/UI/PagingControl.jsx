@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { CenterView, Icon } from "../common_style";
 
+// 스타일 정의
 const PageDiv = styled(CenterView)`
   margin: 2.5rem 0rem;
 `;
+
 const PageNum = styled(CenterView)`
   width: 2.5rem;
   height: 2.5rem;
@@ -14,8 +16,10 @@ const PageNum = styled(CenterView)`
   cursor: pointer;
   &.currentPage {
     background-color: #f0f0f0;
+    font-weight: bold;
   }
 `;
+
 const ArrowIcon = styled(Icon)`
   width: 1.3rem;
   height: 1.3rem;
@@ -32,74 +36,79 @@ const ArrowIcon = styled(Icon)`
   }
 `;
 
+// 컴포넌트 정의
 const PagingControl = (props) => {
-  const cnt = props.cnt || 0; // 전체 개시글 갯수
-  const currentPage = props.currentPage; // 현재 페이지 넘버
-  const setCurrentPage = props.setCurrentPage; // 페이지 set함수
-  const perPage = props.perPage || 10; // 몇개씩 보여줄건지. (디폴트 5개)
+  const cnt = props.cnt || 0; // 전체 게시글 수
+  const currentPage = props.currentPage || 1; // 현재 페이지 번호
+  const setCurrentPage = props.setCurrentPage; // 페이지 상태 변경 함수
+  const perPage = props.perPage || 10; // 한 페이지에 보여줄 게시글 수
 
-  // 마지막 페이지 넘버
-  const finalPagenum =
-    cnt % perPage > 0
-      ? Math.floor(cnt / perPage) + 1
-      : Math.floor(cnt / perPage);
+  // 마지막 페이지 번호 계산
+  const finalPagenum = Math.ceil(cnt / perPage); // 총 페이지 수
 
-  // 보여줄 페이지 배열
+  // 표시할 페이지 배열 상태
   const [pageArray, setPageArray] = useState([]);
+
+  // 페이지 계산 함수
   const paging = () => {
-    /* 
-     start_to_end_num 는,
-     현재 페이지(currentPage) 기준으로
-     현재 페이지(currentPage)가 1~10 사이에 있다면 0,
-     11~20 이면 1, 21~30: 2 ... 출력 
-     */
+    /*
+      현재 페이지에 따라 10개씩 묶어서 페이지 배열 생성
+      예: 1~10 → [1, 2, 3, ..., 10], 11~20 → [11, 12, ..., 20]
+    */
     const start_to_end_num = Math.floor((currentPage - 1) / 10);
     let new_arr = [];
 
-    const startNum = start_to_end_num * 10 + 1;
-    const endNum = (start_to_end_num + 1) * 10;
+    const startNum = start_to_end_num * 10 + 1; // 시작 페이지 번호
+    const endNum = Math.min((start_to_end_num + 1) * 10, finalPagenum); // 마지막 페이지 번호
 
-    for (let i = startNum; i <= endNum && i <= finalPagenum; i++) {
+    for (let i = startNum; i <= endNum; i++) {
       new_arr.push(i);
     }
     setPageArray(new_arr);
   };
+
+  // `currentPage`, `cnt`, 또는 `perPage` 변경 시 페이지 계산
   useEffect(() => {
     paging();
   }, [currentPage, cnt, perPage]);
 
-  // 이전 페이지
+  // 이전 페이지로 이동
   const pre_page = () => {
-    if (currentPage !== 1) {
+    if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
   };
-  // 다음 페이지
+
+  // 다음 페이지로 이동
   const next_page = () => {
-    if (currentPage !== finalPagenum) {
+    if (currentPage < finalPagenum) {
       setCurrentPage(currentPage + 1);
     }
   };
 
+  // 렌더링
   return (
     <PageDiv>
+      {/* 이전 화살표 */}
       <ArrowIcon
-        className={currentPage !== 1 ? "" : "none"}
+        className={currentPage > 1 ? "" : "none"} // 첫 페이지에서 비활성화
         src={require("../../img/icon_arrow_left.png")}
         onClick={pre_page}
       />
-      {pageArray.map((item, idx) => (
+      {/* 페이지 번호 */}
+      {pageArray.map((item) => (
         <PageNum
-          key={idx}
-          onClick={() => setCurrentPage(item)}
+          key={item}
+          onClick={() => setCurrentPage(item)} // 페이지 번호 클릭 시 이동
           className={currentPage === item ? "currentPage" : ""}
         >
           {item}
         </PageNum>
       ))}
+      {/* 다음 화살표 */}
       <ArrowIcon
         className={
-          currentPage === finalPagenum || finalPagenum === 0 ? "none" : ""
+          currentPage < finalPagenum ? "" : "none" // 마지막 페이지에서 비활성화
         }
         src={require("../../img/icon_arrow_right.png")}
         onClick={next_page}

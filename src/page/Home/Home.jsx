@@ -7,7 +7,7 @@ import {
   RowView,
 } from "../../Component/common_style";
 import { InsertRefreshAccessToken, refreshAccessToken } from "../../Api/Farmer";
-import { Section1, Section2, HomePic, Text, SectionLast } from "./HomeCss"
+import { Section1, Section2, HomePic, Text, SectionLast, Section3 } from "./HomeCss"
 import Login from "./Login";
 
 
@@ -23,18 +23,31 @@ const Home = () => {
           <CenterView className="flex">
 
             <div>
-              <div className="xlarge">현재 서비스 개발 중입니다</div>
+              
               <div className="large">디지털 농업의 시작</div>
               <div className="xxlarge">드론평야</div>
               <div className="small">
-                4차 산업혁명의 시대! 농업의 자동화!
+                4차 산업혁명의 시대! 디지털 농업의 시작!
                 <br />첫 걸음을 드론평야에서 경험해 보세요.
               </div>
-              <Icon
-                className="pointer"
-                src={require("../../img/store_google.png")}
-                onClick={() => {window.alert('app')}}
-              />
+              <RowView>
+                <div className="large">
+                  농업인<br/>
+                  <Icon
+                    className="pointer"
+                    src={require("../../img/store_google.png")}
+                    onClick={() => { window.alert('농업인 app') }}
+                  />
+                </div>
+                <div style={{ margin: 10 ,}} className="large">
+                  드론 조종사<br/>
+                  <Icon
+                    className="pointer"
+                    src={require("../../img/store_google.png")}
+                    onClick={() => { window.alert('드론 조종사 app') }}
+                  />
+                </div>
+              </RowView>
             </div>
           </CenterView>
           <CenterView className="flex">
@@ -43,7 +56,7 @@ const Home = () => {
         </RowView>
       </Section1>
 
-      <Section2>
+      <Section3>
         <CenterView className="flex">
           <Text>
             <div>
@@ -62,7 +75,7 @@ const Home = () => {
         <CenterView className="flex">
           <Icon src={require("../../img/home2.png")} />
         </CenterView>
-      </Section2>
+      </Section3>
 
       <Section1>
         <HomePic src={require("../../img/home3.png")} />
@@ -85,7 +98,7 @@ const Home = () => {
         </RowView>
       </Section1>
 
-      <Section2>
+      {/* <Section2>
         <CenterView className="flex">
           <Text>
             <div>
@@ -104,12 +117,12 @@ const Home = () => {
         <CenterView className="flex">
           <Icon src={require("../../img/home4.png")} />
         </CenterView>
-      </Section2>
+      </Section2> */}
 
-      <Section2 style={{ margin: 0 }}>
+      <Section2 style={{ margin: 50 }}>
         <div className="flex">
           <Text>
-            <div className="green">준비 중인 제품 및 서비스ㅤㅤㅤㅤ </div>
+            <div className="green">준비 중인 제품 및 서비스ㅤ </div>
           </Text>
         </div>
         <div className="flex" />

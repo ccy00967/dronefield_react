@@ -45,22 +45,22 @@ const Rules = () => {
   const setting_check4 = () => setCheck4(!check4);
 
   const oepn_check1 = () =>
-    window.open("tos/이용약관", "_blank", "width=500,height=500");
+    window.open("tos/1", "_blank", "width=500,height=500");
   const oepn_check2 = () =>
     window.open(
-      "tos/개인정보_수집_및_이용에_대한_안내",
+      "tos/2",
       "_blank",
       "width=500,height=500"
     );
   const oepn_check3 = () =>
     window.open(
-      "tos/개인정보_제3자_제공동의",
+      "tos/3",
       "_blank",
       "width=500,height=500"
     );
   const oepn_check4 = () =>
     window.open(
-      "tos/드론평야_맞춤_정보_수집_동의",
+      "tos/4",
       "_blank",
       "width=500,height=500"
     );

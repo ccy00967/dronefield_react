@@ -3,11 +3,14 @@ import PrivateRoute from "./Component/Route/PrivateRoute";
 import { useUser } from "./Component/userContext";
 
 import Home from "./page/Home/Home";
-import CompanyInfo from "./page/TopMenuPage/CompanyInfo";
+import UserGuide from "./page/TopMenuPage/UserGuide";
 import ServiceInfo from "./page/TopMenuPage/ServiceInfo";
-import CS from "./page/TopMenuPage/CS";
+import B2bInquiry from "./page/TopMenuPage/B2bInquiry";
 import CS_insert from "./page/TopMenuPage/CS_insert";
 import CS_detail from "./page/TopMenuPage/CS_detail";
+import Notice from "./page/TopMenuPage/Notice/Notice";
+import Notice_detail from "./page/TopMenuPage/Notice/Notice_detail";
+import Terms from "./page/TopMenuPage/TermsPage";
 // 회원가입
 import SignUp_Login from "./page/SignUp/Login";
 import Rules from "./page/SignUp/Rules";
@@ -38,6 +41,9 @@ import { PaymentFailPage } from "./page/tosspayments/PaymentFailPage";
 import NicePassPopUp from "./page/SignUp/NicePassPopUp";
 import PaymentPending from "./page/Menu/Farmer/PaymentPending";
 import RefundList from "./page/Menu/Farmer/RefundList";
+//네이버 웹뷰 지도
+import NaverMap_WebView from "./page/flutteWebView/NaverMapWebView";
+
 
 
 function App() {
@@ -50,12 +56,19 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/CompanyInfo" element={<CompanyInfo />} />
+      <Route path="/UserGuide" element={<UserGuide />} />
       <Route path="/ServiceInfo" element={<ServiceInfo />} />
-      <Route path="/Cs">
-        <Route index element={<CS />} />
+      <Route path="/B2bInquiry">
+        <Route index element={<B2bInquiry />} />
         <Route path="insert" element={<CS_insert />} />
         <Route path="detail/:seq" element={<CS_detail />} />
+      </Route>
+    
+      <Route path="/Terms" element={<Terms />} />
+      <Route path="/Notice">
+        <Route index element={<Notice />} />
+        {/* <Route path="insert" element={<CS_insert />} /> */}
+        <Route path="detail/:seq" element={<Notice_detail />} />
       </Route>
 
       <Route path="/SignUp">
@@ -234,6 +247,9 @@ function App() {
           />
         }
       />
+      {/* 네이버 웹뷰 */}
+      <Route path="/naver-map" element={<NaverMap_WebView />} />
+
 
       {/* 토스 리다이렉트 페이지 */}
       <Route
@@ -245,6 +261,9 @@ function App() {
         element={<PrivateRoute isLogin={isLogin} component={PaymentFailPage} />}
       />
     </Routes>
+
+
+
   );
 }
 

@@ -8,26 +8,6 @@ import { refreshAccessToken } from "./Farmer";
 //Matching
 
 
-/**
- * sgis 단계별 주소조회 api 토큰 받아오기
- * @returns 
- */
-export const fetchToken = async () => {
-  try {
-    const response = await fetch(
-      "https://sgisapi.kostat.go.kr/OpenAPI3/auth/authentication.json?consumer_key=fb0450ed86ba405ba3ec&consumer_secret=a7ec04e5c1f8401594d5"
-    );
-    if (response.status === 200) {
-      const data = await response.json();
-      return data.result.accessToken; // 받아온 토큰 값
-    } else {
-      throw new Error("Failed to fetch token");
-    }
-  } catch (error) {
-    console.error("Error fetching token:", error);
-    return null;
-  }
-};
 
 
 /**
@@ -134,6 +114,26 @@ export const putfarmrequest = async (checkedList) => {
 };
 
 
+/**
+ * sgis 단계별 주소조회 api 토큰 받아오기
+ * @returns 
+ */
+export const fetchToken = async () => {
+  try {
+    const response = await fetch(
+      "https://sgisapi.kostat.go.kr/OpenAPI3/auth/authentication.json?consumer_key=fb0450ed86ba405ba3ec&consumer_secret=a7ec04e5c1f8401594d5"
+    );
+    if (response.status === 200) {
+      const data = await response.json();
+      return data.result.accessToken; // 받아온 토큰 값
+    } else {
+      throw new Error("Failed to fetch token");
+    }
+  } catch (error) {
+    console.error("Error fetching token:", error);
+    return null;
+  }
+};
 
 
 /**
@@ -172,14 +172,13 @@ const addressDepthServerModel = (json) => {
  * 행정구역 cd에 따라 거래 리스트 받는다
  * @return {Promise<[OrderInfo]>} 
  */
-export const getfarmrequest = async (cdInfo) => {
+export const getfarmrequest = async (cdInfo, page = 1, page_size = 10) => {
   const User_Credential = JSON.parse(localStorage.getItem("User_Credential"));
   let accessToken = User_Credential?.access_token;
 
-  // 요청 처리 함수
   const fetchRequest = async () => {
     const cdInfoURL = cdInfo ? `${cdInfo}` : "";
-    const url = `${server}/trade/lists/?cd=${cdInfoURL}`;
+    const url = `${server}/trade/lists/?cd=${cdInfoURL}&page=${page}&page_size=${page_size}`;
 
     const res = await fetch(url, {
       method: "GET",
@@ -190,7 +189,7 @@ export const getfarmrequest = async (cdInfo) => {
     });
 
     if (!res.ok) {
-      throw new Error(`HTTP error! Status: ${res.status}`); // HTTP 오류 발생 시 throw
+      throw new Error(`HTTP error! Status: ${res.status}`);
     }
 
     const data = await res.json();
@@ -203,8 +202,6 @@ export const getfarmrequest = async (cdInfo) => {
   } catch (error) {
     if (error.message.includes("401")) {
       // Access Token이 만료된 경우
-      console.warn("Access token expired. Attempting to refresh token...");
-
       return await refreshAccessToken(fetchRequest); // 토큰 갱신 후 재시도
     }
 
@@ -212,6 +209,7 @@ export const getfarmrequest = async (cdInfo) => {
     return { error: true, message: error.message }; // 기타 에러 반환
   }
 };
+
 
 
 
@@ -336,7 +334,7 @@ export const getWorkStatus = async () => {
 
     const data = await res.json();
     console.log("Work Status List:", data);
-    return data;
+    return data.data;
   };
 
   try {

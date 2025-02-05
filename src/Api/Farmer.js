@@ -205,7 +205,9 @@ export const get_polygon_api = async (x, y) => {
       success: function (res) {
         try {
           const polygon = res.response.result.featureCollection.features[0].geometry.coordinates[0]
+          console.log(res)
           // console.log("pnu", pnuValue);
+          console.log("polygon", polygon)
           resolve(polygon); // Promise 성공 시 값 반환
         } catch (error) {
           reject("Error parsing response");
@@ -262,14 +264,14 @@ export const search_area_api = async (pnu) => {
   // console.log("pnu1", pnu);
   return new Promise((resolve, reject) => {
     $.ajax({
-      type: "POST",
+      type: "GET",
       url: getLndpclAr + `&pnu=${pnu}` + "&format=json",
       dataType: "jsonp",
       success: function (respnu) {
         try {
           const area = respnu.ladfrlVOList.ladfrlVOList[0]?.lndpclAr; // 안전하게 데이터 접근
           // console.log("pnu2", pnu);
-          // console.log("LndcplAr1", area);
+          console.log("search_area_api", area);
           resolve(area); // area 값을 Promise 성공 상태로 반환
         } catch (error) {
           console.error("Error parsing response:", error, respnu);
@@ -489,60 +491,71 @@ export const load_API = async (
 
 //농지등록 함수
 export const insert_API = async (landinfo, lndpclAr, check) => {
-  console.log("landinfo", landinfo)
-  // const polygonData = await get_polygon_api()
-  // console.log(polygonData)
-  if (lndpclAr == "") {
+  if (lndpclAr === "") {
     return alert("검색하기를 눌러서 면적을 입력해주세요");
   }
 
   if (!check) {
-    return alert("동의를 체크해주세요!")
-
+    return alert("동의를 체크해주세요!");
   }
+
+  // 토큰 갱신
   await refreshAccessToken();
-  console.log('landinfo', landinfo);
+
   const userInfo = JSON.parse(localStorage.getItem('User_Credential'));
   let accessToken = userInfo?.access_token;
-  console.log('lndpclAr', lndpclAr);
+
+  // URLSearchParams로 데이터 변환
+  const formData = new URLSearchParams({
+    detail: landinfo.detail || "값이 없음",
+    cropsInfo: landinfo.cropsInfo || "값이 없음",
+    landNickName: landinfo.landNickName || "값이 없음",
+    additionalPhoneNum: landinfo.additionalPhoneNum || "값이 없음",
+    pnu: landinfo.pnu || "값이 없음",
+    lndpclAr: lndpclAr || "값이 없음",
+    cd: landinfo.cd || "값이 없음",
+    jibun: landinfo.jibun || "값이 없음",
+    road: landinfo.road || "값이 없음"
+  });
+
   // 첫 번째 POST 요청
   let res = await fetch(server + "/farmer/land/", {
-    // let res = await fetch(server + "/customer/lands/", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "application/x-www-form-urlencoded", // 변경
       Authorization: `Bearer ${accessToken}`,
     },
-    body: JSON.stringify(landinfo),
+    body: formData.toString(), // URL-encoded 데이터
   });
 
   // 401 에러 발생 시 토큰 갱신 후 다시 시도
   if (res.status === 401) {
     accessToken = await refreshAccessToken();
     if (accessToken) {
-      // 새로운 액세스 토큰으로 다시 시도
       res = await fetch(server + "/farmer/land/", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded", // 변경
           Authorization: `Bearer ${accessToken}`,
         },
-        body: JSON.stringify(landinfo),
+        body: formData.toString(), // URL-encoded 데이터
       });
     }
   }
 
-  // 응답이 성공했을 때 데이터 처리
+  // 응답이 성공했을 때 처리
   if (res.ok) {
     const result = await res.json();
     alert("농지 등록이 완료되었습니다.");
     console.log("Success:", result);
-    // 페이지 새로고침
-    window.location.reload();
+    window.location.reload(); // 페이지 새로고침
   } else {
-    console.error('요청 실패');
+    const errorResponse = await res.text();
+    console.error('요청 실패:', errorResponse);
+    alert('농지 등록에 실패했습니다.');
   }
 };
+
 
 
 //농지정보 수정함수
@@ -598,7 +611,7 @@ export const allLndpclAr_API = async (setAllLndpclAr) => {
   });
 
   const data = await res.json();
-  setAllLndpclAr(data.total_lndpclAr);
+  setAllLndpclAr(data.total_lndpclAr.toFixed(2));
   console.log('123', data);
 
 }

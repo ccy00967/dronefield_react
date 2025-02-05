@@ -46,6 +46,15 @@ div.flex {
 }
 `;
 
+export const Section3 = styled(RowView)`
+box-sizing: border-box;
+padding: 0rem 2rem;
+margin: 5em 0rem;
+div.flex {
+  flex: 1;
+}
+`;
+
 export const HomePic = styled(Icon)`
 width: 100%;
 height: 100%;

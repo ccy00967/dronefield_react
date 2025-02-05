@@ -64,9 +64,9 @@ const WorkStatus = () => {
       }
 
       const data = await res.json();
-      setDataList(data); // 데이터를 상태로 설정
+      setDataList(data.data); // 데이터를 상태로 설정
       console.log(`Work Status (${exterminateState || "전체"})`, data);
-      return data;
+      return data.data;
     };
 
     try {
@@ -218,7 +218,7 @@ const WorkStatus = () => {
             </div>
             <span>▶︎</span>
             <div className={isSelect(2)} onClick={() => handleFilterClick(2)}>
-              작업 중({exterminating_count})
+              작업 시작({exterminating_count})
             </div>
             <span>▶︎</span>
             <div className={isSelect(3)} onClick={() => handleFilterClick(3)}>

@@ -20,6 +20,7 @@ import {
   TmpPASSBtn,
   Btn
 } from "./css/SignUpCss";
+import NicePassBtn2 from "./NicePassBtn2";
 
 
 // 로그인에 필요한 유저정보
@@ -233,6 +234,7 @@ const SignUp = () => {
 
         <div className="title">본인인증</div>
         <NicePassBtn />
+        {/* <NicePassBtn2/> */}
         <AlertText className={nicePassIsSuccess}>
           {message.alert_pass[nicePassIsSuccess] || message.alert_pass.default}
         </AlertText>
@@ -317,6 +319,7 @@ const SignUp = () => {
         <Btn className="signUp" onClick={go_nextPage}>
           가입하기
         </Btn>
+       
       </LoginBox>
       {
         addrmodalOpen &&
