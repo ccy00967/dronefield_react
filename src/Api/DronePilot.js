@@ -1,6 +1,7 @@
 //lsy
 import { server } from "../page/url";
 import { KEY, refreshAccessToken } from "./Farmer";
+import $ from 'jquery';
 
 // const uuid = User_Credential?.uuid
 
@@ -164,94 +165,84 @@ export const fetchToken = async () => {
 
 // 시/도 조회
 export const getSiDo = async (cd, setData) => {
-  try {
-    const url = "https://api.vworld.kr/ned/data/admCodeList";
+  const url = "https://api.vworld.kr/ned/data/admCodeList" + "?key=" + KEY;
 
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      type: "GET",
+      url:
+        url +
+        "&format=json" +
+        "&numOfRows=1000",
+      dataType: "jsonp",
+      success: function (response) {
+        const data = response.admVOList.admVOList;
+        console.log("=============")
+        console.log(data)
+        const result = data.map((item) => addressDepthServerModel(item));
+        setData(result);
       },
-      body: JSON.stringify({
-        key: KEY,
-        format: "json",
-        numOfRows: "1000",
-      }),
+      error: function (e) {
+        reject(e.responseText || "AJAX request failed");
+      },
     });
-
-    if (response.status === 200) {
-      const data = await response.json();
-      console.log(data)
-      const result = data.result.map((item) => addressDepthServerModel(item));
-      setData(result);
-    } else {
-      setData([]);
-    }
-  } catch (error) {
-    setData([]);
-  }
+  });
 }
 
 
 // 시군구 조회
 export const getSiGunGu = async (cd, setData) => {
-  try {
-    const url = "https://api.vworld.kr/ned/data/admSiList";
+  const url = "https://api.vworld.kr/ned/data/admSiList" + "?key=" + KEY;
 
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      type: "GET",
+      url:
+        url +
+        `&admCode=${cd}` + // 시도 코드(2자리)
+        "&format=json" +
+        "&numOfRows=1000",
+      dataType: "jsonp",
+      success: function (response) {
+        const data = response.admVOList.admVOList;
+        console.log("=============")
+        console.log(data)
+        const result = data.map((item) => addressDepthServerModel(item));
+        setData(result);
       },
-      body: JSON.stringify({
-        key: KEY,
-        format: "json",
-        numOfRows: "1000",
-        admCode: cd, // 시도 코드(2자리)
-      }),
+      error: function (e) {
+        reject(e.responseText || "AJAX request failed");
+      },
     });
-
-    if (response.status === 200) {
-      const data = await response.json();
-      const result = data.result.map((item) => addressDepthServerModel(item));
-      setData(result);
-    } else {
-      setData([]);
-    }
-  } catch (error) {
-    setData([]);
-  }
+  });
 }
 
 
 // 읍면동 조회
 export const getEupMyeonDong = async (cd, setData) => {
-  try {
-    const url = "https://api.vworld.kr/ned/data/admDongList";
+  const url = "https://api.vworld.kr/ned/data/admDongList" + "?key=" + KEY;
 
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      type: "GET",
+      url:
+        url +
+        `&admCode=${cd}` + // 시도/시군구 코드(5자리)
+        "&format=json" +
+        "&numOfRows=1000",
+      dataType: "jsonp",
+      success: function (response) {
+        const data = response.admVOList.admVOList;
+        console.log("=============")
+        console.log(data)
+        const result = data.map((item) => addressDepthServerModel(item));
+        setData(result);
       },
-      body: JSON.stringify({
-        key: KEY,
-        format: "json",
-        numOfRows: "1000",
-        admCode: cd, // 시도/시군구 코드(5자리)
-      }),
+      error: function (e) {
+        reject(e.responseText || "AJAX request failed");
+      },
     });
-
-    if (response.status === 200) {
-      const data = await response.json();
-      const result = data.result.map((item) => addressDepthServerModel(item));
-      setData(result);
-    } else {
-      setData([]);
-    }
-  } catch (error) {
-    setData([]);
-  }
+  });
 }
 
 const addressDepthServerModel = (json) => {
