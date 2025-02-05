@@ -177,8 +177,6 @@ export const getSiDo = async (cd, setData) => {
       dataType: "jsonp",
       success: function (response) {
         const data = response.admVOList.admVOList;
-        console.log("=============")
-        console.log(data)
         const result = data.map((item) => addressDepthServerModel(item));
         setData(result);
       },
@@ -205,8 +203,6 @@ export const getSiGunGu = async (cd, setData) => {
       dataType: "jsonp",
       success: function (response) {
         const data = response.admVOList.admVOList;
-        console.log("=============")
-        console.log(data)
         const result = data.map((item) => addressDepthServerModel(item));
         setData(result);
       },
@@ -233,8 +229,6 @@ export const getEupMyeonDong = async (cd, setData) => {
       dataType: "jsonp",
       success: function (response) {
         const data = response.admVOList.admVOList;
-        console.log("=============")
-        console.log(data)
         const result = data.map((item) => addressDepthServerModel(item));
         setData(result);
       },
