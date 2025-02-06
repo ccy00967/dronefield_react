@@ -42,11 +42,11 @@ const WorkStatus_Modal = forwardRef((props, ref) => {
   const transaction = data.dealmothod === 0 ? "일반거래" : "개인거래";
   const farmland = data?.jibun || "농지 없음";
   const date = data.endDate
-  const price = data?.price || "30원";
+  const price = data?.setAveragePrice || "30";
   // const [date, setDate] = useState("8/19");
   // const [price, setPrice] = useState("30원");
   const pesticidesUsed = data.pesticide || "농약 없음";
-  const amount = 30 * Math.round(data?.lndpclAr * 0.3025).toString() || "대금 없음";
+  const amount = Math.round(data?.requestAmount).toString() || "대금 없음";
   // -
   // const [amount, setAmount] = useState(360000);
   const [serviceAmount, setServiceAmount] = useState(1000);
@@ -101,7 +101,7 @@ const WorkStatus_Modal = forwardRef((props, ref) => {
           </DataRow>
           <DataRow>
             <TextMedium className="letter">평단가</TextMedium>
-            <div className="gray">{price}</div>
+            <div className="gray">{price}원</div>
           </DataRow>
           <DataRow>
             <TextMedium className="letter">마감일</TextMedium>
@@ -150,7 +150,7 @@ const WorkStatus_Modal = forwardRef((props, ref) => {
               총 <span style={{ color: blueColor }}>{1}</span>건 서비스 이용금액
             </TextSemiBold>
             <TextMedium className="auto" $fontsize={20} $color={true}>
-              {(amount + serviceAmount).toLocaleString("ko-KR")}원
+              {amount.toLocaleString("ko-KR")}원
             </TextMedium>
           </RowView>
         </ModalBox>

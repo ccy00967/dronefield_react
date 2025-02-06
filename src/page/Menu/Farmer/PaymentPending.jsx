@@ -240,6 +240,15 @@ const PaymentPending = () => {
               </Table>
               <Divider />
               <CenteredText>결제 전 정보를 다시 한 번 확인하세요!</CenteredText>
+
+
+              <TotalAmountWrapper>
+                <TotalAmountTitle>서비스 이용금액:</TotalAmountTitle>
+                <TotalAmountValue>
+                  {(selectedData.length * 10000).toLocaleString()}원
+                </TotalAmountValue>
+              </TotalAmountWrapper>
+
               <TotalAmountWrapper>
                 <TotalAmountTitle>총 <TotalAmountValue>{selectedData.length}</TotalAmountValue>건 결제금액:</TotalAmountTitle>
                 <TotalAmountValue>

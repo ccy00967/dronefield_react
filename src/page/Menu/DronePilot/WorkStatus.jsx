@@ -48,8 +48,8 @@ const WorkStatus = () => {
     const fetchRequest = async () => {
       // 쿼리 파라미터 추가
       const endpoint = exterminateState !== null
-        ? `${server}/trade/work-list/?exterminateState=${exterminateState}`
-        : `${server}/trade/work-list/`;
+        ? `${server}/trade/work-list/?exterminateState=${exterminateState}&page=1&page_size=10`
+        : `${server}/trade/work-list/?page=1&page_size=10`;
 
       const res = await fetch(endpoint, {
         method: "GET",
@@ -65,6 +65,7 @@ const WorkStatus = () => {
 
       const data = await res.json();
       setDataList(data.data); // 데이터를 상태로 설정
+      setCnt(data.total_items);
       console.log(`Work Status (${exterminateState || "전체"})`, data);
       return data.data;
     };
@@ -81,6 +82,7 @@ const WorkStatus = () => {
       console.error("Error fetching work status:", error);
       return { error: true, message: error.message }; // 기타 에러 반환
     }
+    
   };
 
 
@@ -207,7 +209,7 @@ const WorkStatus = () => {
           <RowView2 className="title">
             작업현재상황
             <Icon
-              onClick={setting_reset}
+              onClick={()=>{handleFilterClick(null)}}
               src={require("../../../img/icon_reset.png")}
             />
           </RowView2>
