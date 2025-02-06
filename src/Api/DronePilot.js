@@ -396,7 +396,7 @@ export const getWorkStatus = async () => {
 
   // 요청 처리 함수
   const fetchRequest = async () => {
-    const res = await fetch(`${server}/trade/work-list/?exterminateState=3`, {
+    const res = await fetch(`${server}/trade/work-list/?exterminateState=3&checkState=1&page=1&page_size=10`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -414,7 +414,7 @@ export const getWorkStatus = async () => {
 
     const data = await res.json();
     console.log("Work Status List:", data);
-    return data.data;
+    return data;
   };
 
   try {

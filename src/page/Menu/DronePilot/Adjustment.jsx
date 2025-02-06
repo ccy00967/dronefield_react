@@ -34,7 +34,8 @@ const Adjustment = () => {
 
     const fetchinfo = async () => {
     const getWorkStatusData = await getWorkStatus();
-    setDataList(getWorkStatusData);
+    setDataList(getWorkStatusData.data);
+    setCnt(getWorkStatusData.total_items);
     }
     fetchinfo();
   }, []);

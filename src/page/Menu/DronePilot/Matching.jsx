@@ -486,7 +486,7 @@ const Matching = ({ }) => {
                     </DataRow>
                     <DataRow>
                       <TextMedium className="letter">평단가</TextMedium>
-                      <div className="gray">{selectData[see_seq].setAmount}30원</div>
+                      <div className="gray">{selectData[see_seq].setAveragePrice}원</div>
                     </DataRow>
                     <DataRow>
                       <TextMedium className="letter">마감일</TextMedium>

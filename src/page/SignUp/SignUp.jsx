@@ -233,8 +233,8 @@ const SignUp = () => {
         )}
 
         <div className="title">본인인증</div>
-        <NicePassBtn />
-        {/* <NicePassBtn2/> */}
+        {/* <NicePassBtn /> */}
+        <NicePassBtn2/>
         <AlertText className={nicePassIsSuccess}>
           {message.alert_pass[nicePassIsSuccess] || message.alert_pass.default}
         </AlertText>
