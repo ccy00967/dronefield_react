@@ -7,11 +7,13 @@ import { server } from "../url";
  * @param {string} cancelReason - 환불 사유
  * @param {Array<string>} orderidlist - 환불 대상 주문 ID 목록
  */
-export const cancelPayment = async (tossOrderId, cancelReason, orderidlist) => {
+export const cancelPayment = async ( cancelReason, orderid) => {
     const User_Credential = JSON.parse(localStorage.getItem("User_Credential"));
     const accessToken = User_Credential.access_token;
+    // const orderid = "b779cabd-d591-4510-b445-7f8ed1c3439e"
+    console.log(cancelReason,orderid);
     try {
-      const response = await fetch(`${server}/payments/cancel/${tossOrderId}/`, {
+      const response = await fetch(`${server}/payments/cancel/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -19,7 +21,7 @@ export const cancelPayment = async (tossOrderId, cancelReason, orderidlist) => {
         },
         body: JSON.stringify({
           cancelReason,
-          orderidlist,
+          orderid,
         }),
       });
   
