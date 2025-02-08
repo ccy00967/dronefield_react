@@ -51,17 +51,17 @@ const PestControl_useList = () => {
   const handleRefundRequest = async (orderId) => {
     try {
       // 1. orderId로 tossOrderId 가져오기
-      const tossOrderId = await getTradeDetail(orderId);
+      // const tossOrderId = await getTradeDetail(orderId);
 
-      if (!tossOrderId) {
-        console.error("tossOrderId가 없습니다.");
+      if (!orderId) {
+        console.error("OrderId가 없습니다.");
         return;
       }
 
       // 2. tossOrderId로 결제 취소 요청
       const cancelReason = "사용자 요청에 의한 환불";
-      const orderidlist = [orderId];
-      await cancelPayment(tossOrderId, cancelReason, orderidlist);
+      // const orderidlist = orderId;
+      await cancelPayment(cancelReason, orderId);
 
       // 성공 메시지
       alert("환불이 성공적으로 처리되었습니다.");
