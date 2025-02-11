@@ -241,7 +241,7 @@ export const get_pnu_api = async () => {
       success: function (res) {
         try {
           const pnuValue = res.response.result.items[0].id;
-          // console.log("pnu", pnuValue);
+          console.log("pnu", pnuValue);
           resolve(pnuValue); // Promise 성공 시 값 반환
         } catch (error) {
           reject("Error parsing response");

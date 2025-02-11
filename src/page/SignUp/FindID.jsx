@@ -69,7 +69,7 @@ const FindID = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setEmail(data.email); // 성공적으로 받은 이메일 저장
+        setEmail(data.id); // 성공적으로 받은 이메일 저장
         setFindOk(true);
       } else {
         const error = await response.json();

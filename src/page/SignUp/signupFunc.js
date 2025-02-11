@@ -19,7 +19,7 @@ export const sendOTPEmail = async function (id,token_version_id) {
 export const emailValidateCheck = async function (otp, token_version_id) {
     const bodyData = new URLSearchParams();
     bodyData.append("validate_key", otp);
-    // bodyData.append("token_version_id", token_version_id);
+    bodyData.append("token_version_id", token_version_id);
 
     console.log(`값: ${otp}, 타입: ${typeof otp}`);
     console.log(bodyData.toString());

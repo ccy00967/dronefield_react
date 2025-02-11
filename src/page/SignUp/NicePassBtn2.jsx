@@ -1,19 +1,15 @@
 import { useState } from "react";
-import { server } from "../url"; // 서버 URL 가져오기
+import { server } from "../url";
 import { PASSBtn } from "./css/NicePassBtnCss";
 
-const NicePassBtn2 = () => {
-  const [authResult, setAuthResult] = useState(null); // 인증 결과 상태
+const NicePassBtn2 = ({ setTokenVersionId }) => {  // 부모로부터 setTokenVersionId 전달받음
+  const [authResult, setAuthResult] = useState(null);
 
   const openNicePopup = async () => {
     try {
-      // 1. `/user/nice-token/` API 호출하여 토큰 발급
       const tokenResponse = await fetch(`${server}/user/nice-token/`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          returnURL: `${window.location.origin}/user/nice-callback/`,
-        }).toString(),
       });
 
       if (!tokenResponse.ok) {
@@ -23,7 +19,9 @@ const NicePassBtn2 = () => {
       const { token_version_id, enc_data, integrity_value, url } =
         await tokenResponse.json();
 
-      // 2. 팝업 창 열기
+      // 부모 컴포넌트에 token_version_id 전달
+      setTokenVersionId(token_version_id);
+
       const popup = window.open(
         "",
         "popupChk",
@@ -35,7 +33,6 @@ const NicePassBtn2 = () => {
         return;
       }
 
-      // 3. 팝업 창에 인증 데이터를 전달
       popup.document.write(`
         <form name="form_chk" method="post" action="${url}">
           <input type="hidden" name="token_version_id" value="${token_version_id}" />
@@ -47,7 +44,6 @@ const NicePassBtn2 = () => {
         </script>
       `);
 
-      // 4. 인증 결과 메시지 처리
       const receiveMessage = (event) => {
         if (event.origin !== window.location.origin) {
           console.warn("Message origin not trusted:", event.origin);
@@ -62,7 +58,7 @@ const NicePassBtn2 = () => {
           console.warn("Unknown message received:", event.data);
         }
 
-        popup.close(); // 팝업 창 닫기
+        popup.close();
       };
 
       window.addEventListener("message", receiveMessage, { once: true });
