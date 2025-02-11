@@ -16,17 +16,20 @@ export const sendOTPEmail = async function (id,token_version_id) {
     });
 }
 
-export const emailValidateCheck = async function (otp,token_version_id) {
-    const bodyData = {
-        validatekey: otp,
-        token_version_id: token_version_id
-    }
-    console.log(`값: ${otp}, 타입: ${typeof otp}`)
-    console.log(bodyData);
+export const emailValidateCheck = async function (otp, token_version_id) {
+    const bodyData = new URLSearchParams();
+    bodyData.append("validate_key", otp);
+    // bodyData.append("token_version_id", token_version_id);
+
+    console.log(`값: ${otp}, 타입: ${typeof otp}`);
+    console.log(bodyData.toString());
+
     return fetch(server + '/user/validatekeycheck/', {
         method: 'POST',
-        headers: [["Content-Type", 'application/json']],
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
         credentials: "include",
-        body: JSON.stringify(bodyData),
+        body: bodyData.toString(),
     });
-}
+};
