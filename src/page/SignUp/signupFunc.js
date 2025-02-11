@@ -21,6 +21,7 @@ export const emailValidateCheck = async function (otp,token_version_id) {
         validatekey: otp,
         token_version_id: token_version_id
     }
+    console.log(`값: ${otp}, 타입: ${typeof otp}`)
     console.log(bodyData);
     return fetch(server + '/user/validatekeycheck/', {
         method: 'POST',
