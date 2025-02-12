@@ -2,7 +2,7 @@ import { server } from "../url";
 
 
 // 인증이메일 발송
-export const sendOTPEmail = async function (id,token_version_id) {
+export const sendOTPEmail = async function (id, token_version_id) {
     const bodyData = {
         email: id,
         token_version_id: token_version_id

@@ -65,47 +65,47 @@ const Rules = () => {
       "width=500,height=500"
     );
 
-    const signUpAPI = async (formData) => {
-      try {
-        // URLSearchParams를 사용하여 x-www-form-urlencoded 형식으로 변환
-        const bodyData = new URLSearchParams();
-        
-        for (const key in formData) {
-          if (typeof formData[key] === "object" && formData[key] !== null) {
-            bodyData.append(key, JSON.stringify(formData[key]));
-          } else {
-            bodyData.append(key, formData[key]);
-          }
+  const signUpAPI = async (formData) => {
+    try {
+      // URLSearchParams를 사용하여 x-www-form-urlencoded 형식으로 변환
+      const bodyData = new URLSearchParams();
+
+      for (const key in formData) {
+        if (typeof formData[key] === "object" && formData[key] !== null) {
+          bodyData.append(key, JSON.stringify(formData[key]));
+        } else {
+          bodyData.append(key, formData[key]);
         }
-    
-        // ✅ Boolean 값 변환 (true → 1, false → 0)
-        bodyData.append("optional_consent", formData.optional_consent ? "1" : "0");
-    
-        const res = await fetch(server + "/user/register/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          credentials: "include",
-          body: bodyData.toString(), // ✅ optional_consent가 포함된 bodyData 전송
-        });
-    
-        if (!res.ok) {
-          const errorData = await res.json();
-          throw new Error(errorData.message || "회원가입 요청 실패");
-        }
-    
-        const responseData = await res.json();
-        console.log("회원가입 성공:", responseData);
-        return true;
-    
-      } catch (error) {
-        console.error("회원가입 오류 발생:", error.message);
-        return false;
       }
-    };
-    
-    
+
+      // ✅ Boolean 값 변환 (true → 1, false → 0)
+      bodyData.append("optional_consent", formData.optional_consent ? "1" : "0");
+
+      const res = await fetch(server + "/user/register/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        credentials: "include",
+        body: bodyData.toString(), // ✅ optional_consent가 포함된 bodyData 전송
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "회원가입 요청 실패");
+      }
+
+      const responseData = await res.json();
+      console.log("회원가입 성공:", responseData);
+      return true;
+
+    } catch (error) {
+      console.error("회원가입 오류 발생:", error.message);
+      return false;
+    }
+  };
+
+
 
   const goHome = () => Navigate("/");
   const goNext = async () => {
@@ -126,7 +126,7 @@ const Rules = () => {
     }
     alert("전체동의 해주세요.");
   };
-  
+
 
   return (
     <Common_Layout>

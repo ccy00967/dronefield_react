@@ -43,7 +43,7 @@ const userModel = {
 
 const SignUp = () => {
   const Navigate = useNavigate();
-  const [tokenVersionId, setTokenVersionId] = useState(""); 
+  const [tokenVersionId, setTokenVersionId] = useState("");
   const [userType, setUserType] = useState("");
   const [id, setID] = useState(""); // id는 email과 같음
   const [otp, setOtp] = useState("");
@@ -120,7 +120,7 @@ const SignUp = () => {
       return;
     }
 
-    const res = await sendOTPEmail(id,tokenVersionId)
+    const res = await sendOTPEmail(id, tokenVersionId)
     if (res.ok) {
       setAlert_id("ok");
     }
@@ -133,7 +133,7 @@ const SignUp = () => {
       return;
     }
 
-    const res = await emailValidateCheck(otp,tokenVersionId)
+    const res = await emailValidateCheck(otp, tokenVersionId)
     if (res.ok) {
       console.log(res)
       setAlert_otp("ok");
@@ -175,26 +175,26 @@ const SignUp = () => {
     if (userType === "드론조종사") { roleSelect = 3 } // * 나중에 3,4번으로 전부 수정하기 3==방제사, 4==농민
 
     console.log({
-      email:id,
-        password: pw,
-        type: roleSelect,
-        road: addrRoad,
-        jibun: addrJibun,
-        detail: addrDetail,
-        token_version_id: tokenVersionId,
+      email: id,
+      password: pw,
+      type: roleSelect,
+      road: addrRoad,
+      jibun: addrJibun,
+      detail: addrDetail,
+      token_version_id: tokenVersionId,
     })
 
     // 약관 동의로 이동
     Navigate("rules", {
       state: {
-        email:id,
+        email: id,
         password: pw,
         type: roleSelect,
         road: addrRoad,
         jibun: addrJibun,
         detail: addrDetail,
         token_version_id: tokenVersionId,
-        
+
       }
     });
   };
@@ -235,7 +235,7 @@ const SignUp = () => {
 
         <div className="title">본인인증</div>
         {/* <NicePassBtn /> */}
-        <NicePassBtn2 setTokenVersionId={setTokenVersionId}/>
+        <NicePassBtn2 setTokenVersionId={setTokenVersionId} />
         {/* <AlertText className={nicePassIsSuccess}>
           {message.alert_pass[nicePassIsSuccess] || message.alert_pass.default}
         </AlertText> */}
@@ -320,7 +320,7 @@ const SignUp = () => {
         <Btn className="signUp" onClick={go_nextPage}>
           가입하기
         </Btn>
-       
+
       </LoginBox>
       {
         addrmodalOpen &&
