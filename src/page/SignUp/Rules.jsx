@@ -65,38 +65,68 @@ const Rules = () => {
       "width=500,height=500"
     );
 
-  const signUpAPI = async () => {
-    // 회원가입 요청 보내기
-    const res = await fetch(server + '/user/register/', {
-      method: 'POST',
-      headers: [["Content-Type", 'application/json']],
-      credentials: "include",
-      body: JSON.stringify(state),
-    });
-    
+  const signUpAPI = async (formData) => {
+    try {
+      // URLSearchParams를 사용하여 x-www-form-urlencoded 형식으로 변환
+      const bodyData = new URLSearchParams();
 
-    if (true) {
-      // 회원가입 성공
+      for (const key in formData) {
+        if (typeof formData[key] === "object" && formData[key] !== null) {
+          bodyData.append(key, JSON.stringify(formData[key]));
+        } else {
+          bodyData.append(key, formData[key]);
+        }
+      }
+
+      // ✅ Boolean 값 변환 (true → 1, false → 0)
+      bodyData.append("optional_consent", formData.optional_consent ? "1" : "0");
+
+      const res = await fetch(server + "/user/register/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        credentials: "include",
+        body: bodyData.toString(), // ✅ optional_consent가 포함된 bodyData 전송
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "회원가입 요청 실패");
+      }
+
+      const responseData = await res.json();
+      console.log("회원가입 성공:", responseData);
       return true;
+
+    } catch (error) {
+      console.error("회원가입 오류 발생:", error.message);
+      return false;
     }
-    // 회원가입 실패
-    return false;
   };
+
+
 
   const goHome = () => Navigate("/");
-  const goNext = () => {
-    // 전체동의
+  const goNext = async () => {
+    // 전체 동의 체크 확인
     if (check1 && check2 && check3 && check4) {
-      // 회원가입 실행 if문안에서 실행
-      if (signUpAPI())
-        Navigate("/signUp/login", {
-          state: state,
-        });
+      try {
+        const isSuccess = await signUpAPI(state);  // ⬅️ 회원가입 결과를 기다림
+        if (isSuccess) {
+          Navigate("/signUp/login", { state: state }); // ⬅️ 회원가입 성공 시 이동
+        } else {
+          alert("회원가입에 실패했습니다. 다시 시도해주세요.");
+        }
+      } catch (error) {
+        console.error("회원가입 중 오류 발생:", error);
+        alert("회원가입 중 오류가 발생했습니다.");
+      }
       return;
     }
-    // 그 외
     alert("전체동의 해주세요.");
   };
+
 
   return (
     <Common_Layout>

@@ -43,7 +43,7 @@ const userModel = {
 
 const SignUp = () => {
   const Navigate = useNavigate();
-
+  const [tokenVersionId, setTokenVersionId] = useState("");
   const [userType, setUserType] = useState("");
   const [id, setID] = useState(""); // id는 email과 같음
   const [otp, setOtp] = useState("");
@@ -120,7 +120,7 @@ const SignUp = () => {
       return;
     }
 
-    const res = await sendOTPEmail(id)
+    const res = await sendOTPEmail(id, tokenVersionId)
     if (res.ok) {
       setAlert_id("ok");
     }
@@ -133,7 +133,7 @@ const SignUp = () => {
       return;
     }
 
-    const res = await emailValidateCheck(otp)
+    const res = await emailValidateCheck(otp, tokenVersionId)
     if (res.ok) {
       console.log(res)
       setAlert_otp("ok");
@@ -157,10 +157,10 @@ const SignUp = () => {
       return setAlert_type("no");
     }
     // PASS 본인인증을 하지 않았다면 no
-    if (nicePassIsSuccess != "ok") {
-      ScrollToTop_smooth();
-      return dispatch(nicePassFail())
-    }
+    // if (nicePassIsSuccess != "ok") {
+    //   ScrollToTop_smooth();
+    //   return dispatch(nicePassFail())
+    // }
     if (id === "") {
       // 아이디가 없으면 no
       ScrollToTop_smooth();
@@ -175,25 +175,26 @@ const SignUp = () => {
     if (userType === "드론조종사") { roleSelect = 3 } // * 나중에 3,4번으로 전부 수정하기 3==방제사, 4==농민
 
     console.log({
+      email: id,
       password: pw,
-      role: roleSelect,
-      address: {
-        roadaddress: addrRoad,
-        jibunAddress: addrJibun,
-        detailAddress: addrDetail,
-      },
+      type: roleSelect,
+      road: addrRoad,
+      jibun: addrJibun,
+      detail: addrDetail,
+      token_version_id: tokenVersionId,
     })
 
     // 약관 동의로 이동
     Navigate("rules", {
       state: {
+        email: id,
         password: pw,
-        role: roleSelect,
-        address: {
-          roadaddress: addrRoad,
-          jibunAddress: addrJibun,
-          detailAddress: addrDetail,
-        },
+        type: roleSelect,
+        road: addrRoad,
+        jibun: addrJibun,
+        detail: addrDetail,
+        token_version_id: tokenVersionId,
+
       }
     });
   };
@@ -234,10 +235,10 @@ const SignUp = () => {
 
         <div className="title">본인인증</div>
         {/* <NicePassBtn /> */}
-        <NicePassBtn2/>
-        <AlertText className={nicePassIsSuccess}>
+        <NicePassBtn2 setTokenVersionId={setTokenVersionId} />
+        {/* <AlertText className={nicePassIsSuccess}>
           {message.alert_pass[nicePassIsSuccess] || message.alert_pass.default}
-        </AlertText>
+        </AlertText> */}
 
         <div className="title">아이디</div>
         <RowView>
@@ -319,7 +320,7 @@ const SignUp = () => {
         <Btn className="signUp" onClick={go_nextPage}>
           가입하기
         </Btn>
-       
+
       </LoginBox>
       {
         addrmodalOpen &&

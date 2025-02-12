@@ -47,18 +47,28 @@ const FindPW = () => {
       alert("오류가 발생했습니다. 다시 시도해주세요.");
     }
   };
+  const isOk_Pw = (pw) => {
+    const pattern =
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,16}$/;
+    return pattern.test(pw);
+  };
 
   const verifyOtpAndResetPassword = async () => {
     if (!otp || !newPassword || !confirmPassword) {
       alert("모든 필드를 입력해주세요.");
       return;
     }
-
+  
     if (newPassword !== confirmPassword) {
       alert("비밀번호가 일치하지 않습니다.");
       return;
     }
-
+  
+    if (!isOk_Pw(newPassword)) {
+      alert("비밀번호는 8~16자이며, 영문, 숫자, 특수문자를 포함해야 합니다.");
+      return;
+    }
+  
     try {
       const response = await fetch(`${server}/user/resetpassword/checkcode/`, {
         method: "POST",
@@ -69,7 +79,7 @@ const FindPW = () => {
           sessionid: sessionId,
         }),
       });
-
+  
       if (response.ok) {
         alert("비밀번호가 성공적으로 변경되었습니다!");
         setPasswordChanged(true);

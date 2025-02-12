@@ -35,7 +35,7 @@ const NicePassBtn = ({ isOpen, closeModal, setNicepass }) => {
             headers: { "Content-Type": "application/json", },
             credentials: "include",
             body: JSON.stringify({
-                returnURL: window.location.origin + "/SignUp" + "/nicepass",
+                // returnURL: window.location.origin + "/SignUp" + "/nicepass",
             }),
         })
             .then((res) => res.json())
@@ -47,23 +47,23 @@ const NicePassBtn = ({ isOpen, closeModal, setNicepass }) => {
         form_chk.enc_data.value = res.enc_data;
         form_chk.integrity_value.value = res.integrity_value;
         document.form_chk.submit();
-        function receiveMessage(event) {
-            console.log('Received message', event)
-            //if (event.origin !== window.location.href) return;
-            event.data = "ok";
-            if (event.data === "ok") {
-                dispatch(nicePassSuccess())
-                console.log('나이스 인증')
+        // function receiveMessage(event) {
+        //     console.log('Received message', event)
+        //     //if (event.origin !== window.location.href) return;
+        //     event.data = "ok";
+        //     if (event.data === "ok") {
+        //         dispatch(nicePassSuccess())
+        //         console.log('나이스 인증')
 
-            }
-            if (event.data === "no") {
-                dispatch(nicePassFail())
+        //     }
+        //     if (event.data === "no") {
+        //         dispatch(nicePassFail())
 
-            }
-            return;
-        }
+        //     }
+        //     return;
+        // }
 
-        window.addEventListener("message", receiveMessage, false);
+        // window.addEventListener("message", receiveMessage, false);
 
     }
 
