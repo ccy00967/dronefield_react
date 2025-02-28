@@ -15,6 +15,7 @@ import useEscapeKey from "../../../../Component/function/useEscapeKey";
 import { loadTossPayments, ANONYMOUS } from "@tosspayments/tosspayments-sdk";
 import { requestPayment } from "../../../tosspayments/TossPayments_func";
 import { ModalBox, Hr ,DataRow, TextSemiBold, TextMedium, Btn} from "../css/PestControl_applyModalCss";
+import { CheckoutPage } from "../../../tosspayments/TossPayments_widget";
 
 const PestControl_applyModal = forwardRef((props, ref) => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -120,6 +121,14 @@ const PestControl_applyModal = forwardRef((props, ref) => {
         </RowView>
 
         <Btn onClick={() => requestPayment(selectedPaymentMethod, totalAmount, name, phonenum, email, payorderid)}>결제하기</Btn> 
+        {/* <CheckoutPage
+            selectedPaymentMethod={selectedPaymentMethod}
+            totalAmount={totalAmount}
+            name={name}
+            phonenum={phonenum}
+            email={email}
+            payorderid={payorderid}
+          /> */}
         {/* <Btn onClick={() => console.log(selectedPaymentMethod, totalAmount, name, phonenum, email, payorderid)}>콘솔솔</Btn> */}
       </ModalBox>
     </BackgroundArea>
