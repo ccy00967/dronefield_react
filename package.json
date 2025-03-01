@@ -8,7 +8,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "@tosspayments/payment-widget-sdk": "^0.12.0",
-    "@tosspayments/tosspayments-sdk": "^2.3.2",
+    "@tosspayments/tosspayments-sdk": "^2.3.4",
     "@types/navermaps": "^3.7.7",
     "axios": "^1.7.7",
     "jquery": "^3.7.1",
