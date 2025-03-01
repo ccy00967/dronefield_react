@@ -121,14 +121,14 @@ const PestControl_applyModal = forwardRef((props, ref) => {
         </RowView>
 
         <Btn onClick={() => requestPayment(selectedPaymentMethod, totalAmount, name, phonenum, email, payorderid)}>결제하기</Btn> 
-        {/* <CheckoutPage
+        <CheckoutPage
             selectedPaymentMethod={selectedPaymentMethod}
             totalAmount={totalAmount}
             name={name}
             phonenum={phonenum}
             email={email}
             payorderid={payorderid}
-          /> */}
+          />
         {/* <Btn onClick={() => console.log(selectedPaymentMethod, totalAmount, name, phonenum, email, payorderid)}>콘솔솔</Btn> */}
       </ModalBox>
     </BackgroundArea>
